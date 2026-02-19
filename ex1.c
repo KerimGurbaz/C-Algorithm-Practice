@@ -1,22 +1,43 @@
 #include <stdio.h>
 
-double resultat;
-
-
 int main() {
-    int a = 15, b = 10;
+    // char prenom[50];
+    // int age;
 
-    float r1 = 25.5f, r2 = 5.2f;
+    // printf("Entrez votre prenom : ");
+    // scanf("%49s", prenom);
 
-    resultat = a + b;
-    printf("Addition : %d + %d = %.2f\n", a, b, resultat);
+    // printf("Entrez votre age : ");
+    // scanf("%d", age);
 
-    resultat = r1 - r2;
-    printf("Soustraction: %.2f - %.2f = %.2f\n", r1, r2, resultat);
+    // printf("Bienvenu %s, vous avez %d ans.\n", prenom, age);
 
-    resultat = a * b;
-    printf("Multiplication : %d * % d = %.2f\n", a, b, resultat);
 
-    resultat = r1 / r2;
-    printf("Division : %.2f / %.2f = %.2f\n", r1, r2, resultat);
+    // int nombre;
+    // printf("Entrez un nombre: ");
+    // scanf("%d", &nombre);
+
+    // if ((nombre % 3 == 0) && (nombre % 13 == 0)) {
+    //     printf("%d est divisible par 3 et 13\n", nombre);
+    // } else {
+    //     printf("%d n'est pas divisible par 3 et 13 a la fois\n", nombre);
+    // }
+
+    // return 0;
+
+    int x, y, z;
+    scanf("%d%d%d", &x, &y, &z);
+
+    if (x > y) {
+        if (x > z) {
+            printf("Le maximum est : %d\n", x);
+        } else {
+            printf("Le maximum est : %d\n", z);
+        }
+    } else if (y > z) {
+        printf("Le maximum est : %d\n", y);
+    } else {
+        printf("Le maximum est : %d\n", z);
+    }
+
 }
