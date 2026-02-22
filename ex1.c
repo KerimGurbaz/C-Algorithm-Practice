@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int main() {
+// int main() {
     // char prenom[50];
     // int age;
 
@@ -78,10 +78,115 @@ int main() {
 
     // return 0;
 
-    double x, y;
-
-    char op;
 
 
 
+// }
+
+// #include <stdio.h>
+
+// int minOperation(int *nums, int numsSize, int k) {
+//     long long sum = 0;
+
+//     for (int i = 0; i < numsSize; ++i) {
+//         sum += nums[i];
+//     }
+
+//     return (int)(sum % k);
+// }
+
+
+// int main() {
+//     int nums1[] = { 3, 7, 9 };
+
+//     int k1 = 5;
+
+//     printf("Output : %d\n", minOperation(nums1, 3, k1));
+
+//     return 0;
+// }
+
+
+// #include <stdio.h>
+
+// int main() {
+//     double num1, num2;
+
+//     char op;
+
+//     printf("Entrez l'operation(ex : 7-2): ");
+
+//     if (scanf("%lf %c %lf", &num1, &op, &num2) != 3) {
+//         printf("Erreur : Format d'entree invalide.\n");
+//         return 1;
+//     }
+
+//     switch (op) {
+//     case '+': printf("Resultat : %.2lf\n", num1 + num2);
+//         break;
+//     case '-': printf("Resultat : %.2lf\n", num1 - num2);
+//         break;
+
+//     case '*': printf("Resultat : %.2lf\n", num1 * num2);
+//         break;
+
+//     case '/': if (num2 == 0) {
+//         printf("Erreur: division par zero.\n");
+//     } else {
+//         printf("Resultat : %.2lf\n", num1 / num2);
+//     }
+//             break;
+
+//     default:
+//         printf("Erreur : operateur invalide.\n");
+//     }
+
+//     return 0;
+// }
+
+
+#include <stdio.h>
+
+// int main() {
+//     int num;
+
+//     scanf("%d", &num);
+//     for (int i = 1;i <= 10; ++i) {
+//         printf("%d * %d = %d \n", num, i, num * i);
+//     }
+
+
+//     return 0;
+// }
+
+// int main() {
+//     int somme = 0;
+
+//     for (int i = 1; i <= 100; ++i) {
+//         somme += i;
+//     }
+
+//     printf("La somme est : %d\n", somme);
+
+
+
+//     return 0;
+// }
+
+int main() {
+
+    printf("Entrez des nombres pour additionner(0 pour terminer): \n");
+    int num = 0;
+    int sum = 0;
+
+
+    while (num != 0) {
+        scanf("%d", &num);
+        sum += num;
+    }
+
+
+    printf("La somme des nobres est: %d", sum);
+
+    return 0;
 }
