@@ -145,7 +145,7 @@
 // }
 
 
-#include <stdio.h>
+// // #include <stdio.h>
 
 // int main() {
 //     int num;
@@ -173,20 +173,69 @@
 //     return 0;
 // }
 
+// int main() {
+
+//     printf("Entrez des nombres pour additionner(0 pour terminer): \n");
+//     int num = -11;
+//     int sum = 0;
+
+
+//     while (num != 0) {
+//         scanf("%d", &num);
+//         sum += num;
+//     }
+
+
+//     printf("La somme des nobres est: %d", sum);
+
+//     return 0;
+// }
+// #include <limits.h>
+// #include <stdio.h>
+
+// int main() {
+//     int num;
+//     int maxNumber;
+
+//     printf("Entrez des nombres pour trouver le maximum (-1 pour terminer):\n");
+
+//     scanf("%d", &num);
+
+//     if (num == -1) {
+//         printf("Aucun nombre saisi.\n");
+//         return  0;
+//     }
+
+//     maxNumber = num;
+
+//     while (1) {
+//         scanf("%d", &num);
+//         if (num == -1) {
+//             break;
+//         }
+//         if (num > maxNumber)
+//             maxNumber = num;
+//     }
+
+//     printf("Le plus grand nombre est %d\n", maxNumber);
+//     return 0;
+// }
+
+
+#include <stdio.h>
+
 int main() {
 
-    printf("Entrez des nombres pour additionner(0 pour terminer): \n");
-    int num = 0;
-    int sum = 0;
+    int age;
 
+    do {
+        printf("saisir votre age : ");
+        scanf("%d", &age);
 
-    while (num != 0) {
-        scanf("%d", &num);
-        sum += num;
     }
+    while (age < 18);
 
-
-    printf("La somme des nobres est: %d", sum);
+    printf("Acces accorde.");
 
     return 0;
 }
