@@ -222,20 +222,80 @@
 // }
 
 
+// #include <stdio.h>
+
+// int main() {
+
+//     int age;
+
+//     do {
+//         printf("saisir votre age : ");
+//         scanf("%d", &age);
+
+//     }
+//     while (age < 18);
+
+//     printf("Acces accorde.");
+
+//     return 0;
+// }
+
 #include <stdio.h>
 
+// int main() {
+//     int num;
+//     int result = 0;
+
+//     scanf("%d", &num);
+
+//     while (num > 0) {
+//         int res = num % 10;
+//         result = result * 10 + res;
+//         num /= 10;
+//     }
+
+//     printf("%d", result);
+
+
+//     return 0;
+// }
+
+
+// int main() {
+//     int num, result = 0;
+//     printf("Entrez un nombre pour inverser ses chiffres: ");
+//     scanf("%d", &num);
+
+//     do {
+//         int res = num % 10;
+//         result = result * 10 + res;
+//         num /= 10;
+//     }
+//     while (num != 0);
+//     printf("Le nombre inversé est: %d\n", result);
+
+//     return 0;
+// }
+
+#include <stdio.h>
+#include <string.h>
+
 int main() {
-
     int age;
+    char nom[50];
 
-    do {
-        printf("saisir votre age : ");
-        scanf("%d", &age);
+    char *ptr_nom = nom;
+    int *ptr_age = &age;
 
-    }
-    while (age < 18);
+    char **ptr_ptr_nom = &ptr_nom;
 
-    printf("Acces accorde.");
+    int **ptr_ptr_age = &ptr_age;
+
+    strcpy(*ptr_ptr_nom, "Kerim");
+
+    **ptr_ptr_age = 32;
+
+    printf("Nom: %s, Age : %d\n", nom, age);
 
     return 0;
 }
