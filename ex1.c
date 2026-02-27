@@ -280,22 +280,38 @@
 #include <stdio.h>
 #include <string.h>
 
-int main() {
-    int age;
-    char nom[50];
+// int main() {
 
-    char *ptr_nom = nom;
-    int *ptr_age = &age;
+//     int nombre = 42;
+//     int *ptr;
+//     ptr = &nombre;
 
-    char **ptr_ptr_nom = &ptr_nom;
 
-    int **ptr_ptr_age = &ptr_age;
+//     printf("La vlaeur de nombre est : %d\n", *ptr);
 
-    strcpy(*ptr_ptr_nom, "Kerim");
+//     return 0;
+// }
 
-    **ptr_ptr_age = 32;
 
-    printf("Nom: %s, Age : %d\n", nom, age);
+// int main() {
 
-    return 0;
-}
+//     // char nom;
+//     // int age;
+
+//     // char *ptr_nom = &nom;
+//     // int *ptr_age = &age;
+
+//     // char **ptr_ptr_nom = &ptr_nom;
+//     // int **ptr_ptr_age = &ptr_age;
+
+//     // **ptr_ptr_nom = 'V';
+
+//     // **ptr_ptr_age = 31;
+
+//     // printf("Nom (Initiale) : %c\n", nom);
+
+//     // printf("Age : %d\n", age);
+
+//     // return 0;
+// }
+
