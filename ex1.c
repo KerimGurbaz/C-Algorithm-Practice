@@ -277,8 +277,8 @@
 //     return 0;
 // }
 
-#include <stdio.h>
-#include <string.h>
+// #include <stdio.h>
+// #include <string.h>
 
 // int main() {
 
@@ -315,3 +315,129 @@
 //     // return 0;
 // }
 
+#include <stdio.h>
+
+
+// int main() {
+
+//     char mem[40] = {
+//         0,0,0,0,0,0,0,0,0,0,
+//         'M','A', 'R', 'D','I','\0',
+//         0,0,0,0,
+//         'L','U','N','D','I','\0',
+//         0,0,0,0,
+//         'M','E','C','R','E','D','I','\0',
+//         0
+//     };
+
+//     char *jours[3];
+//     jours[0] = &mem[20];
+//     jours[1] = &mem[10];
+//     jours[2] = &mem[30];
+
+//     for (int i = 0; i < 3; ++i) {
+//         printf("%s\n", jours[i]);
+//     }
+
+//     char s[4] = { 'A', 'B', 'C' ,'\0' };
+//     printf("%s", s);
+
+//     return 0;
+
+
+// }
+
+
+// int main() {
+//     char memoire[5][10] = { 0 };
+
+//     sprintf(&memoire[1][4], "Mardi");
+//     sprintf(&memoire[2][3], "Lundi");
+//     sprintf(&memoire[4][0], "Mecredi");
+
+//     char *jours_semaine[3];
+
+//     jours_semaine[2] = &memoire[4][0];
+//     jours_semaine[0] = &memoire[2][3];
+//     jours_semaine[1] = &memoire[1][4];
+
+
+//     printf("Les premiers jours de la semaine : \n");
+
+//     for (int i = 0; i < 3; ++i) {
+//         printf("- %s\n", jours_semaine[i]);
+//     }
+
+//     return 0;
+// }
+
+
+#include <stdio.h>
+
+// int main(void) {
+
+//     char array[60];
+//     char *ptr;
+//     char *strs[3];
+//     int i;
+
+//     ptr = array;
+//     sprintf(ptr, "%s", "Mercredi");
+
+//     strs[2] = ptr;
+
+//     ptr += 28;
+//     sprintf(ptr, "%s", "Lundi");
+
+//     strs[0] = ptr;
+
+//     ptr = array + 42;
+//     sprintf(ptr, "%s", "Mardi");
+
+//     strs[1] = ptr;
+
+//     for (i = 0; i < 3; i++)
+//         printf("%s\n", strs[i]);
+
+// } 
+
+
+#include <stdio.h>
+#define SIZE 20
+
+void somme_tableaux(int a[], int b[], int resault[], int size) {
+    for (int i = 0; i < size; ++i) {
+        resault[i] = a[i] + b[i];
+    }
+}
+
+void afficher(int t[], int size) {
+    for (int i = 0; i < size; ++i) {
+        printf("%d ", t[i]);
+    }
+    printf("\n");
+}
+
+int main() {
+    int tab1[SIZE];
+    int tab2[SIZE];
+    int tab3[SIZE];
+
+    for (int i = 0; i < SIZE; ++i) {
+        tab1[i] = i;
+        tab2[i] = i * 2;
+    }
+
+    somme_tableaux(tab1, tab2, tab3, SIZE);
+
+    printf("Tableau 1 : ");
+    afficher(tab1, SIZE);
+
+    printf("Tableau 2 : ");
+    afficher(tab2, SIZE);
+
+    printf("Tableau 3 (SOMME) : ");
+    afficher(tab3, SIZE);
+
+    return 0;
+}
