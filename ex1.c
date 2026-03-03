@@ -402,42 +402,142 @@
 // } 
 
 
+// #include <stdio.h>
+// #define SIZE 20
+
+// void somme_tableaux(int a[], int b[], int resault[], int size) {
+//     for (int i = 0; i < size; ++i) {
+//         resault[i] = a[i] + b[i];
+//     }
+// }
+
+// void afficher(int t[], int size) {
+//     for (int i = 0; i < size; ++i) {
+//         printf("%d ", t[i]);
+//     }
+//     printf("\n");
+// }
+
+// int main() {
+//     int tab1[SIZE];
+//     int tab2[SIZE];
+//     int tab3[SIZE];
+
+//     for (int i = 0; i < SIZE; ++i) {
+//         tab1[i] = i;
+//         tab2[i] = i * 2;
+//     }
+
+//     somme_tableaux(tab1, tab2, tab3, SIZE);
+
+//     printf("Tableau 1 : ");
+//     afficher(tab1, SIZE);
+
+//     printf("Tableau 2 : ");
+//     afficher(tab2, SIZE);
+
+//     printf("Tableau 3 (SOMME) : ");
+//     afficher(tab3, SIZE);
+
+//     return 0;
+// }
+
+// #include <stdlib.h>
+// #include <stdio.h>
+// int main() {
+
+//     int capacite = 2;
+//     int taille = 0;
+
+//     int *tableau = malloc(capacite * sizeof(int));
+
+//     if (tableau == NULL) {
+//         printf("Erreur :  echec de l'allocation initialle.\n");
+//         return 1;
+//     }
+
+//     int nombre;
+
+//     while (1) {
+//         printf("Entrez un entier positif(une lettre  pour finir): ");
+
+//         if (scanf("%d", &nombre) != 1) {
+//             break;
+//         }
+
+
+
+//         if (taille == capacite) {
+//             capacite *= 2;
+//             int *temp = realloc(tableau, capacite * sizeof(int));
+
+//             if (temp == NULL) {
+//                 printf("Erreur critique : plus de memoire disponible.\n");
+//                 free(tableau);
+//                 return 1;
+//             }
+//             tableau = temp;
+//         }
+
+//         tableau[taille] = nombre;
+//         taille++;
+//     }
+
+//     printf("Vous avez entre : ");
+//     for (int i = 0; i < taille; i++) {
+//         printf("%d ", tableau[i]);
+//     }
+//     printf("\n");
+//     free(tableau);
+
+
+//     return 0;
+// }
+
+
+// #include <stdio.h>
+
+// #define WIDTH 7
+// #define HEIGHT 6
+
+// int main() {
+//     int tab[WIDTH * HEIGHT];
+//     for (int r = 0; r < HEIGHT; ++r) {
+//         for (int c = 0; c < WIDTH; ++c) {
+//             tab[r * WIDTH + c] = (r + 1) * (c + 1);
+//         }
+//     }
+//     for (int i = 0; i < WIDTH * HEIGHT; ++i) {
+//         printf("%2d ", tab[i]);
+//         if ((i + 1) % WIDTH == 0)printf("\n");
+//     }
+//     return 0;
+// }
+
+
 #include <stdio.h>
-#define SIZE 20
-
-void somme_tableaux(int a[], int b[], int resault[], int size) {
-    for (int i = 0; i < size; ++i) {
-        resault[i] = a[i] + b[i];
-    }
-}
-
-void afficher(int t[], int size) {
-    for (int i = 0; i < size; ++i) {
-        printf("%d ", t[i]);
-    }
-    printf("\n");
-}
 
 int main() {
-    int tab1[SIZE];
-    int tab2[SIZE];
-    int tab3[SIZE];
+    int n;
 
-    for (int i = 0; i < SIZE; ++i) {
-        tab1[i] = i;
-        tab2[i] = i * 2;
+    do {
+        printf("Entrez un entier positif: ");
+        if (scanf("%d", &n) != 1) {
+            printf("Erreur de saisie.\n");
+            return 1;
+        }
+
+    }
+    while (n <= 0);
+
+    while (n > 1) {
+        printf("%d ", n);
+        if (n % 2 == 0) {
+            n /= 2;
+        } else {
+            n = 3 * n + 1;
+        }
     }
 
-    somme_tableaux(tab1, tab2, tab3, SIZE);
-
-    printf("Tableau 1 : ");
-    afficher(tab1, SIZE);
-
-    printf("Tableau 2 : ");
-    afficher(tab2, SIZE);
-
-    printf("Tableau 3 (SOMME) : ");
-    afficher(tab3, SIZE);
-
-    return 0;
+    printf("1\n");
 }
