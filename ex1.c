@@ -398,33 +398,212 @@
 //     return 0;
 // }
 
-#include <stdbool.h>
+// #include <stdbool.h>
 
-bool estPalindrom(const int a, const int b) {
-    return a == b;
+// bool estPalindrom(const int a, const int b) {
+//     return a == b;
 
-}
+// }
+
+
+// int main() {
+//     int val;
+//     printf("entrez un number");
+//     if (scanf("%d", &val) != 1) {
+//         while (getchar() != '\n');
+//         return 1;
+//     }
+
+//     int inverse = 0;
+//     int orj = val;
+
+//     while (val > 0) {
+//         int reste = val % 10;
+//         inverse = inverse * 10 + reste;
+//         val /= 10;
+//     }
+
+//     printf(estPalindrom(orj, inverse) ? "Oui" : "Non");
+
+
+//     return 0;
+// }
+
+
+// int main() {
+//     int a, b;
+//     long long resultat = 1;
+//     printf("Pour a**b Etre a et b : ");
+//     if (scanf("%d%d", &a, &b) != 2) {
+//         while (getchar() != '\n');
+//         return 1;
+//     }
+
+//     for (int i = 0; i < b; ++i) {
+//         resultat *= a;
+//     }
+
+//     if (b == 0) {
+//         printf("la resultat : 1");
+//     } else {
+//         printf("Le resultat est %d ", resultat);
+//     }
+//     return 0;
+// }
+
+
+// int main() {
+//     int resultat = 1;
+//     int nombre;
+//     printf("Entrez un numbre : \n");
+//     if (scanf("%d", &nombre) != 1 || nombre < 0 || nombre>12) {
+//         printf("Erreur : Valeur hors limites ou invalide.\n");
+//         return 1;
+//     }
+
+//     int n_orj = nombre;
+
+
+//     while (nombre > 0) {
+//         resultat *= nombre--;
+//     }
+
+//     printf("Factorielle: %d! = %d\n", n_orj, resultat);
+
+//     return 0;
+
+// }
+
+
+// int main() {
+
+//     int a, b, r;
+//     printf("Entrez deux  integer valeurs : ");
+//     if (scanf("%d%d", &a, &b) != 2) {
+//         while (getchar() != '\n');
+//         return 1;
+//     }
+
+//     while (b != 0) {
+//         r = a % b;
+//         a = b;
+//         b = r;
+//     }
+
+//     printf("%d", a);
+//     return 0;
+// }
+
+// #include <stdbool.h>
+
+// bool isPrime(int n) {
+//     if (n <= 1) return false;
+
+//     if (n == 2) return true;
+
+//     for (int i = 2; i * i <= n; ++i) {
+//         if (n % i == 0) {
+//             return false;
+//         }
+//     }
+
+//     return true;
+// }
+
+// int main() {
+
+//     int number;
+
+//     printf("Entrez un number: \n");
+//     if (scanf("%d", &number) != 1) {
+//         return 1;
+//     }
+
+
+//     printf("%s\n", isPrime(number) ? "Premier" : "Non Premier");
+
+//     return 0;
+// }
+// #include <stdio.h>
+// #include <stdbool.h>
+
+// bool isPrime(int n) {
+//     if (n <= 1) return false;
+//     if (n == 2) return true;
+
+//     for (int i = 2; i * i <= n; ++i) {
+//         if (n % i == 0) {
+//             return false;
+//         }
+//     }
+
+//     return true;
+// }
+
+// int main() {
+//     int num;
+//     printf("Entrez un num : \n");
+
+//     if (scanf("%d", &num) != 1) {
+//         return 1;
+//     }
+
+//     for (int i = 1; i <= num; ++i) {
+//         if (isPrime(i)) {
+//             printf("%d ", i);
+//         }
+//     }
+
+//     return 0;
+// }
+
+// int main() {
+//     int num;
+//     do {
+//         printf("Entrez un nombre(1-10) : \n");
+//         if (scanf("%d", &num) != 1) {
+//             return 1;
+//         }
+
+//     }
+//     while (num < 1 || num>10);
+
+//     for (int i = 1; i <= 10; ++i) {
+//         printf("%d * %d = %d\n", num, i, num * i);
+//     }
+
+
+//     printf("\n\n\n");
+
+//     for (int i = 1; i <= 10; ++i) {
+//         for (int j = 1; j <= 10; ++j) {
+//             printf("%4d", i * j);
+//         }
+//         printf("\n");
+//     }
+
+
+//     return 0;
+// }
 
 
 int main() {
     int val;
-    printf("entrez un number");
-    if (scanf("%d", &val) != 1) {
-        while (getchar() != '\n');
-        return 1;
+
+    do {
+        printf("Entre un valeur : \n");
+        if (scanf("%d", &val) != 1) {
+            while (getchar() != '\n');
+            continue;
+        }
     }
+    while (val < 1 || val>20);
 
-    int inverse = 0;
-    int orj = val;
 
-    while (val > 0) {
-        int reste = val % 10;
-        inverse = inverse * 10 + reste;
-        val /= 10;
+    for (int i = 0; i < val; ++i) {
+        for (int j = 0; j <= i; ++j) {
+            printf(" * ");
+        }
+        printf("\n");
     }
-
-    printf(estPalindrom(orj, inverse) ? "Oui" : "Non");
-
-
-    return 0;
 }

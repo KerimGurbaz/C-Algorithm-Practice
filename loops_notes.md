@@ -388,36 +388,240 @@ int main() {
 ```
 
 ```c
+//13) Üs alma
+#include <stdio.h>
+
+int main() {
+    int a, b;
+    long long resultat = 1;
+
+    printf("Entrez la base (a) et l'exposant (b >= 0) : \n");
+    // Saisie sécurisée avec validation de b
+    if (scanf("%d %d", &a, &b) != 2 || b < 0) {
+        printf("Erreur : b doit etre positif ou nul.\n");
+        return 1;
+    }
+
+    // Boucle d'exponentiation itérative
+    // Si b = 0, la boucle est ignorée et resultat reste 1.
+    for (int i = 0; i < b; ++i) {
+        resultat *= a;
+    }
+
+    // Affichage avec le bon spécificateur (%lld)
+    printf("Le resultat est : %lld\n", resultat);
+
+    return 0;
+}
+
+```
+
+```c
+//14) Faktöriyel (güvenli aralık)
+#include <stdio.h>
+
+int main() {
+    int nombre;
+    int resultat = 1;
+
+    printf("Entrez un nombre (0 <= n <= 12) : ");
+
+    // Saisie sécurisée + Validation des limites
+    if (scanf("%d", &nombre) != 1 || nombre < 0 || nombre > 12) {
+        printf("Erreur : Valeur hors limites ou invalide.\n");
+        return 1;
+    }
+
+    int n_original = nombre; // Çıktı ekranında kullanmak için orijinali sakla
+
+    while (nombre > 0) {
+        resultat *= nombre--;
+    }
+
+    printf("Factorielle: %d! = %d\n", n_original, resultat);
+
+    return 0;
+}
 
 
 ```
 
 ```c
+#include <stdio.h>
+
+int main() {
+    int a, b;
+
+    printf("Entrez deux nombres entiers positifs : \n");
+    if (scanf("%d %d", &a, &b) != 2 || a <= 0 || b <= 0) {
+        printf("Erreur : Entrees invalides.\n");
+        return 1;
+    }
+
+    int original_a = a;
+    int original_b = b;
+
+    // Algorithme d'Euclide
+    while (b != 0) {
+        int reste = a % b;
+        a = b;
+        b = reste;
+    }
+
+    // Le resultat (PGCD) est stocké dans 'a'
+    printf("Le PGCD de %d et %d est : %d\n", original_a, original_b, a);
+
+    return 0;
+}
+// EKOK bulmak için ayrı bir döngü yazmaya, sistemi yormaya gerek yoktur. Matematiksel bir teorem bize der ki: İki sayının çarpımı, onların EBOB ve EKOK'larının çarpımına eşittir.$a \times b = PGCD(a,b) \times PPCM(a,b)$Dolayısıyla programın sonuna şu tek satırı eklemen yeterlidir:int ppcm = (original_a * original_b) / a;
 
 
 ```
 
 ```c
+//16) Asal sayı mı?
+#include <stdio.h>
+#include <stdbool.h>
+
+bool isPrime(int n) {
+    // Règle 1 : Les nombres <= 1 ne sont pas premiers
+    if (n <= 1) return false;
+
+    // Règle 2 : Le cas du 2 est géré naturellement ou explicitement
+    if (n == 2) return true;
+
+    // Règle 3 : Optimisation mathématique exigée par l'énoncé
+    for (int i = 2; i * i <= n; ++i) {
+        if (n % i == 0) {
+            return false; // Un diviseur trouvé, ce n'est pas premier
+        }
+    }
+
+    return true; // Aucun diviseur trouvé jusqu'à la racine carrée
+}
+
+int main() {
+    int number;
+    printf("Entrez un nombre: \n");
+    if (scanf("%d", &number) != 1) return 1;
+
+    // L'opérateur ternaire gère l'affichage direct
+    printf("%s\n", isPrime(number) ? "Premier" : "Non Premier");
+
+    return 0;
+}
+
+```
+
+```c
+#include <stdio.h>
+#include <stdbool.h>
+
+bool isPrime(int n) {
+    if (n <= 1) return false;
+    if (n == 2) return true;
+
+    for (int i = 2; i * i <= n; ++i) {
+        if (n % i == 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+int main() {
+    int num;
+    printf("Entrez un num : \n");
+
+    if (scanf("%d", &num) != 1) {
+        return 1;
+    }
+
+    for (int i = 1; i <= num; ++i) {
+        if (isPrime(i)) {
+            printf("%d ", i);
+        }
+    }
+
+    return 0;
+}
+
+```
+
+```c
+//Çarpım tablosu (format önemli)
+int main() {
+    int num;
+    do {
+        printf("Entrez un nombre(1-10) : \n");
+        if (scanf("%d", &num) != 1) {
+            return 1;
+        }
+
+    }
+    while (num < 1 || num>10);
+
+    for (int i = 1; i <= 10; ++i) {
+        printf("%d * %d = %d\n", num, i, num * i);
+    }
+
+
+    printf("\n\n\n");
+
+    for (int i = 1; i <= 10; ++i) {
+        for (int j = 1; j <= 10; ++j) {
+            printf("%4d", i * j);
+        }
+        printf("\n");
+    }
+
+
+    return 0;
+}
 
 
 ```
 
 ```c
+#include <stdio.h>
 
+int main() {
+    int n;
+    int count = 0;
+    float sum = 0.0f; // float başlatırken 0.0f kullanmak iyi bir alışkanlıktır.
 
-```
+    // 1. Önce kaç sayı okuyacağımızı (N) alıyoruz
+    printf("Entrez N, puis les nombres : \n");
+    if (scanf("%d", &n) != 1 || n <= 0) {
+        printf("Erreur : N doit etre un entier positif.\n");
+        return 1;
+    }
 
-```c
+    // 2. N defa dönecek okuma döngüsü
+    for (int i = 0; i < n; ++i) {
+        float val;
 
+        // Lecture robuste (Sağlam okuma) kısmı:
+        if (scanf("%f", &val) != 1) {
+            // Kullanıcı sayı yerine harf girdiyse programı güvenle kapatıyoruz.
+            printf("Erreur de lecture.\n");
+            return 1;
+        }
 
-```
+        // Sadece pozitif olanları filtrele
+        if (val > 0.0f) {
+            count++;
+            sum += val;
+        }
+    }
 
-```c
+    // Çıktı formatlaması: Yüzde nokta iki (%.2f)
+    printf("Count: %d\n", count);
+    printf("Somme: %.2f\n", sum);
 
-
-```
-
-```c
+    return 0;
+}
 
 
 ```
