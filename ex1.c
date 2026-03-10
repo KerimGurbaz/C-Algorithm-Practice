@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 // int main() {
+
 //     int n;
 
 //     if (scanf("%d", &n) != 1 || n <= 0) {
@@ -8,89 +9,57 @@
 //     }
 
 //     int tab[n];
-//     int somme = 0;
+//     int count = 0;
 
 //     for (int i = 0; i < n; ++i) {
-//         if (scanf("%d", &tab[i]) != 1) return 1;
-//         somme += tab[i];
-//     }
-//     printf("Somme : %d\n", somme);
-//     return 0;
-// }
-
-
-// int main() {
-//     int n;
-//     printf("entrez un entier : \n");
-//     if (scanf("%d", &n) != 1 || n < 1 || n>10) {
-//         return 1;
-//     }
-
-//     float tab[n];
-//     float somme = 0;
-
-//     for (int i = 0; i < n; ++i) {
-//         if (scanf("%f", &tab[i]) != 1)return 1;
-//         somme += tab[i];
-//     }
-
-//     printf("Moyenne : %.2f \n", (float)somme / n);
-// }
-
-
-// int main() {
-
-//     int n;
-//     printf("Entrez un nombre : \n");
-//     if (scanf("%d", &n) != 1 || n < 2) {
-//         return 1;
-//     }
-
-//     int tab[n];
-
-//     for (int i = 0; i < n; ++i) {
-
-//         if (scanf("%d", &tab[i]) != 1)return 1;
-
-//     }
-
-//     int max_el = tab[0];
-
-//     for (int i = 1; i < n; ++i) {
-//         if (tab[i] > max_el) {
-//             max_el = tab[i];
+//         if (scanf("%d", &tab[i]) != 1) {
+//             return 1;
 //         }
 //     }
 
-//     printf("Maximum : %d\n", max_el);
+//     for (int i = 0; i < n; ++i) {
+//         if (tab[i] % 2 == 0) {
+//             count++;
+//         }
+//     }
 
 
-//     return 0;
+//     printf("il y a %d valeurs paires\n ", count);
 // }
 
 
 int main() {
-    int n;
-    printf("entrez un valeur : \n");
-    if (scanf("%d", &n) != 1) {
+
+    int num;
+    int pos = 0;
+    int neg = 0;
+    int zero = 0;
+
+    if (scanf("%d", &num) != 1 || num <= 0) {
         return 1;
     }
+    int tab[num];
 
-    int tab[n];
+    for (int i = 0; i < num; ++i) {
 
-
-    for (int i = 0; i < n; ++i) {
-        if (scanf("%d", &tab[i]) != 1)return 1;
-    }
-    int min_el = tab[0];
-    int idx = 0;
-
-    for (int i = 0; i < n; ++i) {
-        if (tab[i] < min_el) {
-            min_el = tab[i];
-            idx = i;
+        if (scanf("%d", &tab[i]) != 1) {
+            return 1;
         }
     }
-    printf("Minumum : %d\n", min_el);
-    printf("Indice : %d\n", idx);
+
+    for (int i = 0; i < num; ++i) {
+        if (tab[i] > 0) {
+            ++pos;
+        } else if (tab[i] < 0) {
+            ++neg;
+        } else {
+            ++zero;
+        }
+
+    }
+
+    printf("Positives : %d\n", pos);
+    printf("Negatives : %d\n", neg);
+    printf("Zeros : %d\n", zero);
+
 }
