@@ -379,11 +379,97 @@ int main() {
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
 
+int main() {
+    int taille = 0;
+    int capacity = 1;
+    int valeur;
+
+    int *tab = malloc(capacity * sizeof *tab);
+    if (tab == NULL) return 1;
+
+    // Lecture jusqu'à trouver un 0
+    while (scanf("%d", &valeur) == 1) {
+        if (valeur == 0) break; // Sortie si c'est 0
+        
+        tab[taille++] = valeur; // Ajout de la valeur et incrémentation
+
+        // Si le tableau est plein, on double sa capacité
+        if (taille == capacity) {
+            capacity *= 2;
+            int *temp = realloc(tab, capacity * sizeof *temp);
+            if (temp == NULL) {
+                free(tab);
+                return 1;
+            }
+            tab = temp;
+        }
+    }
+
+    // Affichage propre sur une seule ligne
+    for (int i = 0; i < taille; ++i) {
+        printf("%d ", tab[i]);
+    }
+    printf("\n");
+
+    free(tab);
+    return 0;
+}
 
 ```
 
 ```c
+//(Le vrai Shrink-to-fit
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int taille = 0;
+    int capacity = 1;
+    int valeur;
+
+    int *tab = malloc(capacity * sizeof * tab);
+    if (tab == NULL) return 1;
+
+    while (scanf("%d", &valeur) == 1) {
+        if (valeur == 0) break;
+
+        // 1. On ajoute d'abord
+        tab[taille++] = valeur;
+
+        // 2. On double SEULEMENT si c'est plein
+        if (taille == capacity) {
+            capacity *= 2;
+            int *temp = realloc(tab, capacity * sizeof * tab);
+            if (temp == NULL) {
+                free(tab);
+                return 1;
+            }
+            tab = temp;
+        }
+    }
+
+    // --- LE VRAI SHRINK-TO-FIT ---
+    // Si la RAM allouée (capacity) est plus grande que les données utiles (taille)
+    // ET qu'il y a au moins 1 donnée (taille > 0).
+    if (capacity > taille && taille > 0) {
+        int *temp = realloc(tab, taille * sizeof * tab);
+        if (temp != NULL) {
+            tab = temp;
+            capacity = taille; // Maintenant, l'étiquette correspond à la réalité physique
+        }
+    }
+
+    for (int i = 0; i < taille; ++i) {
+        printf("%d ", tab[i]);
+    }
+    printf("\nTaille : %d  && Capacity : %d\n", taille, capacity);
+
+    free(tab);
+    return 0;
+}
 
 
 ```
