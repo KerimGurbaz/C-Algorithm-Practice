@@ -718,21 +718,111 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define TAILLE 5
+// #define TAILLE 5
 
 
+// int main() {
+//     size_t lignes = 5;
+//     size_t colonnes = 10;
+//     int **tab;
+
+//     tab = malloc(lignes * sizeof(int *));
+//     if (tab == NULL) return 1;
+
+//     for (int i = 0; i < lignes; ++i) {
+//         tab[i] = malloc(colonnes * sizeof(int));
+//         if (tab[i] == NULL) {
+//             for (size_t j = 0; j < i; j++) {
+//                 free(tab[j]);
+//             }
+//             free(tab);
+//             return 1;
+//         }
+//     }
+
+//     for (size_t i = 0; i < lignes; ++i) {
+//         for (size_t j = 0; j < colonnes; ++j) {
+//             tab[i][j] = (i + 1) * (j + 1);
+//         }
+//     }
+
+//     for (size_t i = 0; i < lignes; ++i) {
+//         for (size_t j = 0; j < colonnes; ++j) {
+//             printf("%4d", tab[i][j]);
+//         }
+//         printf("\n");
+//     }
+
+//     for (size_t i = 0; i < lignes; ++i) {
+//         free(tab[i]);
+//     }
+//     free(tab);
+
+//     return 0;
+
+// }
+
+
+// int main() {
+//     int lignes;
+//     int colonnes;
+
+//     if (scanf("%d", &lignes) != 1 || lignes <= 0) return 1;
+//     if (scanf("%d", &colonnes) != 1 || colonnes <= 0) return 1;
+
+//     int **tab = malloc(lignes * sizeof(int *));
+//     if (tab == NULL) return 1;
+
+//     for (int i = 0; i < lignes; ++i) {
+//         tab[i] = malloc(colonnes * sizeof(int));
+//         if (tab[i] == NULL) {
+//             for (int j = 0; j < i; ++j) {
+//                 free(tab[j]);
+//             }
+//             free(tab);
+//             return 1;
+//         }
+//     }
+
+
+//     for (int i = 0; i < lignes; ++i) {
+//         for (int j = 0; j < colonnes; ++j) {
+//             if (scanf("%d", &tab[i][j]) != 1) {
+//                 for (int k = 0; k < lignes; ++k) {
+//                     free(tab[k]);
+//                 }
+//                 free(tab);
+//                 return 1;
+//             }
+
+//         }
+//     }
+//     printf("\nMatrice:\n");
+//     for (int i = 0; i < lignes; ++i) {
+//         for (int j = 0; j < colonnes; ++j) {
+//             printf("%4d", tab[i][j]);
+//         }
+//         printf("\n");
+//     }
+
+//     free(tab);
+
+//     return 1;
+// }
 int main() {
-    size_t lignes = 5;
-    size_t colonnes = 10;
-    int **tab;
+    int lignes;
+    int colonnes;
 
-    tab = malloc(lignes * sizeof(int *));
-    if (tab == NULL) return 1;
+    if (scanf("%d", &lignes) != 1 || lignes <= 0) return 1;
+    if (scanf("%d", &colonnes) != 1 || colonnes <= 0) return 1;
+
+    int **tab = malloc(lignes * sizeof(int *));
+    if (tab == NULL)return 1;
 
     for (int i = 0; i < lignes; ++i) {
         tab[i] = malloc(colonnes * sizeof(int));
         if (tab[i] == NULL) {
-            for (size_t j = 0; j < i; j++) {
+            for (int j = 0; j < i; ++j) {
                 free(tab[j]);
             }
             free(tab);
@@ -740,24 +830,26 @@ int main() {
         }
     }
 
-    for (size_t i = 0; i < lignes; ++i) {
-        for (size_t j = 0; j < colonnes; ++j) {
-            tab[i][j] = (i + 1) * (j + 1);
+    for (int i = 0; i < lignes; ++i) {
+        for (int j = 0; j < colonnes; ++j) {
+            if (scanf("%d", &tab[i][j]) != 1) {
+                for (int k = 0;k < lignes;++k) {
+                    free(tab[k]);
+                }
+                free(tab);
+                return 1;
+            }
         }
     }
 
-    for (size_t i = 0; i < lignes; ++i) {
-        for (size_t j = 0; j < colonnes; ++j) {
+    for (int i = 0; i < lignes; ++i) {
+        for (int j = 0; j < colonnes; ++j) {
             printf("%4d", tab[i][j]);
         }
         printf("\n");
     }
 
-    for (size_t i = 0; i < lignes; ++i) {
-        free(tab[i]);
-    }
+
     free(tab);
-
     return 0;
-
 }
