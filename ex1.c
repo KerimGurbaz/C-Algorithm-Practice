@@ -809,47 +809,112 @@
 
 //     return 1;
 // }
+
+/// @brief /////////////////////777
+/// @return 
+// int main() {
+//     int lignes;
+//     int colonnes;
+
+//     if (scanf("%d", &lignes) != 1 || lignes <= 0) return 1;
+//     if (scanf("%d", &colonnes) != 1 || colonnes <= 0) return 1;
+
+//     int **tab = malloc(lignes * sizeof(int *));
+//     if (tab == NULL)return 1;
+
+//     for (int i = 0; i < lignes; ++i) {
+//         tab[i] = malloc(colonnes * sizeof(int));
+//         if (tab[i] == NULL) {
+//             for (int j = 0; j < i; ++j) {
+//                 free(tab[j]);
+//             }
+//             free(tab);
+//             return 1;
+//         }
+//     }
+
+//     for (int i = 0; i < lignes; ++i) {
+//         for (int j = 0; j < colonnes; ++j) {
+//             if (scanf("%d", &tab[i][j]) != 1) {
+//                 for (int k = 0;k < lignes;++k) {
+//                     free(tab[k]);
+//                 }
+//                 free(tab);
+//                 return 1;
+//             }
+//         }
+//     }
+
+//     for (int i = 0; i < lignes; ++i) {
+//         for (int j = 0; j < colonnes; ++j) {
+//             printf("%4d", tab[i][j]);
+//         }
+//         printf("\n");
+//     }
+
+
+//     free(tab);
+//     return 0;
+// }
+
+// #include <stdlib.h>
+// #include <stdio.h>
+
+// int main() {
+//     int lignes;
+//     int colones;
+//     long long int somme = 0;
+
+//     if (scanf("%d", &lignes) != 1 || lignes <= 0) return 1;
+//     if (scanf("%d", &colones) != 1 || colones <= 0) return 1;
+
+//     int **tab = malloc(lignes * sizeof(int *));
+//     if (tab == NULL)return 1;
+
+//     for (int i = 0; i < lignes; ++i) {
+//         tab[i] = malloc(colones * sizeof(int));
+//         if (tab[i] == NULL) {
+//             for (int j = 0; j < i; ++j) {
+//                 free(tab[j]);
+//             }
+//             free(tab);
+//             return 1;
+//         }
+//     }
+
+//     for (int i = 0; i < lignes; ++i) {
+//         for (int j = 0; j < colones; ++j) {
+//             if (scanf("%d", &tab[i][j]) != 1) {
+//                 for (int k = 0; k < lignes; ++k) {
+//                     free(tab[k]);
+//                 }
+//                 free(tab);
+//                 return 1;
+//             }
+//             somme += tab[i][j];
+//         }
+//     }
+//     for (int i = 0; i < lignes; ++i) {
+//         for (int j = 0; j < colones; ++j) {
+//             printf("%4d ", tab[i][j]);
+//         }
+//         printf("\n");
+//     }
+//     printf("\nSomme : %lld ", somme);
+
+//     for (int i = 0; i < lignes; ++i) {
+//         free(tab[i]);
+//     }
+
+//     free(tab);
+
+//     return 0;
+// }
+
+
 int main() {
     int lignes;
-    int colonnes;
+    int colones;
 
     if (scanf("%d", &lignes) != 1 || lignes <= 0) return 1;
-    if (scanf("%d", &colonnes) != 1 || colonnes <= 0) return 1;
-
-    int **tab = malloc(lignes * sizeof(int *));
-    if (tab == NULL)return 1;
-
-    for (int i = 0; i < lignes; ++i) {
-        tab[i] = malloc(colonnes * sizeof(int));
-        if (tab[i] == NULL) {
-            for (int j = 0; j < i; ++j) {
-                free(tab[j]);
-            }
-            free(tab);
-            return 1;
-        }
-    }
-
-    for (int i = 0; i < lignes; ++i) {
-        for (int j = 0; j < colonnes; ++j) {
-            if (scanf("%d", &tab[i][j]) != 1) {
-                for (int k = 0;k < lignes;++k) {
-                    free(tab[k]);
-                }
-                free(tab);
-                return 1;
-            }
-        }
-    }
-
-    for (int i = 0; i < lignes; ++i) {
-        for (int j = 0; j < colonnes; ++j) {
-            printf("%4d", tab[i][j]);
-        }
-        printf("\n");
-    }
-
-
-    free(tab);
-    return 0;
 }
