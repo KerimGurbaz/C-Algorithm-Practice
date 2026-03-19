@@ -912,9 +912,419 @@
 // }
 
 
+// int main() {
+//     int lignes;
+//     int colones;
+//     long long int somme = 0;
+
+//     if (scanf("%d", &lignes) != 1 || lignes <= 0) return 1;
+//     if (scanf("%d", &colones) != 1 || colones <= 0) return 1;
+
+//     int **tab = malloc(lignes * sizeof(int *));
+//     if (tab == NULL) return 1;
+
+//     for (int i = 0; i < lignes; ++i) {
+//         tab[i] = malloc(colones * sizeof(int));
+//         if (tab[i] == NULL) {
+//             for (int k = 0; k < i; ++k) {
+//                 free(tab[k]);
+//             }
+//             free(tab);
+//             return 1;
+//         }
+//     }
+
+//     for (int i = 0; i < lignes; ++i) {
+//         for (int j = 0; j < colones; ++j) {
+//             if (scanf("%d", &tab[i][j]) != 1) {
+//                 for (int k = 0; k < lignes; ++k) {
+//                     free(tab[k]);
+//                 }
+//                 free(tab);
+//                 return 1;
+//             }
+//             somme += tab[i][j];
+//         }
+//     }
+
+//     for (int i = 0; i < lignes; ++i) {
+//         for (int j = 0; j < colones; ++j) {
+//             printf("%3d", tab[i][j]);
+//         }
+//         printf("\n");
+//     }
+
+//     printf("\nSomme : %lld \n ", somme);
+
+//     for (int i = 0; i < lignes; ++i) {
+//         free(tab[i]);
+//     }
+//     free(tab);
+//     return 0;
+
+// }
+
+
+// #include <stdio.h>
+// #define TAILLE_MAX 10
+
+// int iTab[TAILLE_MAX] = { 3, 6, 0, 8, 97, 0, 5, 6, 0, 8 };
+
+// int main() {
+
+//     int *p = iTab;
+//     int *fin = iTab + TAILLE_MAX;
+
+//     for (; p < fin; ++p) {
+//         if (*p == 0) {
+//             printf("%td ", p - iTab);
+//         }
+//     }
+
+//     return 0;
+
+// }
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <limits.h>
+// int main() {
+//     int lignes;
+//     int colonnes;
+//     int max_element = INT_MIN;
+
+//     if (scanf("%d", &lignes) != 1 || lignes <= 1) return 1;
+//     if (scanf("%d", &colonnes) != 1 || colonnes <= 1) return 1;
+
+//     int **tab = malloc(lignes * sizeof(int *));
+//     if (tab == NULL) return 1;
+
+//     for (int i = 0; i < lignes; ++i) {
+//         tab[i] = malloc(colonnes * sizeof(int));
+//         if (tab[i] == NULL) {
+//             for (int j = 0; j < i;++j) {
+//                 free(tab[j]);
+//             }
+//             free(tab);
+//             return 1;
+//         }
+//     }
+
+//     for (int i = 0; i < lignes; ++i) {
+//         for (int j = 0; j < colonnes; ++j) {
+//             if (scanf("%d", &tab[i][j]) != 1) {
+//                 for (int k = 0; k < lignes; ++k) {
+//                     free(tab[k]);
+//                 }
+//                 free(tab);
+//                 return 1;
+//             }
+//             if (tab[i][j] > max_element) {
+//                 max_element = tab[i][j];
+//             }
+//         }
+
+//     }
+
+//     for (int i = 0; i < lignes; ++i) {
+//         for (int j = 0; j < colonnes; ++j) {
+//             printf("%3d", tab[i][j]);
+//         }
+//         printf("\n");
+//     }
+
+
+
+//     printf("\nMax element : %d ", max_element);
+//     for (int i = 0; i < lignes; ++i) {
+//         free(tab[i]);
+//     }
+
+//     free(tab);
+//     return 0;
+// }
+
+// int main() {
+//     int lignes;
+//     int colonnes;
+
+//     if (scanf("%d", &lignes) != 1 || lignes <= 0) return 1;
+//     if (scanf("%d", &colonnes) != 1 || colonnes <= 0) return 1;
+
+//     int **tab = malloc(lignes * sizeof(int *));
+//     if (tab == NULL) return 1;
+
+//     for (int i = 0; i < lignes; ++i) {
+//         tab[i] = malloc(colonnes * sizeof(int));
+//         if (tab[i] == NULL) {
+//             for (int k = 0; k < i; ++k) {
+//                 free(tab[k]);
+//             }
+//             free(tab);
+//             return 1;
+//         }
+//     }
+
+//     int **tr = malloc(lignes * sizeof(int *));
+//     if (tr == NULL) return 1;
+
+//     for (int i = 0; i < lignes; ++i) {
+//         tr[i] = malloc(colonnes * sizeof(int));
+//         if (tr[i] == NULL) {
+//             for (int k = 0; k < i; ++k) {
+//                 free(tr[k]);
+//             }
+//             free(tr);
+//             return 1;
+//         }
+//     }
+
+
+//     for (int i = 0; i < lignes; ++i) {
+//         for (int j = 0; j < colonnes; ++j) {
+//             if (scanf("%d", &tab[i][j]) != 1) {
+//                 for (int k = 0; k < lignes; ++k) {
+//                     free(tab[k]);
+//                 }
+//                 free(tab);
+//                 return 1;
+//             }
+//             tr[j][i] = tab[i][j];
+//         }
+
+//     }
+
+//     for (int i = 0; i < lignes; ++i) {
+//         for (int j = 0; j < colonnes; ++j) {
+//             printf("%3d", tab[i][j]);
+//         }
+//         printf("\n");
+//     }
+//     printf("\n");
+//     for (int i = 0; i < lignes; ++i) {
+//         for (int j = 0; j < colonnes; ++j) {
+//             printf("%3d", tr[i][j]);
+//         }
+//         printf("\n");
+//     }
+//     printf("\n");
+
+
+
+
+//     for (int i = 0; i < lignes; ++i) {
+//         free(tab[i]);
+//     }
+//     for (int i = 0; i < lignes; ++i) {
+//         free(tr[i]);
+//     }
+//     free(tab);
+//     free(tr);
+
+
+//     return 0;
+// }
+
+
+// #include <stdio.h>
+
+// int main(void) {
+//     int a;
+//     float b;
+//     char mot[30];
+
+//     printf("Entrez un entier : ");
+//     if (scanf("%d", &a) != 1) return 1;
+
+//     printf("Entrez un flottant : ");
+//     if (scanf("%f", &b) != 1) return 1;
+
+//     printf("Entrez un mot : ");
+//     scanf("%29s", mot);
+
+//     printf("Entier : %d\n", a);
+//     printf("Flottant : %.2f\n", b);
+//     printf("Mot : %s\n", mot);
+
+//     return 0;
+// }
+
+// size_t longueur_chaine(const char *str) {
+//     if (str == NULL) return 0;
+
+//     const char *ptr = str;
+
+//     while (*ptr != '\0') {
+//         ptr++;
+//     }
+
+//     return ptr - str;
+// }
+// int main() {
+
+//     char mot[30];
+
+//     printf("Entrez un mot : ");
+//     if (scanf("%29s", mot) != 1) return 1;
+
+//     size_t longueur = longueur_chaine(mot);
+//     printf("Le mot '%s' contient %zu caracters.\n", mot, longueur);
+
+
+//     return 0;
+// }
+
+
+// #include <stdio.h>
+
+// int main(void) {
+//     int age;
+//     float taille;
+//     char nom[20];
+
+//     printf("Entrez votre age : ");
+//     //scanf("%f", age);
+//     scanf("%d", &age);
+
+//     printf("Entrez votre taille : ");
+//     //scanf("%d", &taille);
+//     scanf("%f", &taille);
+
+//     printf("Entrez votre nom : ");
+//     scanf("%19s", nom);
+
+//     printf("Age : %d\n", age);
+//     printf("Taille : %.2f\n", taille);
+//     printf("Nom : %s\n", nom);
+
+//     return 0;
+// }
+
+// char *dupliquer_mot(const char *source) {
+//     if (source == NULL) return NULL;
+
+//     size_t longeur = 0;
+//     const char *ptr = source;
+//     while (*ptr != '\0') {
+//         longeur++;
+//         ptr++;
+//     }
+
+//     char *copie = malloc((longeur + 1) * sizeof(char));
+//     if (copie == NULL) return NULL;
+
+//     const char *ptr_source = source;
+//     char *ptr_dest = copie;
+
+//     while (*ptr_source != '\0') {
+//         *ptr_dest = *ptr_source;
+//         ptr_dest++;
+//         ptr_source++;
+//     }
+
+//     *ptr_dest = '\0';
+
+//     return copie;
+// }
+
+
+// int main() {
+//     char mot_statique[30];
+
+//     printf("Entrez un mot : ");
+//     if (scanf("%29s", mot_statique) != 1) return 1;
+
+//     char *mot_dynamique = dupliquer_mot(mot_statique);
+//     if (mot_dynamique == NULL) return 1;
+
+//     printf("Copie dynamique : %s\n", mot_dynamique);
+
+//     free(mot_dynamique);
+
+
+//     return 0;
+// }
+#include <limits.h>
+
+void calcul_moyenne(int **tab, int lignes, int colonnes, float *moyenne) {
+    if (tab != NULL && lignes >= 0 && colonnes >= 0) {
+        int somme = 0;
+        int element = lignes * colonnes;
+        for (int i = 0; i < lignes;++i) {
+            for (int j = 0; j < colonnes; ++j) {
+                somme += tab[i][j];
+            }
+        }
+
+
+        if (somme != 0) {
+            *moyenne = (float)somme / element;
+        }
+    }
+    printf("\nMoyenne : %.2f ", *moyenne);
+
+}
+
+void afficher_superieurs(int **tab, float moyenne, int lignes, int colonnes) {
+
+    for (int i = 0; i < lignes; ++i) {
+        int lgn = INT_MIN;
+        int somme = 0;
+        for (int j = 0; j < colonnes; ++j) {
+            somme += tab[i][j];
+            if (somme > moyenne) {
+                printf("\nLigne %d, colonnes %d : %d", i, j, somme);
+            }
+        }
+    }
+}
+
 int main() {
+
     int lignes;
-    int colones;
+    int colonnes;
 
     if (scanf("%d", &lignes) != 1 || lignes <= 0) return 1;
+    if (scanf("%d", &colonnes) != 1 || colonnes <= 0) return 1;
+
+    int **tab = malloc(lignes * sizeof(int *));
+    if (tab == NULL) return 1;
+
+    for (int i = 0; i < lignes; ++i) {
+        tab[i] = malloc(colonnes * sizeof(int));
+        if (tab[i] == NULL) {
+            for (int j = 0; j < i; ++j) {
+                free(tab[j]);
+            }
+            free(tab);
+            return 1;
+        }
+    }
+
+    for (int i = 0; i < lignes; ++i) {
+        for (int j = 0; j < colonnes; ++j) {
+            if (scanf("%d", &tab[i][j]) != 1) {
+                for (int k = 0; k < lignes; ++i) {
+                    free(tab[k]);
+                }
+                free(tab);
+                return 1;
+            }
+        }
+    }
+    float moyenne = 0.0f;
+
+    calcul_moyenne(tab, lignes, colonnes, &moyenne);
+
+    afficher_superieurs(tab, moyenne, lignes, colonnes);
+
+
+
+
+    for (int i = 0; i < lignes; ++i) {
+        free(tab[i]);
+    }
+
+
+    free(tab);
+    return 0;
 }
