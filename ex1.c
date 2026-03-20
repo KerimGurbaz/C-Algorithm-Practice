@@ -1243,88 +1243,371 @@
 
 //     return 0;
 // }
-#include <limits.h>
+// #include <limits.h>
 
-void calcul_moyenne(int **tab, int lignes, int colonnes, float *moyenne) {
-    if (tab != NULL && lignes >= 0 && colonnes >= 0) {
-        int somme = 0;
-        int element = lignes * colonnes;
-        for (int i = 0; i < lignes;++i) {
-            for (int j = 0; j < colonnes; ++j) {
-                somme += tab[i][j];
+// void calcul_moyenne(int **tab, int lignes, int colonnes, float *moyenne) {
+//     if (tab != NULL && lignes >= 0 && colonnes >= 0) {
+//         int somme = 0;
+//         int element = lignes * colonnes;
+//         for (int i = 0; i < lignes;++i) {
+//             for (int j = 0; j < colonnes; ++j) {
+//                 somme += tab[i][j];
+//             }
+//         }
+
+
+//         if (somme != 0) {
+//             *moyenne = (float)somme / element;
+//         }
+//     }
+//     printf("\nMoyenne : %.2f ", *moyenne);
+
+// }
+
+// void afficher_superieurs(int **tab, float moyenne, int lignes, int colonnes) {
+
+//     for (int i = 0; i < lignes; ++i) {
+//         int lgn = INT_MIN;
+//         int somme = 0;
+//         for (int j = 0; j < colonnes; ++j) {
+//             somme += tab[i][j];
+//             if (somme > moyenne) {
+//                 printf("\nLigne %d, colonnes %d : %d", i, j, somme);
+//             }
+//         }
+//     }
+// }
+
+// int main() {
+
+//     int lignes;
+//     int colonnes;
+
+//     if (scanf("%d", &lignes) != 1 || lignes <= 0) return 1;
+//     if (scanf("%d", &colonnes) != 1 || colonnes <= 0) return 1;
+
+//     int **tab = malloc(lignes * sizeof(int *));
+//     if (tab == NULL) return 1;
+
+//     for (int i = 0; i < lignes; ++i) {
+//         tab[i] = malloc(colonnes * sizeof(int));
+//         if (tab[i] == NULL) {
+//             for (int j = 0; j < i; ++j) {
+//                 free(tab[j]);
+//             }
+//             free(tab);
+//             return 1;
+//         }
+//     }
+
+//     for (int i = 0; i < lignes; ++i) {
+//         for (int j = 0; j < colonnes; ++j) {
+//             if (scanf("%d", &tab[i][j]) != 1) {
+//                 for (int k = 0; k < lignes; ++i) {
+//                     free(tab[k]);
+//                 }
+//                 free(tab);
+//                 return 1;
+//             }
+//         }
+//     }
+//     float moyenne = 0.0f;
+
+//     calcul_moyenne(tab, lignes, colonnes, &moyenne);
+
+//     afficher_superieurs(tab, moyenne, lignes, colonnes);
+
+//     for (int i = 0; i < lignes; ++i) {
+//         free(tab[i]);
+//     }
+
+
+//     free(tab);
+//     return 0;
+// }
+
+// void calcul_moyenne(int **tab, int lignes, int colonnes, float *moyenne) {
+//     if (tab == NULL || lignes <= 0 || colonnes <= 0) return;
+
+//     int somme = 0;
+//     int elements = lignes * colonnes;
+
+//     for (int i = 0; i < lignes; ++i) {
+//         for (int j = 0; j < colonnes; ++j) {
+//             somme += tab[i][j];
+//         }
+//     }
+
+//     *moyenne = (float)somme / elements;
+// }
+
+// void afficher_superieurs(const int **tab, int lignes, int colonnes, float moyenne) {
+//     printf("\n Emenets superieurs à la moyenne %f : \n", moyenne);
+
+//     for (int i = 0; i < lignes; ++i) {
+//         printf("Ligne %d :", i);
+
+//         for (int j = 0; j < colonnes; ++j) {
+//             if (tab[i][j] > moyenne) {
+//                 printf(" %d", tab[i][j]);
+//             }
+//         }
+//         printf("\n");
+//     }
+// }
+
+// int main() {
+//     int lignes, colonnes;
+
+//     printf("Nobre de lignes : ");
+//     if (scanf("%d", &lignes) != 1 || lignes <= 0) return 1;
+//     printf("Nobre de colonnes : ");
+//     if (scanf("%d", &colonnes) != 1 || colonnes <= 0) return 1;
+
+//     int **tab = malloc(lignes * sizeof(int *));
+//     if (tab == NULL) return 1;
+
+//     for (int i = 0; i < lignes; ++i) {
+//         tab[i] = malloc(colonnes * sizeof(int));
+//         if (tab[i] == NULL) {
+//             for (int j = 0; j < lignes; ++j) {
+//                 free(tab[j]);
+//             }
+//             free(tab);
+//             return 1;
+//         }
+//     }
+
+
+//     printf("Entrez les valeur (%d * %d ) : \n", lignes, colonnes);
+//     for (int i = 0; i < lignes; ++i) {
+//         for (int j = 0; j < colonnes; ++j) {
+//             printf("Ligne %d, colonne %d : ", i, j);
+//             if (scanf("%d4d", &tab[i][j]) != 1) {
+//                 for (int k = 0; k < lignes; ++k) {
+//                     free(tab[k]);
+//                 }
+//                 free(tab);
+//                 return 1;
+//             }
+//         }
+//     }
+
+//     float moyenne = 0.0f;
+//     calcul_moyenne(tab, lignes, colonnes, &moyenne);
+
+//     afficher_superieurs((const int **)tab, lignes, colonnes, moyenne);
+
+
+//     for (int i = 0; i < lignes; ++i) {
+//         free(tab[i]);
+//     }
+
+//     free(tab);
+
+//     return 0;
+// }
+
+// void reverseString(char *str) {
+
+//     int longeur = 0;
+//     char *first = str;
+//     char *ptr = str;
+
+
+//     while (*ptr != '\0') {
+//         ++longeur;
+//         ptr++;
+//     }
+
+//     char copy[longeur + 1];
+
+//     for (int i = 0; i < longeur + 1; ++i) {
+//         copy[i] = str[longeur - 1 - i];
+//     }
+//     copy[longeur] = '\0';
+
+//     printf("\nApres inversion : %s\n", str);
+//     printf("%29s", copy);
+
+// }
+
+
+// int main() {
+//     char str[30] = "Programmation en C";
+
+
+//     printf("Avant inversion : %s\n", str);
+//     reverseString(str);
+//     return 0;
+// }
+
+// void reverseString(char *str) {
+
+//     if (str == NULL) return;
+//     int longeur = 0;
+
+//     while (str[longeur] != '\0') {
+//         longeur++;
+//     }
+
+//     int gauche = 0;
+//     int droite = longeur - 1;
+
+//     while (gauche < droite) {
+//         char temp = str[gauche];
+//         str[gauche] = str[droite];
+//         str[droite] = temp;
+
+//         gauche++;
+//         droite--;
+//     }
+// }
+
+
+// int main() {
+
+//     char str[30] = "Programation en C";
+//     printf("Avant inversion : %s\n", str);
+
+//     reverseString(str);
+
+//     printf("Apres Inversion : %s\n", str);
+
+//     return 0;
+// }
+
+// void nettoyer_chaine(char *str) {
+//     if (str == NULL) return;
+
+//     char *read = str;
+//     char *write = str;
+
+//     while (*read != '\0') {
+//         char c = *write;
+//         int est_minuscule = (c >= 'a' && c <= 'z');
+//         int est_majuscule = (c >= 'A' && c <= 'Z');
+//         int est_chiffre = (c >= '0' && c <= '9');
+
+//         if (est_minuscule || est_chiffre || est_majuscule) {
+//             if (est_majuscule) {
+//                 c = c + 32;
+//             }
+//             *write++ = c;
+
+//         }
+
+//         ++read;
+//     }
+//     *read = '\0';
+// }
+
+
+// int main() {
+//     char texte[] = "Hello, World! 2026... C'est top.";
+
+//     printf("Original : %s\n", texte);
+//     nettoyer_chaine(texte);
+//     printf("Nettoye : %s\n", texte);
+
+//     return 0;
+// }
+// #define N 3
+
+// typedef double mat3x3[3][3];
+// typedef double vec3[3];
+
+// void mat_vec_mult(mat3x3 m, vec3 v, vec3 res) {
+//     for (int i = 0; i < N; ++i) {
+//         double somme = 0.;
+//         for (int j = 0; j < N; ++j) {
+//             somme += m[i][j] * v[j];
+//         }
+//         res[i] = somme;
+//     }
+// }
+
+// void display(vec3 v) {
+//     printf("[");
+//     for (int i = 0; i < N; ++i) {
+//         if (i != 0) {
+//             printf(", ");
+//         }
+//         printf("%.1f", v[i]);
+//     }
+//     printf("]\n");
+// }
+
+// int main() {
+
+//     mat3x3 ma_matrice = {
+//             {1.0, 2.0, 3.0},
+//             {4.0, 5.0, 6.0},
+//             {7.0, 8.0, 9.0}
+//     };
+//     vec3 v = { 1,2,3 };
+//     vec3 res = { 0,0,0 };
+
+
+//     mat_vec_mult(ma_matrice, v, res);
+//     display(res);
+
+//     return 0;
+// }
+#include <stdio.h>
+#define N 3
+
+typedef double mat3x3[3][3];
+
+void mat_mult(mat3x3 a, mat3x3 b, mat3x3 res) {
+    for (int i = 0; i < N; ++i) {
+
+        for (int j = 0; j < N; ++j) {
+            int somme = 0;
+            for (int k = 0; k < N; ++k) {
+                somme += a[i][k] * b[k][j];
             }
+            res[i][j] = somme;
         }
 
-
-        if (somme != 0) {
-            *moyenne = (float)somme / element;
-        }
     }
-    printf("\nMoyenne : %.2f ", *moyenne);
 
 }
 
-void afficher_superieurs(int **tab, float moyenne, int lignes, int colonnes) {
-
-    for (int i = 0; i < lignes; ++i) {
-        int lgn = INT_MIN;
-        int somme = 0;
-        for (int j = 0; j < colonnes; ++j) {
-            somme += tab[i][j];
-            if (somme > moyenne) {
-                printf("\nLigne %d, colonnes %d : %d", i, j, somme);
+void print_mat(mat3x3 m) {
+    for (int i = 0; i < N; ++i) {
+        printf("[");
+        for (int j = 0; j < N; ++j) {
+            printf("%.0f", m[i][j]);
+            if (j < N - 1) {
+                printf(", ");
             }
         }
+        printf("]\n");
     }
 }
 
 int main() {
 
-    int lignes;
-    int colonnes;
 
-    if (scanf("%d", &lignes) != 1 || lignes <= 0) return 1;
-    if (scanf("%d", &colonnes) != 1 || colonnes <= 0) return 1;
+    mat3x3 a = {
+     {1, 2, 3},
+     {4, 5, 6},
+     {7, 8, 9}
+    };
 
-    int **tab = malloc(lignes * sizeof(int *));
-    if (tab == NULL) return 1;
+    mat3x3 b = {
+        {9, 8, 7},
+        {6, 5, 4},
+        {3, 2, 1}
+    };
+    mat3x3 res = { 0 };
 
-    for (int i = 0; i < lignes; ++i) {
-        tab[i] = malloc(colonnes * sizeof(int));
-        if (tab[i] == NULL) {
-            for (int j = 0; j < i; ++j) {
-                free(tab[j]);
-            }
-            free(tab);
-            return 1;
-        }
-    }
+    mat_mult(a, b, res);
 
-    for (int i = 0; i < lignes; ++i) {
-        for (int j = 0; j < colonnes; ++j) {
-            if (scanf("%d", &tab[i][j]) != 1) {
-                for (int k = 0; k < lignes; ++i) {
-                    free(tab[k]);
-                }
-                free(tab);
-                return 1;
-            }
-        }
-    }
-    float moyenne = 0.0f;
-
-    calcul_moyenne(tab, lignes, colonnes, &moyenne);
-
-    afficher_superieurs(tab, moyenne, lignes, colonnes);
+    print_mat(res);
 
 
-
-
-    for (int i = 0; i < lignes; ++i) {
-        free(tab[i]);
-    }
-
-
-    free(tab);
     return 0;
+
 }

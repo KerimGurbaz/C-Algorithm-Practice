@@ -262,6 +262,57 @@ int main() {
 ```
 
 ```c
+#include <stdio.h>
+
+// --- DEBUT PARTIE A COMPLETER -----------------------------------------------
+
+void nettoyer_chaine(char *str) {
+    if (str == NULL) return;
+
+    char *lecture = str;
+    char *ecriture = str;
+
+    while (*lecture != '\0') {
+        char c = *lecture;
+
+        // 1. Karakterin harf veya rakam olup olmadığını kontrol et
+        int est_minuscule = (c >= 'a' && c <= 'z');
+        int est_majuscule = (c >= 'A' && c <= 'Z');
+        int est_chiffre   = (c >= '0' && c <= '9');
+
+        if (est_minuscule || est_majuscule || est_chiffre) {
+
+            // 2. Majuscule ise Minuscule'e çevir
+            // ASCII tablosunda büyük harfler ile küçük harfler arasında 32 fark vardır.
+            // 'A' (65) + 32 = 'a' (97)
+            if (est_majuscule) {
+                c = c + 32;
+            }
+
+            // Geçerli karakteri yazma pointer'ının gösterdiği yere kaydet
+            *ecriture = c;
+            ecriture++; // Yazma pointer'ını sadece geçerli bir harf bulduğumuzda ilerletiyoruz
+        }
+
+        // Okuma pointer'ı her döngüde bir harf ilerler
+        lecture++;
+    }
+
+    // Kelimenin yeni sonunu belirle (Geriye kalan çöp karakterleri keser)
+    *ecriture = '\0';
+}
+
+// --- FIN PARTIE A COMPLETER -------------------------------------------------
+
+int main() {
+    char texte[] = "Hello, World! 2026... C'est top.";
+
+    printf("Original : %s\n", texte);
+    nettoyer_chaine(texte);
+    printf("Nettoye  : %s\n", texte); // Çıktı: helloworld2026cesttop
+
+    return 0;
+}
 
 
 ```
