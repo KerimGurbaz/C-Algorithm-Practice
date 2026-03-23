@@ -318,7 +318,59 @@ int main() {
 ```
 
 ```c
+#include <stdio.h>
+#define N 3
 
+typedef int mat3x3[3][3];
+
+// Const doğruluğu (Const correctness) eklendi
+void mat_mult(const mat3x3 a, const mat3x3 b, mat3x3 res) {
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            int somme = 0;
+            for (int k = 0; k < N; ++k) {
+                somme += a[i][k] * b[k][j];
+            }
+            res[i][j] = somme;
+        }
+    }
+}
+
+void print_mat(const mat3x3 m) {
+    for (int i = 0; i < N; ++i) {
+        printf("[");
+        for (int j = 0; j < N; ++j) {
+            // DÜZELTME 1: int için %d kullanılır (Genişlik için %3d şık durur)
+            printf("%3d", m[i][j]);
+
+            // DÜZELTME 2: Magic number '2' yerine 'N - 1'
+            if (j < N - 1) {
+                printf(", ");
+            }
+        }
+        printf("]\n");
+    }
+}
+
+int main() {
+    mat3x3 a = {
+     {1, 2, 3},
+     {4, 5, 6},
+     {7, 8, 9}
+    };
+
+    mat3x3 b = {
+        {9, 8, 7},
+        {6, 5, 4},
+        {3, 2, 1}
+    };
+    mat3x3 res = { 0 };
+
+    mat_mult(a, b, res);
+    print_mat(res);
+
+    return 0;
+}
 
 ```
 
