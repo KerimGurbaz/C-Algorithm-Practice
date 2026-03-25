@@ -599,36 +599,147 @@
 //     }
 // }
 
-int extraire_valeurs(const char *buffer, const char *valeurs[]) {
-    int count = 0;
-    const char *ptr = buffer;
+// int extraire_valeurs(const char *buffer, const char *valeurs[]) {
+//     int count = 0;
+//     const char *ptr = buffer;
 
-    while (*ptr != '\0') {
-        while (*ptr != '=' && *ptr != '\0') {
-            ++ptr;
-        }
-        if (*ptr == '=') {
-            ptr++;
-            valeurs[count++] = ptr;
-        }
+//     while (*ptr != '\0') {
+//         while (*ptr != '=' && *ptr != '\0') {
+//             ++ptr;
+//         }
+//         if (*ptr == '=') {
+//             ptr++;
+//             valeurs[count++] = ptr;
+//         }
 
-        while (*ptr != '\0') {
-            ptr++;
-        }
-        ptr++;
-    }
-    return count;
-}
+//         while (*ptr != '\0') {
+//             ptr++;
+//         }
+//         ptr++;
+//     }
+//     return count;
+// }
 
 
-int main() {
-    const char env_buffer = "USER=ahmet\0LANG=fr\0PATH=/bin\0";
+// int main() {
+//     const char env_buffer = "USER=ahmet\0LANG=fr\0PATH=/bin\0";
 
-    const char *valeurs_extraites[10];
+//     const char *valeurs_extraites[10];
 
-    int nb_valeurs = extraire_valeurs(env_buffer, valeurs_extraites);
+//     int nb_valeurs = extraire_valeurs(env_buffer, valeurs_extraites);
 
-    for (int i = 0; i < nb_valeurs; ++i) {
-        printf("- %s\n", valeurs_extraites[i]);
-    }
-}
+//     for (int i = 0; i < nb_valeurs; ++i) {
+//         printf("- %s\n", valeurs_extraites[i]);
+//     }
+// }
+
+// #include <string.h>
+// #include <ctype.h>
+
+
+// int main() {
+//     char mot[100];
+//     printf("[?] Saisir un mot (que des lettres dans [a-z,A-Z]): ");
+
+//     if (scanf("%99s", mot) != 1) {
+//         printf("Erreur de lecture;");
+//     }
+
+//     char *debut = mot;
+//     char *fin = mot + strlen(mot) - 1;
+
+//     int est_palindrome = 1;
+
+//     while (debut < fin) {
+//         if (tolower(*debut) != tolower(*fin)) {
+//             est_palindrome = 0;
+//             break;
+//         }
+//         debut++;
+//         fin--;
+//     }
+
+//     if (est_palindrome) {
+//         printf("[i] %s est un palindrome\n", mot);
+//     } else {
+//         printf("[i] %s n'est pas un palindrome\n", mot);
+//     }
+
+
+//     return 0;
+// }
+
+
+// #include <string.h>
+// #include <ctype.h>
+
+// int main() {
+//     char mot[100];
+//     if (scanf("%99s", mot) != 1) {
+//         return 1;
+//     }
+
+//     char *debut = mot;
+//     char *fin = mot + strlen(mot) - 1;
+
+//     int palindrome = 1;
+
+//     while (debut < fin) {
+//         if (tolower(*debut) != tolower(*fin)) {
+//             palindrome = 0;
+//             break;
+//         }
+//         debut++;
+//         fin--;
+//     }
+
+//     if (palindrome) {
+//         printf("Oui %s", mot);
+//     } else {
+//         printf("Non %s", mot);
+//     }
+
+//     return 0;
+// }
+// #include <string.h>
+// #include <ctype.h>
+
+// int est_phrase_palindrome(const char *phrase) {
+//     if (phrase == NULL) return 0;
+
+//     const char *debut = phrase;
+//     const char *fin = phrase + strlen(phrase) - 1;
+
+//     while (debut < fin) {
+//         while (debut < fin && !isalpha(*debut)) {
+//             ++debut;
+//         }
+
+//         while (debut < fin && !isalpha(*fin)) {
+//             --fin;
+//         }
+
+//         if (debut < fin) {
+//             if (tolower(*debut) != tolower(*fin)) {
+//                 return 0;
+//             }
+//             debut++;
+//             fin--;
+//         }
+//     }
+//     return 1;
+// }
+
+// int main(void) {
+//     // Tests avec des pointeurs constants (Read-only)
+//     const char *test1 = "Engage le jeu que je le gagne";
+//     const char *test2 = "Elu par cette crapule!";
+//     const char *test3 = "Bonjour le monde";
+
+//     printf("\"%s\" -> %s\n", test1, est_phrase_palindrome(test1) ? "Palindrome" : "Non");
+//     printf("\"%s\" -> %s\n", test2, est_phrase_palindrome(test2) ? "Palindrome" : "Non");
+//     printf("\"%s\" -> %s\n", test3, est_phrase_palindrome(test3) ? "Palindrome" : "Non");
+
+//     return 0;
+// }
+

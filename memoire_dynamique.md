@@ -375,27 +375,315 @@ int main() {
 ```
 
 ```c
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 
+// Retourne 1 si c'est un palindrome, 0 sinon
+int est_phrase_palindrome(const char *phrase) {
+    if (phrase == NULL) return 0;
+
+    const char *debut = phrase;
+    const char *fin = phrase + strlen(phrase) - 1;
+
+    while (debut < fin) {
+        // 1. Ignorer tout ce qui n'est pas une lettre par la gauche
+        // Attention au piège : il faut revérifier (debut < fin) pour ne pas
+        // déborder si la phrase ne contient que des espaces ("   ").
+        while (debut < fin && !isalpha(*debut)) {
+            debut++;
+        }
+
+        // 2. Ignorer tout ce qui n'est pas une lettre par la droite
+        while (debut < fin && !isalpha(*fin)) {
+            fin--;
+        }
+
+        // 3. Comparaison stricte des caractères valides
+        if (debut < fin) {
+            if (tolower(*debut) != tolower(*fin)) {
+                return 0; // Fin immédiate si non-correspondance
+            }
+            // Passage aux lettres suivantes
+            debut++;
+            fin--;
+        }
+    }
+
+    return 1; // Si on a tout traversé sans retourner 0, c'est valide
+}
+
+int main(void) {
+    // Tests avec des pointeurs constants (Read-only)
+    const char *test1 = "Engage le jeu que je le gagne";
+    const char *test2 = "Elu par cette crapule!";
+    const char *test3 = "Bonjour le monde";
+
+    printf("\"%s\" -> %s\n", test1, est_phrase_palindrome(test1) ? "Palindrome" : "Non");
+    printf("\"%s\" -> %s\n", test2, est_phrase_palindrome(test2) ? "Palindrome" : "Non");
+    printf("\"%s\" -> %s\n", test3, est_phrase_palindrome(test3) ? "Palindrome" : "Non");
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
 
+// 1. Fonction utilitaire : Convertir en minuscule manuellement (Sans <ctype.h>)
+// ASCII tablosunda büyük harfler ile küçük harfler arasında 32 birim fark vardır.
+static inline char en_minuscule(char c) {
+    if (c >= 'A' && c <= 'Z') {
+        return c + 32;
+    }
+    return c;
+}
+
+// 2. Fonction principale de vérification (Const correctness appliquée)
+int est_palindrome(const char *mot) {
+    if (mot == NULL) return 0;
+
+    const char *debut = mot;
+    const char *fin = mot;
+
+    // Trouver la fin du mot (Pointer'ı '\0' karakterine kadar götür)
+    while (*fin != '\0') {
+        fin++;
+    }
+
+    // Eğer kelime boş değilse, fin pointer'ını son harfin üzerine (1 adım geri) al
+    if (fin > mot) {
+        fin--;
+    }
+
+    // Les deux pointeurs convergent vers le centre
+    while (debut < fin) {
+        // Harfleri küçük harfe çevirerek kıyasla
+        if (en_minuscule(*debut) != en_minuscule(*fin)) {
+            return 0; // Eşleşme yoksa palindrome değildir (Faux)
+        }
+        debut++; // Soldakini sağa kaydır
+        fin--;   // Sağdakini sola kaydır
+    }
+
+    return 1; // Tüm harfler eşleşti (Vrai)
+}
+
+int main(void) {
+    char mot[100]; // Allocation statique suffisante pour un mot
+
+    printf("[?] Saisir un mot (que des lettres dans [a-z,A-Z]): ");
+    // %99s : Buffer overflow koruması (Güvenlik standardı)
+    if (scanf("%99s", mot) != 1) return 1;
+
+    // Appel de la fonction et affichage exact selon la consigne
+    if (est_palindrome(mot)) {
+        printf("[i] %s est un palindrome\n", mot);
+    } else {
+        printf("[i] %s n'est pas un palindrome\n", mot);
+    }
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <ctype.h>
 
+// Fonksiyon: Metni yerinde değiştirir (in-place)
+void supprimer_voyelles(char *texte) {
+    if (texte == NULL) return;
+
+    int ecriture = 0; // Yazma indeksi (Yavaş ilerler)
+
+    // i: Okuma indeksi (Hızlı ilerler, her harfi kontrol eder)
+    for (int i = 0; texte[i] != '\0'; i++) {
+        char c = tolower(texte[i]);
+
+        // Eğer karakter sesli harf DEĞİLSE
+        if (!(c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u' || c == 'y')) {
+            // Karakteri yazma indeksinin olduğu yere kopyala
+            texte[ecriture] = texte[i];
+            // Yazma indeksini bir sağa kaydır
+            ecriture++;
+        }
+        // Eğer sesli harfse, if bloğuna girmez, 'ecriture' artmaz, ama 'i' okumaya devam eder.
+        // Bu sayede sesli harfler atlanmış olur.
+    }
+
+    // EN KRİTİK NOKTA: Yeni string'in sonuna manuel olarak \0 koymak zorundayız.
+    // Aksi halde eski string'in kuyruğu ekranda görünmeye devam eder.
+    texte[ecriture] = '\0';
+}
+
+int main(void) {
+    // char *phrase = "Data Engineering" YAPAMAYIZ! (Read-only bellek değiştirilemez)
+    // char phrase[] kullanarak Stack'te değiştirilebilir bir dizi oluşturuyoruz.
+    char phrase[] = "Data Engineering";
+
+    printf("Avant : %s\n", phrase);
+
+    // Adresi gönderiyoruz
+    supprimer_voyelles(phrase);
+
+    printf("Apres : %s\n", phrase);
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+// Yardımcı Fonksiyon: Açan ve kapatan parantez eşleşiyor mu?
+int correspond(char ouvrant, char fermant) {
+    if (ouvrant == '(' && fermant == ')') return 1;
+    if (ouvrant == '[' && fermant == ']') return 1;
+    if (ouvrant == '{' && fermant == '}') return 1;
+    return 0;
+}
+
+// Ana Fonksiyon: Stack (Yığın) kullanarak syntax kontrolü
+int verifier_syntaxe(const char *texte) {
+    size_t len = strlen(texte);
+    if (len == 0) return 1; // Boş string geçerlidir
+
+    // 1. Yığın için dinamik bellek ayır (En kötü ihtimalle hepsi açan parantezdir)
+    char *pile = malloc(len * sizeof(char));
+    if (pile == NULL) {
+        printf("Erreur d'allocation mémoire.\n");
+        return 0;
+    }
+
+    int sommet = -1; // Yığının en üstünü gösteren indeks (Stack pointer)
+    int est_valide = 1; // Başlangıçta geçerli varsayıyoruz
+
+    // 2. Metni karakter karakter işle
+    for (size_t i = 0; i < len; i++) {
+        char c = texte[i];
+
+        // Açan sembolleri yığına ekle (Push)
+        if (c == '(' || c == '[' || c == '{') {
+            sommet++;
+            pile[sommet] = c;
+        }
+        // Kapatan sembolleri kontrol et (Pop)
+        else if (c == ')' || c == ']' || c == '}') {
+            // Yığın boşsa (Açılmadan kapanıyorsa)
+            if (sommet == -1) {
+                est_valide = 0;
+                break;
+            }
+
+            // Yığının en üstündeki elemanla eşleşiyor mu?
+            char dernier_ouvrant = pile[sommet];
+            if (!correspond(dernier_ouvrant, c)) {
+                est_valide = 0; // Eşleşme hatası (Örn: [ )
+                break;
+            }
+
+            // Eşleştiyse yığından çıkar (Pop)
+            sommet--;
+        }
+    }
+
+    // 3. Döngü bittiğinde yığın tamamen boşalmış olmalı (sommet == -1)
+    if (sommet != -1) {
+        est_valide = 0; // Kapatılmamış semboller kaldı
+    }
+
+    // 4. Bellek temizliği (Zorunlu)
+    free(pile);
+
+    return est_valide;
+}
+
+int main(void) {
+    const char *test1 = "int main() { printf(\"OK[1]\"); }"; // Geçerli
+    const char *test2 = "if (a[i) == 0]";                     // Geçersiz (Kesişim)
+    const char *test3 = "while (true) {";                    // Geçersiz (Kapatılmamış '{')
+
+    printf("Test 1 : %s -> %s\n", test1, verifier_syntaxe(test1) ? "Valide" : "Invalide");
+    printf("Test 2 : %s -> %s\n", test2, verifier_syntaxe(test2) ? "Valide" : "Invalide");
+    printf("Test 3 : %s -> %s\n", test3, verifier_syntaxe(test3) ? "Valide" : "Invalide");
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+// DİKKAT: <string.h> eklemiyoruz, yasak!
 
+int main(void) {
+    char ligne[256];
+    int longueur = 0;
+    int position, nb_caracteres;
+
+    printf("[?] Saisissez une ligne de mots: ");
+
+    // 1. fgets ile okuma
+    if (fgets(ligne, sizeof(ligne), stdin) == NULL) {
+        return 1;
+    }
+
+    // 2. Kendi strlen() mantığımızı yazıyoruz ve '\n' karakterini siliyoruz
+    while (ligne[longueur] != '\0') {
+        if (ligne[longueur] == '\n') {
+            ligne[longueur] = '\0'; // Enter karakterini string bitirici ile ez
+            break; // Döngüden çık, saymayı bırak
+        }
+        longueur++;
+    }
+
+    // 3. Boş satır kontrolü
+    if (longueur == 0) {
+        printf("[!] Erreur: ligne vide!\n");
+        return 1; // Programı hata koduyla bitir
+    }
+
+    printf("[i] La ligne contient %d caracteres.\n", longueur);
+
+    // 4. Pozisyonu alma ve doğrulama (Validation)
+    printf("[?] Extraire APRES combien de caracteres? ");
+    // scanf 1 değer okuyamazsa (örn 'Z' girilirse) veya sınırlar aşılırsa:
+    if (scanf("%d", &position) != 1 || position < 0 || position > longueur) {
+        printf("[!] Erreur: position impossible!\n");
+        return 1;
+    }
+
+    // 5. Kesilecek karakter sayısını alma ve doğrulama
+    printf("[?] Extraire combien de caracteres? ");
+    // Başlangıç pozisyonu + kesilecek miktar, toplam uzunluğu geçemez!
+    if (scanf("%d", &nb_caracteres) != 1 || nb_caracteres < 0 || (position + nb_caracteres > longueur)) {
+        printf("[!] Erreur: longueur impossible!\n");
+        return 1;
+    }
+
+    // 6. Alt metni (Sous-chaîne) çıkarma
+    char sous_chaine[256];
+    int i;
+
+    // Asıl sihir burada: Eski dizinin (position + i) indeksinden al, yeni dizinin i indeksine yaz.
+    for (i = 0; i < nb_caracteres; i++) {
+        sous_chaine[i] = ligne[position + i];
+    }
+
+    // Yeni oluşturduğumuz string'in sonuna BİTİŞ KARAKTERİNİ koymayı ASLA unutma!
+    sous_chaine[i] = '\0';
+
+    // 7. Sonucu yazdırma
+    printf("[i] La sous-chaîne extraite de la chaîne est : \"%s\"\n", sous_chaine);
+
+    return 0;
+}
 
 ```
 
