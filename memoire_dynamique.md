@@ -69,7 +69,10 @@ int main() {
     for (int i = 0; i < lignes; ++i) {
         tab[i] = malloc(colonnes * sizeof(int));
         if (tab[i] == NULL) {
-            for (int k = 0; k < i; ++k) free(tab[k]);
+            for (int k = 0; k < i; ++k)
+            {
+                free(tab[k]);
+            }
             free(tab);
             return 1;
         }

@@ -1,745 +1,584 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-
-// int main() {
-
-//     int capacity = 2;
-//     int taille = 0;
-
-//     int *tab = malloc(capacity * sizeof(int));
-
-//     if (tab == NULL) {
-//         return 1;
-//     }
-//     int valeur;
-//     while (1) {
-
-//         printf("Entrez un entier positif (une lettre pour finir): ");
-
-//         if (scanf("%d", &valeur) != 1) {
-//             free(tab);
-//             return 1;
-//         }
-
-//         if (taille == capacity) {
-//             capacity *= 2;
-//             int *temp = realloc(tab, sizeof(int));
-//             if (temp == NULL) {
-//                 free(tab);
-//                 return 1;
-//             }
-//             tab = temp;
-//         }
-
-//         tab[taille++] = valeur;
-
-
-//     }
-
-//     for (int i = 0; i < taille; ++i) {
-//         printf("%d", tab[i]);
-//     }
-
-//     free(tab);
-
-
-
-//     return 0;
-// }
-
-
-// #define WIDTH 7
-// #define HEIGHT 6
-
-// int main() {
-
-//     int tab[WIDTH * HEIGHT];
-
-//     for (int i = 0; i < HEIGHT;++i) {
-//         for (int j = 0; j < WIDTH; ++j) {
-//             tab[i * WIDTH + j] = (i + 1) * (j + 1);
-//         }
-//     }
-
-//     for (int i = 0; i < HEIGHT; ++i) {
-//         for (int j = 0; j < WIDTH; ++j) {
-//             printf("%2d ", tab[i * WIDTH + j]);
-//         }
-//         printf("\n");
-//     }
-
-
-
-//     return 0;
-// }
-
-
-// #define WIDTH 7
-// #define HEIGHT 6
-
-// int main() {
-//     int tab[HEIGHT][WIDTH];
-
-//     for (int i = 0; i < HEIGHT; ++i) {
-//         for (int j = 0; j < WIDTH; ++j) {
-//             tab[i][j] = (i + 1) * (j + 1);
-//         }
-//     }
-
-//     for (int i = 0; i < HEIGHT; ++i) {
-//         for (int j = 0; j < WIDTH; ++j) {
-//             printf("%2d ", tab[i][j]);
-//         }
-//         printf("\n");
-//     }
-
-//     return 0;
-// }
 
 // #include <stdio.h>
 
-// #define LIGNES 6
-// #define COLONNES 7
-
-// int main() {
-
-
-//     int tab[LIGNES][COLONNES];
-
-//     for (int i = 0; i < LIGNES; ++i) {
-//         for (int j = 0; j < COLONNES; ++j) {
-//             tab[i][j] = (i + 1) * (j + 1);
-//         }
+// int somme(int num) {
+//     if (num <= 0) {
+//         return 0;
 //     }
 
-//     for (int i = 0; i < LIGNES; ++i) {
-//         for (int j = 0; j < COLONNES; ++j) {
-//             printf("%2d ", tab[i][j]);
-//         }
-//         printf("\n");
-//     }
-
-//     return 0;
-// }
-
-// typedef double mat3x3[3][3];
-// typedef double vec3[3];
-
-
-// void mat_vec_mult(const mat3x3 m, const vec3 v, vec3 res) {
-//     for (int i = 0; i < 3; ++i) {
-//         double somme = 0.0;
-//         for (int j = 0; j < 3; ++j) {
-//             somme += m[i][j] * v[j];
-//         }
-//         res[i] = somme;
-//     }
-// }
-
-
-
-// int main() {
-//     mat3x3 m = {
-//         {1, 2, 3},
-//         {4, 5, 6},
-//         {7, 8, 9}
-//     };
-
-//     vec3 v = { 1, 2, 3 };
-
-//     // UYARI: Orijinal sorudaki "vec3 w = {};" yapisi C23 oncesi standartlarda warning verir. 
-//     // Derleyicinin (gcc) warning vermemesi icin "{0}" seklinde sifirlamak en guvenlisidir.
-//     vec3 w = { 0 };
-
-//     mat_vec_mult(m, v, w);
-
-//     // Çıktı: [[1, 2, 3], [4, 5, 6], [7, 8, 9]] * [1, 2, 3] = [14, 32, 50]
-//     print_mat("%m * %v = %v\n", m, v, w);
-
-//     return 0;
-// }
-// int main() {
-//     long long nombre;
-//     long long inverse = 0;
-
-//     printf("Le nombre d'entree est : ");
-//     if (scanf("%lld", &nombre) != 1) {
-//         return 1;
-//     }
-
-//     long long temp = nombre;
+//     int total = 0;
+//     int temp = num;
 
 //     do {
-//         int reste = temp % 10;
-//         inverse = inverse * 10 + reste;
+//         total += temp % 10;
 //         temp /= 10;
 
 //     }
 //     while (temp > 0);
 
+//     return total;
+// }
+
+// int main() {
+//     int number;
+//     int status;
+
+//     printf("Entrez un nombre positif : ");
+//     do {
+//         status = scanf("%d", &number);
+//         if (status != 1 || number <= 0) {
+//             int c;
+//             while ((c = getchar()) != '\n' && c != EOF);
+//             printf("Erreur. ");
+//         }
+
+//     }
+//     while (status != 1 || number <= 0);
+
+//     int res = somme(number);
+//     printf("La somme : %d\n", res);
+
+//     return 0;
+
+// }
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// void inverser_chaine(char *str, int idx) {
+//     int debut = 0;
+//     int fin = idx - 1;
+
+//     while (debut < fin) {
+//         char temp = str[debut];
+//         str[debut] = str[fin];
+//         str[fin] = temp;
+//         ++debut;
+//         --fin;
+//     }
+// }
+
+// char *entier_vers_binaire(unsigned int valeur) {
+//     int capacite_max = 33;
+//     char *buffer_temp = malloc(capacite_max * sizeof(char));
+//     if (buffer_temp == NULL) return NULL;
+
+
+//     unsigned int temp = valeur;
+
+//     int index = 0;
+
+//     do {
+//         buffer_temp[index] = (temp % 2) + '0';
+//         ++index;
+//         temp /= 2;
+
+//     }
+//     while (temp > 0);
+//     buffer_temp[index] = '\0';
+
+//     inverser_chaine(buffer_temp, index);
+
+//     char *resultat_final = realloc(buffer_temp, (index + 1) * sizeof(char));
+//     if (resultat_final != NULL) {
+//         return resultat_final;
+//     }
+
+//     return buffer_temp;
+
+// }
+
+// int main() {
+//     unsigned int valeur;
+//     int status;
+
+//     do {
+//         printf("enterz un entier positif\n");
+//         status = scanf("%d", &valeur);
+//         if (status != 1) {
+//             int c;
+//             while ((c = getchar()) != '\n' && c != EOF) {
+
+//             }
+//         }
+
+//     }
+//     while (status != 1);
+
+//     char *binaire_str = entier_vers_binaire(valeur);
+
+//     if (binaire_str == NULL) {
+//         printf("Erreur critique d'allocation memoire.\n");
+//         return 1;
+//     }
+
+//     printf("Le nombre %u en binaire est : %s\n", valeur, binaire_str);
+
+//     free(binaire_str);
+
 
 //     return 0;
 // }
 
-// int *extraire_chiffre(int nombre, int *taille_tableau) {
-//     if (nombre == 0) {
-//         *taille_tableau = 1;
-//         int *tab = malloc(1 * sizeof(int));
-//         if (tab == NULL) return NULL;
+// int longeur(const int number) {
+//     int temp = number;
+//     int counter = 0;
 
-//         tab[0] = 0;
-//         return tab;
-//     }
-
-//     int temp = nombre;
-//     int count = 0;
-//     while (temp > 0) {
-//         count++;
+//     do {
 //         temp /= 10;
+//         ++counter;
+
+//     }
+//     while (temp != 0);
+
+//     return counter;
+// }
+
+// int main() {
+//     int number;
+//     int status;
+
+//     do {
+//         status = scanf("%d", &number);
+//         if (status != 1) {
+//             int c;
+//             while ((c = getchar()) != '\n' && c != EOF);
+//         }
+
+//     }
+//     while (status != 1);
+
+//     int result = longeur(number);
+//     printf(" %d sayisi -> %d basamaklidir\n", number, result);
+
+//     return 0;
+// }
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <stdbool.h>
+// #include <ctype.h>
+// #include <string.h>
+
+// int *decouper(int nombre, int *taille) {
+//     long long temp = nombre;
+//     if (temp < 0) {
+//         temp = -temp;
 //     }
 
-//     *taille_tableau = count;
+//     int count = 0;
 
-//     int *tab = malloc(count * sizeof(int));
-//     if (tab == NULL) {
-//         return NULL;
+//     do {
+//         temp /= 10;
+//         ++count;
 //     }
+//     while (temp != 0);
 
-//     temp = nombre;
-//     for (int i = 0; i < count; ++i) {
-//         tab[i] = temp % 10;
-//         temp = temp / 10;
+//     *taille = count;
+
+//     int *tableau = malloc(count * sizeof(int));
+//     if (tableau == NULL) return NULL;
+
+//     for (int i = count - 1; i >= 0; --i) {
+//         tableau[i] = nombre % 10;
+//         nombre /= 10;
 //     }
-//     return tab;
-
+//     return tableau;
 // }
 // int main() {
+//     int valuer;
+//     int status;
 
-//     int nombre_utilisateur;
+//     do {
+//         printf("Entrez un nombre entier : ");
+//         status = scanf("%d", &valuer);
+//         if (status != 1) {
+//             int c;
+//             while ((c = getchar()) != '\n' && c != EOF);
+//         }
+//     }
+//     while (status != 1);
 //     int taille;
 
-//     printf("Entrez un nombre positif : ");
-//     if (scanf("%d", &nombre_utilisateur) != 1 || nombre_utilisateur < 0) {
-//         printf("Saisie invalide :\n");
-//         return 1;
-//     }
-
-//     int *chiffres = extraire_chiffre(nombre_utilisateur, &taille);
-//     if (chiffres == NULL) {
+//     int *chiffre = decouper(valuer, &taille);
+//     if (chiffre == NULL) {
 //         printf("Erreur d'allocation memoire.\n");
 //         return 1;
 //     }
 
-//     printf("Les chiffres extraits(unites d'abors) : ");
-//     for (int i = 0; i < taille; ++i) {
-//         printf("%d ", chiffres[i]);
+//     printf("Les %d chiffres du nombre %d sont : [ ", taille, valuer);
+//     for (int i = 0; i < taille; i++) {
+//         printf("%d ", chiffre[i]);
 //     }
-//     printf("\n");
+//     printf("]\n");
+
+//     free(chiffre);
+
+
+//     return 0;
+// }
+
+// #include <stdio.h>
+// #include <stdbool.h>
+
+// bool palindrome(int n) {
+//     if (n < 0)return false;
+//     int temp = n;
+//     long long inverse = 0;
+
+//     do {
+//         int der = temp % 10;
+//         inverse = inverse * 10 + der;
+//         temp /= 10;
+//     }
+//     while (temp != 0);
+
+//     return inverse == n;
+// }
+
+// int main() {
+//     int valeur;
+//     int status;
+
+//     printf("Entrez un entier positif : ");
+
+//     do {
+//         status = scanf("%d", &valeur);
+//         if (status != 1 || valeur < 0) {
+//             int c;
+//             while ((c = getchar()) != '\n' && c != EOF);
+//             printf("[!] Erreur. Entrez un entier positif valide :");
+//         }
+
+//     }
+//     while (status != 1 || valeur < 0);
+
+//     printf("%d sayisi -> %s\n", valeur, palindrome(valeur) ? "Palindrome" : "Non-Palindrome");
+
+//     return 0;
+// }
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <stdbool.h>
+
+// int *extraire(int nombre, int *taille) {
+//     if (nombre < 0) nombre = -nombre;
+
+//     int compteur = 0;
+
+//     int temp = nombre;
+
+//     do {
+//         compteur++;
+//         temp /= 10;
+
+//     }
+//     while (temp != 0);
+
+//     *taille = compteur;
+
+//     int *tab = malloc(compteur * sizeof(int));
+//     if (tab == NULL) return NULL;
+
+//     temp = nombre;
+
+//     for (int i = compteur - 1; i >= 0; --i) {
+//         tab[i] = temp % 10;
+//         temp /= 10;
+//     }
+//     return tab;
+// }
+
+// bool est_symetrique(const int *tab, int taille) {
+//     if (tab == NULL || taille <= 0) {
+//         return false;
+//     }
+//     int gauche = 0;
+//     int droite = taille - 1;
+
+//     while (gauche < droite) {
+//         if (tab[gauche] != tab[droite]) {
+//             return false;
+//         }
+//         gauche++;
+//         droite--;
+//     }
+
+//     return true;
+// }
+
+
+
+// int main() {
+//     int valeur;
+//     int status;
+
+
+//     do {
+//         printf("Entrez un nombre pour tester la symetrie : ");
+//         status = scanf("%d", &valeur);
+//         if (status != 1) {
+//             printf("Saisie invalide.\n");
+//             int c;
+//         }
+
+//     }
+//     while (status != 1);
+
+//     int taille_tab;
+
+//     int *chiffres = extraire(valeur, &taille_tab);
+//     if (chiffres == NULL) {
+//         printf("Erreur d'allocation.\n");
+//         return 1;
+//     }
+
+//     bool symetrique = est_symetrique(chiffres, taille_tab);
+
+//     printf("Les chiffres du nombre palindrome ?  %s\n", symetrique ? "OUI" : "NON");
 
 //     free(chiffres);
-//     return 0;
-// }
-
-
-// #include <stdio.h>
-// #define TAILLE 5
-
-// void sommeTab(const int *t1, const int *t2, int *res, int taille) {
-//     for (int i = 0; i < taille; ++i) {
-//         res[i] = t1[i] + t2[i];
-//     }
-// }
-
-// void afficher(const char *nom, const int *t, int taille) {
-//     printf("%s : [", nom);
-//     for (int i = 0; i < taille; ++i) {
-//         printf("%d", t[i]);
-//         if (i < taille - 1) {
-//             printf(", ");
-//         }
-//     }
-//     printf("]\n");
-// }
-// void readAndFillArrays(int *tab1, int *tab2) {
-//     char line[1000];
-//     // Read the input line
-//     if (fgets(line, sizeof(line), stdin)) {
-//         // Parse the input line to fill in tab1 and tab2
-//         sscanf(line, "[%d,%d,%d,%d,%d], [%d,%d,%d,%d,%d]",
-//             &tab1[0], &tab1[1], &tab1[2], &tab1[3], &tab1[4],
-//             &tab2[0], &tab2[1], &tab2[2], &tab2[3], &tab2[4]);
-//     }
-// }
-
-// int main() {
-//     int tab1[TAILLE];
-//     int tab2[TAILLE];
-//     int resultat[TAILLE];
-
-//     readAndFillArrays(tab1, tab2);
-
-//     sommeTab(tab1, tab2, resultat, TAILLE);
-
-//     afficher("Premier Tab", tab1, TAILLE);
-//     afficher("Deuxieme tab", tab2, TAILLE);
-//     afficher("Resultat : ", resultat, TAILLE);
-
 
 
 //     return 0;
 // }
 
-
-// #define TAILLE 5
-
-// void traiter_tableau(int *t, int taille, int *min, int *max) {
-//     if (taille <= 0) return;
-//     *min = t[0];
-//     *max = t[0];
-
-//     for (int i = 0; i < taille / 2; ++i) {
-//         int temp = t[i];
-//         t[i] = t[taille - 1 - i];
-//         t[taille - 1 - i] = temp;
-//     }
-
-//     for (int i = 0; i < taille; ++i) {
-//         if (t[i] > *max) {
-//             *max = t[i];
-//         }
-//         if (t[i] < *min) {
-//             *min = t[i];
-//         }
-//     }
-
-// }
-
-// int main() {
-//     int nombres[TAILLE] = { 15,42,8,99,23 };
-
-//     int minimum;
-//     int maximum;
-
-//     printf("AVANT : [ ");
-//     for (int i = 0; i < TAILLE; ++i) printf("%d ", nombres[i]);
-//     printf("\n");
-
-//     traiter_tableau(nombres, TAILLE, &minimum, &maximum);
-//     printf("Apres : [ ");
-//     for (int i = 0; i < TAILLE; i++) printf("%d ", nombres[i]);
-//     printf("]\n");
-
-//     printf("Valeur minimale : %d\n", minimum);
-//     printf("Valeur maximale : %d\n", maximum);
-
-
-//     return 0;
-// }
-
-// #include <stdio.h>    // printf, scanf
-// #include <stddef.h>   // size_t
-// #include <stdlib.h>   // calloc, free, malloc
-// #include <stdint.h>   // int64_t 
-// #include <inttypes.h> // SCNd64
-
-// size_t lire_size_t(const char *message) {
-//     // lecture avec vérification d'un entier de type size_t 
-
-//     int64_t n;
-//     printf("%s", message);
-//     while (scanf("%" SCNd64, &n) != 1 || n <= 0) {
-//         printf("Erreur de saisie. Entrez un entier positif : ");
-//         while (getchar() != '\n')
-//             ;
-//     }
-//     return (size_t)n;
-// }
-
-// int main() {
-//     size_t lignes;
-//     size_t colonnes;
-//     int **tab;
-
-//     lignes = lire_size_t("Nombre de lignes ? ");
-//     colonnes = lire_size_t("Nombre de colonnes ? ");
-//     printf("\n");
-
-//     // allocation du tableau de tableaux
-//     tab = calloc(lignes, sizeof(int *));
-//     if (tab == NULL) goto liberation;
-
-//     // allocation des tableaux pour chaque ligne
-//     for (int i = 0; i < lignes; ++i) {
-//         tab[i] = malloc(colonnes * sizeof(int));
-//         if (tab[i] == NULL) goto liberation;
-//     }
-
-
-//     // remplissage avec les valeurs de la table de multiplication
-
-//     for (int i = 0; i < lignes; ++i) {
-//         for (int j = 0; j < colonnes; ++j) {
-//             tab[i][j] = (i + 1) * (j + 1);
-//         }
-//     }
-
-
-//     // affichage
-//     for (int i = 0; i < lignes; ++i) {
-//         for (size_t j = 0; j < colonnes; ++j) {
-//             printf("%2d ", tab[i][j]);
-//         }
-//         printf("\n");
-//     }
-
-
-// liberation:
-//     if (tab != NULL) {
-//         for (int i = 0; i < lignes; ++i) {
-//             if (tab[i] != NULL) {
-//                 free(tab[i]);
-//             }
-//         }
-//         free(tab);
-//     }
-
-//     return 0;
-
-// }
 // #include <stdlib.h>
 // #include <stdio.h>
+// #include <stdbool.h>
 
-// int **cree_matrice_triangulaire(size_t taille) {
-//     if (taille == 0) return NULL;
-
-//     int **matrice = calloc(taille, sizeof(int *));
-//     if (matrice == NULL) return NULL;
-
-//     int compteur = 1;
+// bool est_matrice_symetrique(int **m, const int taille) {
+//     if (m == NULL || taille <= 0) return false;
 
 //     for (int i = 0; i < taille; ++i) {
-//         matrice[i] = malloc((i + 1) * sizeof(int));
-
-//         if (matrice[i] == NULL) {
-//             for (size_t k = 0; k < i; ++k) {
-//                 free(matrice[k]);
+//         for (int j = i + 1; j < taille; ++j) {
+//             if (m[i][j] != m[j][i]) {
+//                 return false;
 //             }
-//             free(matrice);
-//             return NULL;
 //         }
-//         for (size_t j = 0; j < i; ++j) {
-//             matrice[i][j] = compteur++;
-//         }
-
 //     }
-//     return matrice;
+//     return true;
 // }
 
+// void liberer_matrice(int **m, int N) {
+//     if (m == NULL) return;
+//     for (int i = 0; i < N; ++i) {
 
-// void liberer_triangulaire(int **matrice, size_t taille) {
-//     if (matrice == NULL) return;
-
-//     for (size_t i = 0; i < taille; ++i) {
-//         if (matrice[i] == NULL);
-//         free(matrice[i]);
+//         if (m[i] != NULL) {
+//             free(m[i]);
+//         }
 //     }
-//     free(matrice);
+//     free(m);
+
 // }
-
-
 
 // int main() {
+//     int N;
 
-//     size_t N;
-//     printf("Entrez la taille de la matrice .. : ");
+//     printf("Entrez la dimension N de la matrice carree (ex: 3 pour 3x3) : ");
+
 //     if (scanf("%d", &N) != 1 || N <= 0) {
-//         printf("Saisie invalide .\n");
+//         int c;
+//         while ((c = getchar()) != 1 || N <= 0);
+//         printf("Saisie invalide.\n");
 //         return 1;
 //     }
 
-//     int **mat_triangulaire = cree_matrice_triangulaire(N);
-//     if (mat_triangulaire == NULL) {
+//     int **matrice = calloc(N, sizeof(int *));
+//     if (matrice == NULL) {
 //         return 1;
 //     }
 
-//     printf("\nMatrice Triangulaire Inferieure :\n");
-//     for (size_t i = 0; i < N; ++i) {
-//         for (size_t j = 0; j <= i; ++j) {
-//             printf("%3d ", mat_triangulaire[i][j]);
+//     for (int i = 0; i < N; ++i) {
+//         matrice[i] = malloc(N * sizeof(int));
+//         liberer_matrice(matrice, N);
+//         return 1;
+//     }
+//     printf("Entrez les %d valeurs de la matrice :\n", N * N);
+
+//     for (int i = 0; i < N; ++i) {
+//         for (int j = 0; j < N; ++j) {
+//             printf("Ligne %d, Colonne %d : ", i, j);
+//             scanf("%d", &matrice[i][j]);
+//         }
+//     }
+//     printf("\nVotre Matrice :\n");
+
+//     for (int i = 0; i < N; ++i) {
+//         for (int j = 0; j < N; ++j) {
+//             printf("%3d", matrice[i][j]);
 //         }
 //         printf("\n");
 //     }
 
-//     liberer_triangulaire(mat_triangulaire, N);
+//     bool resultat = est_matrice_symetrique(matrice, N);
+
+//     if (resultat) {
+//         printf("\n[i] Cette matrice EST symetrique (A = A^T).\n");
+//     } else {
+//         printf("\n[i] Cette matrice N'EST PAS symetrique.\n");
+//     }
+
+//     liberer_matrice(matrice, N);
+
+
 //     return 0;
 // }
-
-
 // #include <stdio.h>
+// #define TAILLE 5
+
+// void max_et_min(const int *tab, int taille, int *minVal, int *maxVal) {
+//     if (tab == NULL || taille <= 0) return;
+//     *minVal = tab[0];
+//     *maxVal = tab[0];
+
+
+//     for (int i = 1; i < taille; ++i) {
+//         if (tab[i] > *maxVal) {
+//             *maxVal = tab[i];
+//         }
+//         if (tab[i] < *minVal) {
+//             *minVal = tab[i];
+//         }
+//     }
+// }
+
+// int main() {
+
+//     int t[5] = { 1,2,3,4,5 };
+
+
+//     int min_val;
+//     int max_val;
+
+
+
+//     max_et_min(t, TAILLE, &min_val, &max_val);
+
+//     printf("max_val : %3d,  min_val : %2d\n", max_val, min_val);
+
+//     return 0;
+// }
 // #include <stdlib.h>
-
-// void libere_matrice(int **matrice, size_t n) {
-//     if (matrice != NULL) {
-//         for (int i = 0; i < n; ++i) {
-//             free(matrice[i]);
-//         }
-//         free(matrice);
-//     }
-// }
-
-// int **rotation_droite(int **matrice, size_t n) {
-//     int **resultat = calloc(n, sizeof(int *));
-//     if (resultat == NULL) return NULL;
-
-//     for (size_t i = 0; i < n; ++i) {
-//         resultat[i] = malloc(n * sizeof(int));
-//         if (resultat[i] == NULL) {
-//             for (size_t k = 0; k < i; ++k) {
-//                 free(resultat[k]);
-//             }
-//             free(resultat);
-//             return NULL;
-//         }
-//     }
-
-//     for (int i = 0; i < n; ++i) {
-//         for (int j = 0; j < n; ++j) {
-//             resultat[j][n - 1 - i] = matrice[i][j];
-//         }
-//     }
-
-//     return resultat;
-
-// }
-
-
-// int main() {
-
-//     size_t n = 3;
-
-//     int **image = malloc(n * sizeof(int *));
-//     if (image == NULL) return 1;
-
-//     for (int i = 0; i < n; ++i) {
-//         image[i] = malloc(n * sizeof(int));
-//         if (image[i] == NULL) {
-//             libere_matrice(image, i);
-//             return 1;
-//         }
-//         for (size_t j = 0; j < n; ++j) {
-//             image[i][j] = (i * n) + j + 1;
-//         }
-//     }
-
-//     printf("Image originale :\n");
-//     for (size_t i = 0; i < n; i++) {
-//         for (size_t j = 0; j < n; j++) printf("%2d ", image[i][j]);
-//         printf("\n");
-//     }
-
-//     int **image_tourne = rotation_droite(image, n);
-
-// }
-
 // #include <stdio.h>
-// int main() {
-//     char memoire[] = "Mardi\0Lundi\0Mercredi\0";
 
-//     char *jours[3];
 
-//     jours[0] = &memoire[6];
-//     jours[1] = &memoire[0];
-//     jours[2] = &memoire[12];
 
-//     for (int i = 0; i < 3; ++i) {
-//         printf("- %s\n", jours[i]);
+// double *normalise_donnees(const int *tab, int taille) {
+//     if (tab == NULL || taille <= 0) return NULL;
+
+//     int minVal = tab[0];
+//     int maxVal = tab[0];
+//     for (int i = 1; i < taille; ++i) {
+//         if (tab[i] > maxVal) maxVal = tab[i];
+//         if (tab[i] < minVal) minVal = tab[i];
 //     }
 
-//     return 0;
-// }
-
-// void *trier_jours(char **tableau, int taille) {
-//     if (tableau == NULL || taille <= 1) return;
-
-//     for (int i = 0; i < taille - 1; ++i) {
-//         for (int j = 0; j < taille - i - 1; ++j) {
-//             if (strcmp(tableau[j], tableau[j + 1]) > 0) {
-//                 char *temp = tableau[j];
-//                 tableau[j] = tableau[j + 1];
-//                 tableau[j + 1] = temp;
-//             }
-//         }
+//     double *temp = malloc(taille * sizeof(double));
+//     if (temp == NULL) {
+//         return NULL;
 //     }
 
-// }
+//     double diff = (double)(maxVal - minVal);
 
-
-// int main() {
-//     char *semaine[] = {
-//         "Vendredi",
-//         "Lundi",
-//         "Mardi",
-//         "Jeudi",
-//         "Mercredi"
-//     };
-
-//     int taille = sizeof(semaine) / sizeof(semaine[0]);
-
-//     printf("AVANT\n");
-//     for3 (int i = 0; i < taille; ++i) {
-//         printf("-%s\n", semaine[i]);
-//     }
-
-//     trier_jours(semaine, taille);
-
-//     printf("\n--- Apres le tri (Alphabetique) ---\n");
-//     for (int i = 0; i < taille; i++) {
-//         printf("%s\n", semaine[i]);
-//     }
-// }
-
-// int extraire_valeurs(const char *buffer, const char *valeurs[]) {
-//     int count = 0;
-//     const char *ptr = buffer;
-
-//     while (*ptr != '\0') {
-//         while (*ptr != '=' && *ptr != '\0') {
-//             ++ptr;
-//         }
-//         if (*ptr == '=') {
-//             ptr++;
-//             valeurs[count++] = ptr;
+//     for (int i = 0; i < taille; ++i) {
+//         if (diff == 0.0) {
+//             temp[i] = diff;
+//         } else {
+//             temp[i] = (tab[i] - minVal) / diff;
 //         }
 
-//         while (*ptr != '\0') {
-//             ptr++;
+//     }
+//     return temp;
+// }
+
+// int second_max(const int *tab, int taille, int *erreur) {
+//     if (tab == NULL || erreur == NULL || taille <= 1) return -1;
+//     int maxVal = tab[0];
+//     int secVal = tab[0];
+
+//     for (int i = 0; i < taille;++i) {
+//         if (tab[i] > maxVal) {
+//             secVal = maxVal;
+//             maxVal = tab[i];
 //         }
-//         ptr++;
 //     }
-//     return count;
+//     return secVal;
 // }
 
-
 // int main() {
-//     const char env_buffer = "USER=ahmet\0LANG=fr\0PATH=/bin\0";
 
-//     const char *valeurs_extraites[10];
+//     int dataset[] = { 10, 20, 30, 40, 50 };
 
-//     int nb_valeurs = extraire_valeurs(env_buffer, valeurs_extraites);
+//     int taille = sizeof(dataset) / sizeof(dataset[0]);
+//     int erreur = 0;
+//     int sec = second_max(dataset, taille, &erreur);
+//     printf("SECOND-VAL : %d\n", sec);
 
-//     for (int i = 0; i < nb_valeurs; ++i) {
-//         printf("- %s\n", valeurs_extraites[i]);
+
+//     printf("Original :");
+//     for (int i = 0; i < taille; ++i) {
+//         printf("%d ", dataset[i]);
 //     }
-// }
+//     printf("\n");
 
-// #include <string.h>
-// #include <ctype.h>
-
-
-// int main() {
-//     char mot[100];
-//     printf("[?] Saisir un mot (que des lettres dans [a-z,A-Z]): ");
-
-//     if (scanf("%99s", mot) != 1) {
-//         printf("Erreur de lecture;");
-//     }
-
-//     char *debut = mot;
-//     char *fin = mot + strlen(mot) - 1;
-
-//     int est_palindrome = 1;
-
-//     while (debut < fin) {
-//         if (tolower(*debut) != tolower(*fin)) {
-//             est_palindrome = 0;
-//             break;
-//         }
-//         debut++;
-//         fin--;
-//     }
-
-//     if (est_palindrome) {
-//         printf("[i] %s est un palindrome\n", mot);
-//     } else {
-//         printf("[i] %s n'est pas un palindrome\n", mot);
-//     }
-
-
-//     return 0;
-// }
-
-
-// #include <string.h>
-// #include <ctype.h>
-
-// int main() {
-//     char mot[100];
-//     if (scanf("%99s", mot) != 1) {
+//     double *donne_normalisees = normalise_donnees(dataset, taille);
+//     if (donne_normalisees == NULL) {
+//         printf("Erreur...\n");
 //         return 1;
 //     }
 
-//     char *debut = mot;
-//     char *fin = mot + strlen(mot) - 1;
-
-//     int palindrome = 1;
-
-//     while (debut < fin) {
-//         if (tolower(*debut) != tolower(*fin)) {
-//             palindrome = 0;
-//             break;
-//         }
-//         debut++;
-//         fin--;
+//     printf("Dataset normalise : ");
+//     for (int i = 0; i < taille; ++i) {
+//         printf("%.2f ", donne_normalisees[i]);
 //     }
+//     printf("\n");
 
-//     if (palindrome) {
-//         printf("Oui %s", mot);
-//     } else {
-//         printf("Non %s", mot);
-//     }
+
+//     free(donne_normalisees);
 
 //     return 0;
 // }
-// #include <string.h>
-// #include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-// int est_phrase_palindrome(const char *phrase) {
-//     if (phrase == NULL) return 0;
+int diziler_esit_mi(int *t1, int *t2) {
+    if (t1 == NULL || t2 == NULL) return -1;
+    int *p1 = t1;
+    int lenght1 = 0;
+    int *p2 = t2;
+    int lenght2 = 0;
 
-//     const char *debut = phrase;
-//     const char *fin = phrase + strlen(phrase) - 1;
+    while (*p1 != '\0') {
+        ++lenght1;
+        ++p1;
+    }
+    while (*p2 != '\0') {
+        ++lenght2;
+        ++p2;
+    }
+    if (lenght1 != lenght2) {
+        return 0;
+    } else {
+        for (int i = 0; i < lenght1; ++i) {
+            if (t1[i] != t2[i]) {
+                return 0;
+            }
+        }
+    }
 
-//     while (debut < fin) {
-//         while (debut < fin && !isalpha(*debut)) {
-//             ++debut;
-//         }
+    return 1;
+}
 
-//         while (debut < fin && !isalpha(*fin)) {
-//             --fin;
-//         }
+int main() {
 
-//         if (debut < fin) {
-//             if (tolower(*debut) != tolower(*fin)) {
-//                 return 0;
-//             }
-//             debut++;
-//             fin--;
-//         }
-//     }
-//     return 1;
-// }
+    int t1[5] = { 1,2,3,4,5 };
 
-// int main(void) {
-//     // Tests avec des pointeurs constants (Read-only)
-//     const char *test1 = "Engage le jeu que je le gagne";
-//     const char *test2 = "Elu par cette crapule!";
-//     const char *test3 = "Bonjour le monde";
+    int t2[5] = { 1,2,3,4,5 };
 
-//     printf("\"%s\" -> %s\n", test1, est_phrase_palindrome(test1) ? "Palindrome" : "Non");
-//     printf("\"%s\" -> %s\n", test2, est_phrase_palindrome(test2) ? "Palindrome" : "Non");
-//     printf("\"%s\" -> %s\n", test3, est_phrase_palindrome(test3) ? "Palindrome" : "Non");
+    printf("diziler %s\n", diziler_esit_mi(t1, t2) ? "ESIT" : "ESIT-DEGIL");
 
-//     return 0;
-// }
 
+    return 0;
+}
