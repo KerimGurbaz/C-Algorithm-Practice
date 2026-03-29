@@ -619,51 +619,283 @@
 
 //     return 0;
 // }
+// #include <stdio.h>
+// #include <ctype.h>
+// #include <stdbool.h>
+
+// char toLower(char c) {
+//     if (c >= 'A' && c <= 'Z') {
+//         c = c + 32;
+//     }
+//     return c;
+// }
+
+
+// bool est_palindrome_complet(const char *ph) {
+//     if (ph == NULL) return false;
+//     const char *p = ph;
+
+//     if (*p == '\0') return true;
+
+//     while (*p != '\0')++p;
+//     const char *debut = ph;
+//     const char *fin = p - 1;
+
+//     while (debut < fin) {
+//         while (debut < fin && !isalnum(*debut))++debut;
+//         while (debut < fin && !isalnum(*fin))--fin;
+//         if (toLower(*debut) != toLower(*fin)) {
+//             return false;
+//         }
+//         ++debut;
+//         --fin;
+//     }
+
+//     return true;
+// }
+
+
+// int main(void) {
+//     // Virgül, apostrof, ünlem ve boşluk içeren kompleks bir palindrom
+//     const char *phrase_complexe = "A l'etape, epate-la !";
+
+//     if (est_palindrome_complet(phrase_complexe)) {
+//         printf("La phrase \"%s\" EST un palindrome parfait.\n", phrase_complexe);
+//     } else {
+//         printf("NON palindrome.\n");
+//     }
+
+//     return 0;
+// }
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+
+// void trouver_plus_long_palindrome(const char *str) {
+//     if (str == NULL || *str == '\0')return;
+
+//     int len = strlen(str);
+
+//     const char *max_debut = str;
+//     int max_len = 1;
+
+//     for (int i = 0; i < len; ++i) {
+//         int l1 = i
+//     }
+// }
+
+// int main(void) {
+//     const char *test1 = "abacaba";
+//     const char *test2 = "abcbaxyz";
+//     const char *test3 = "cbbd";
+
+//     trouver_plus_long_palindrome(test1); // abacaba
+//     trouver_plus_long_palindrome(test2); // abcba
+//     trouver_plus_long_palindrome(test3); // bb
+
+//     return 0;
+// }
+// #include <stdio.h>
+
+
+// void inverser(int *debut, int *fin) {
+//     if (debut == NULL || fin == NULL) return;
+
+//     int temp;
+
+//     while (debut < fin) {
+//         temp = *debut;
+
+//         *debut = *fin;
+//         *fin = temp;
+//         debut++;
+//         fin--;
+//     }
+// }
+
+// int main() {
+//     int data[] = { 10, 20, 30, 40, 50, 60 };
+//     int taille = sizeof(data) / sizeof(data[0]);
+
+//     inverser(data, data + taille - 1);
+
+//     for (int i = 0; i < taille; ++i) {
+//         printf("%d ", data[i]);
+//     }
+//     printf("\n");
+
+
+//     return 0;
+// }
+
+// #include <stdio.h>
+// #include <stdlib.h>
+
+// void libere(int **m, int l) {
+//     if (m == NULL)return;
+//     for (int i = 0; i < l; ++i) {
+//         free(m[i]);
+//     }
+//     free(m);
+// }
+// void display(const int **m, int l, int c) {
+//     if (m == NULL || l <= 0 || c <= 0)return;
+//     for (int i = 0; i < l; ++i) {
+//         for (int j = 0; j < c; ++j) {
+//             printf("%3d ", m[i][j]);
+//         }
+//         printf("\n");
+//     }
+//     printf("\n");
+// }
+
+// int **copy_(const int **m, int l, int c) {
+//     if (m == NULL || l <= 0 || c <= 0) return NULL;
+//     int **copy_matrice = calloc(l, sizeof(int *));
+//     if (copy_matrice == NULL) { return NULL; }
+
+//     for (int i = 0; i < l; ++i) {
+//         copy_matrice[i] = malloc(c * sizeof(int));
+//         if (copy_matrice[i] == NULL) {
+//             libere(copy_matrice, i);
+//             return NULL;
+//         }
+//         for (int j = 0; j < c; ++j) {
+//             copy_matrice[i][j] = m[i][j];
+//         }
+//     }
+
+//     return copy_matrice;
+// }
+
+// int main() {
+
+//     int lignes, colonnes;
+
+//     printf("entrez number of lignes et colonnes..\n ");
+
+//     do {
+//         if (scanf("%d %d", &lignes, &colonnes) != 2) {
+//             int c;
+//             while ((c = getchar()) != 2 && c != EOF);
+//         }
+
+//     }
+//     while (scanf("%d %d", &lignes, colonnes) != 2);
+
+//     int **matris = calloc(lignes, sizeof(int *));
+//     if (matris == NULL) {
+//         return 1;
+//     }
+
+//     int compteur = 1;
+//     for (int i = 0; i < lignes; ++i) {
+//         matris[i] = malloc(colonnes * sizeof(int));
+//         if (matris[i] == NULL) {
+//             libere(matris, i);
+//             return 1;
+//         }
+//         for (int j = 0; j < colonnes; ++j) {
+//             matris[i][j] = compteur++;
+//         }
+//     }
+//     display(matris, lignes, colonnes);
+//     int **copy_matrice = copy_(matris, lignes, colonnes);
+//     display(matris, lignes, colonnes);
+
+//     libere(matris, lignes);
+//     libere(copy_matrice, lignes);
+
+//     return 0;
+
+// }
+
 #include <stdio.h>
-#include <ctype.h>
-#include <stdbool.h>
+#include <stdlib.h>
 
-char toLower(char c) {
-    if (c >= 'A' && c <= 'Z') {
-        c = c + 32;
+void libere(int **m, int l) {
+    if (m == NULL)return;
+    for (int i = 0; i < l; ++i) {
+        free(m[i]);
     }
-    return c;
+    free(m);
 }
 
-
-bool est_palindrome_complet(const char *ph) {
-    if (ph == NULL) return false;
-    const char *p = ph;
-
-    if (*p == '\0') return true;
-
-    while (*p != '\0')++p;
-    const char *debut = ph;
-    const char *fin = p - 1;
-
-    while (debut < fin) {
-        while (debut < fin && !isalnum(*debut))++debut;
-        while (debut < fin && !isalnum(*fin))--fin;
-        if (toLower(*debut) != toLower(*fin)) {
-            return false;
+void display(const int **m, int l, int c) {
+    if (m == NULL || l <= 0 || c <= 0)return;
+    for (int i = 0; i < l; ++i) {
+        for (int j = 0; j < c; ++j) {
+            printf("%2d ", m[i][j]);
         }
-        ++debut;
-        --fin;
+        printf("\n");
     }
+    printf("\n");
+}
+void col_avg(const int **t, int l, int c, float *result) {
+    if (t == NULL || result == NULL || l <= 0 || c <= 0) return;
 
-    return true;
+    for (int j = 0; j < c; ++j) {
+        float somme = 0;
+        for (int i = 0; i < l; ++i) {
+            somme += t[i][j];
+        }
+        result[j] = (float)somme / l;
+    }
 }
 
 
-int main(void) {
-    // Virgül, apostrof, ünlem ve boşluk içeren kompleks bir palindrom
-    const char *phrase_complexe = "A l'etape, epate-la !";
+int main() {
 
-    if (est_palindrome_complet(phrase_complexe)) {
-        printf("La phrase \"%s\" EST un palindrome parfait.\n", phrase_complexe);
-    } else {
-        printf("NON palindrome.\n");
+    int lignes, colonnes, status;
+
+    do {
+        printf("Entrez le nombre de lignes et collones : \n");
+        status = scanf("%d %d", &lignes, &colonnes);
+        if (status != 2 || lignes <= 0 || colonnes <= 0) {
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF);
+            printf("Saisie invalide.\n");
+        }
+
     }
+    while (status != 2 || lignes <= 0 || colonnes <= 0);
+
+
+    int **matris = calloc(lignes, sizeof(int *));
+    if (matris == NULL) {
+        return 1;
+    }
+    int compteur = 10;
+    for (int i = 0; i < lignes; ++i) {
+        matris[i] = malloc(colonnes * sizeof(int));
+        if (matris[i] == NULL) {
+            libere(matris, i);
+            return 1;
+        }
+        for (int j = 0; j < colonnes; ++j) {
+            matris[i][j] = compteur++;
+        }
+    }
+
+    float *avg = malloc(colonnes * sizeof(float));
+    if (avg == NULL) {
+        libere(matris, lignes);
+        return 1;
+    }
+
+    col_avg((const int **)matris, lignes, colonnes, avg);
+
+
+    display((const int **)matris, lignes, colonnes);
+
+
+    for (int i = 0; i < colonnes; ++i) {
+        printf("%.2f ", avg[i]);
+    }
+    printf("\n");
+
+    libere(matris, lignes);
+    free(avg);
 
     return 0;
 }
