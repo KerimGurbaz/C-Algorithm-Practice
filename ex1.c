@@ -541,40 +541,129 @@
 //     return 0;
 // }
 
-#include <stdlib.h>
+// #include <stdlib.h>
+// #include <stdio.h>
+// #include <string.h>
+
+// char *concatener_dynamique(const char *s1, const char *s2) {
+//     if (s1 == NULL || s2 == NULL) return NULL;
+
+//     int len1 = strlen(s1);
+//     int len2 = strlen(s2);
+
+//     char *resultat = malloc((len1 + len2 + 1) * sizeof(char));
+//     if (resultat == NULL) return NULL;
+
+//     int i, j;
+//     for (i = 0; i < len1;++i) {
+//         resultat[i] = s1[i];
+//     }
+//     for (j = 0; j < len2;++j) {
+//         resultat[i + j] = s2[j];
+//     }
+
+//     resultat[i + j] = '\0';
+
+//     return resultat;
+// }
+
+// int main() {
+
+//     const char *mot1 = "DATA ";
+//     const char *mot2 = "ENGINEERING";
+//     char *phraseComplete = concatener_dynamique(mot1, mot2);
+
+//     if (phraseComplete != NULL) {
+//         printf("resultat : %s\n", phraseComplete);
+//         free(phraseComplete);
+//     }
+// }
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <stdbool.h>
+// #include <ctype.h>
+
+// bool est_phrase_palindrome(const char *ph) {
+//     if (ph == NULL)return false;
+//     if (*ph == '\n') return true;
+//     const char *p = ph;
+//     while (*p != '\0') {
+//         ++p;
+//     }
+//     const char *fin = p - 1;
+//     const  char *debut = ph;
+
+//     while (debut < fin) {
+//         while (debut < fin && !isalnum(*debut))++debut;
+//         while (debut < fin && !isalnum(*fin))--fin;
+//         if (debut < fin && tolower(*debut) != tolower(*fin)) {
+//             return false;
+//         }
+//         ++debut;
+//         --fin;
+//     }
+
+//     return true;
+// }
+
+// int main() {
+//     const char *test1 = "ey edip adanada pide ye"; // İçinde boşluklar var
+//     const char *test2 = "tu l as trop ecrase cesar le port salut"; // Fransızca klasik palindrom
+//     const char *test3 = "ingenierie des donnees";
+
+//     printf("Test 1 : %s\n", est_phrase_palindrome(test1) ? "VRAI" : "FAUX");
+//     printf("Test 2 : %s\n", est_phrase_palindrome(test2) ? "VRAI" : "FAUX");
+//     printf("Test 3 : %s\n", est_phrase_palindrome(test3) ? "VRAI" : "FAUX");
+
+//     return 0;
+// }
 #include <stdio.h>
-#include <string.h>
+#include <ctype.h>
+#include <stdbool.h>
 
-char *concatener_dynamique(const char *s1, const char *s2) {
-    if (s1 == NULL || s2 == NULL) return NULL;
-
-    int len1 = strlen(s1);
-    int len2 = strlen(s2);
-
-    char *resultat = malloc((len1 + len2 + 1) * sizeof(char));
-    if (resultat == NULL) return NULL;
-
-    int i, j;
-    for (i = 0; i < len1;++i) {
-        resultat[i] = s1[i];
+char toLower(char c) {
+    if (c >= 'A' && c <= 'Z') {
+        c = c + 32;
     }
-    for (j = 0; j < len2;++j) {
-        resultat[i + j] = s2[j];
-    }
-
-    resultat[i + j] = '\0';
-
-    return resultat;
+    return c;
 }
 
-int main() {
 
-    const char *mot1 = "DATA ";
-    const char *mot2 = "ENGINEERING";
-    char *phraseComplete = concatener_dynamique(mot1, mot2);
+bool est_palindrome_complet(const char *ph) {
+    if (ph == NULL) return false;
+    const char *p = ph;
 
-    if (phraseComplete != NULL) {
-        printf("resultat : %s\n", phraseComplete);
-        free(phraseComplete);
+    if (*p == '\0') return true;
+
+    while (*p != '\0')++p;
+    const char *debut = ph;
+    const char *fin = p - 1;
+
+    while (debut < fin) {
+        while (debut < fin && !isalnum(*debut))++debut;
+        while (debut < fin && !isalnum(*fin))--fin;
+        if (toLower(*debut) != toLower(*fin)) {
+            return false;
+        }
+        ++debut;
+        --fin;
     }
+
+    return true;
+}
+
+
+int main(void) {
+    // Virgül, apostrof, ünlem ve boşluk içeren kompleks bir palindrom
+    const char *phrase_complexe = "A l'etape, epate-la !";
+
+    if (est_palindrome_complet(phrase_complexe)) {
+        printf("La phrase \"%s\" EST un palindrome parfait.\n", phrase_complexe);
+    } else {
+        printf("NON palindrome.\n");
+    }
+
+    return 0;
 }
