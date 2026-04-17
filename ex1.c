@@ -90,40 +90,125 @@
 
 // }
 
+// #include <stdio.h>
+// #include <stdint.h>
+
+// #define PERM_EXEC 0x01
+// #define PERM_WRITE 0x02
+// #define PERM_READ 0x04
+
+// //Foction utilitaire pour verifier l'etat des bits
+
+// void affciher_droits(uint8_t droits) {
+//     printf("Lecture : %s\n", (droits & PERM_READ) ? "[X] AUTORISE" : "[ ] REFUSE");
+//     printf("Ecriture :%s\n", (droits & PERM_WRITE) ? "[X] AUTORISE" : "[ ] REFUSE");
+//     printf("Execution : %s\n", (droits & PERM_EXEC) ? "[X] AUTORISE" : "[ ] REFUSE");
+//     printf("-> valeur memoire : %d (Hex: 0x%02X)\n\n", droits, droits);
+// }
+
+// int main() {
+//     uint8_t droits = 0x00;
+//     printf("ETAPE 1: Fichier nouvellement cree---\n");
+//     affciher_droits(droits);
+
+//     printf("ETAPE 2: Ajout du droit de LECTURE\n");
+//     droits |= PERM_READ;
+//     affciher_droits(droits);
+
+//     printf("ETAPE 3 : Ajout ECRITURE et EXECUTION d'un coup\n");
+//     droits |= (PERM_WRITE | PERM_EXEC);
+//     affciher_droits(droits);
+
+//     printf("ETAPE 4 : Retrait du droit d'ecriture\n");
+//     droits &= ~PERM_WRITE;
+//     affciher_droits(droits);
+
+
+//     return 0;
+
+// }
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <stdint.h>
+// #include <time.h>
+// #include <unistd.h>
+
+// #define CLIGNOTEMENTS 20
+
+// void afficher(uint8_t etat) {
+//     printf("\r");
+
+//     for (int i = 7; i >= 0; --i) {
+//         if ((etat >> i) & 1) {
+//             printf("*");
+//         } else {
+//             printf("-");
+//         }
+//     }
+
+//     fflush(stdout);
+// }
+// int main() {
+//     srand(time(NULL));
+
+//     uint8_t guirlande = 0xAA;
+
+//     printf("simulation de la guirlande en cours...\n");
+
+//     for (int i = 0; i < CLIGNOTEMENTS; ++i) {
+//         afficher(guirlande);
+
+//         int delai = (rand() % 900001) + 100000;
+//         usleep(delai);
+
+//         guirlande = ~guirlande;
+//     }
+//     printf("\nTermine.\n");
+
+//     return 0;
+// }
+
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
+#include <unistd.h>
+#include <time.h>
 
-#define PERM_EXEC 0x01
-#define PERM_WRITE 0x02
-#define PERM_READ 0x04
+#define CLIOGNOTEMENTS 20
 
-//Foction utilitaire pour verifier l'etat des bits
+void afficher_guirlande(uint8_t etat) {
+    printf("\r");
 
-void affciher_droits(uint8_t droits) {
-    printf("Lecture : %s\n", (droits & PERM_READ) ? "[X] AUTORISE" : "[ ] REFUSE");
-    printf("Ecriture :%s\n", (droits & PERM_WRITE) ? "[X] AUTORISE" : "[ ] REFUSE");
-    printf("Execution : %s\n", (droits & PERM_EXEC) ? "[X] AUTORISE" : "[ ] REFUSE");
-    printf("-> valeur memoire : %d (Hex: 0x%02X)\n\n", droits, droits);
+    for (int i = 7; i >= 0; --i) {
+        if ((etat >> i) & 1) {
+            printf("*");
+        } else {
+            printf("-");
+        }
+    }
+    fflush(stdout);
 }
 
 int main() {
-    uint8_t droits = 0x00;
-    printf("ETAPE 1: Fichier nouvellement cree---\n");
-    affciher_droits(droits);
+    srand(time(NULL));
+    uint8_t guirlande = 0xAA;
 
-    printf("ETAPE 2: Ajout du droit de LECTURE\n");
-    droits |= PERM_READ;
-    affciher_droits(droits);
+    printf("Simulation de la guirlande (%d clignotements) : \n\n", CLIOGNOTEMENTS);
 
-    printf("ETAPE 3 : Ajout ECRITURE et EXECUTION d'un coup\n");
-    droits |= (PERM_WRITE | PERM_EXEC);
-    affciher_droits(droits);
+    for (int i = 0; i < CLIOGNOTEMENTS; ++i) {
+        afficher_guirlande(guirlande);
 
-    printf("ETAPE 4 : Retrait du droit d'ecriture\n");
-    droits &= ~PERM_WRITE;
-    affciher_droits(droits);
+        int min_us = 100000;
+        int max_us = 1000000;
+        int delai = min_us + (rand() % (max_us - min_us + 1));
 
+        usleep(delai);
+
+        guirlande = ~guirlande;
+    }
+    printf("\n\nJoyeuses FETES!\n");
 
     return 0;
-
 }
