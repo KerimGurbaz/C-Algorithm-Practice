@@ -95,9 +95,9 @@ int main(void) {
     afficher_droits(mes_droits);
 
     printf("--- ETAPE 4 : Retrait du droit d'ECRITURE ---\n");
-// Maskenin tersini al (~) ve mevcut haklarla VE'le (&)
-mes_droits &= ~PERM_WRITE;
-afficher_droits(mes_droits);
+    // Maskenin tersini al (~) ve mevcut haklarla VE'le (&)
+    mes_droits &= ~PERM_WRITE;
+    afficher_droits(mes_droits);
 
     return 0;
 }
@@ -105,22 +105,282 @@ afficher_droits(mes_droits);
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <time.h>
+#include <unistd.h>
 
+#define CLIGNOTEMENTS 20
+
+// Guirlande'ı ekrana basan fonksiyon
+void afficher_guirlande(uint8_t etat) {
+    // \r (Carriage Return) imleci satırın en başına alır, alt satıra geçmez.
+    printf("\r");
+
+    // 8 biti MSB'den (En Anlamlı Bit) LSB'ye (En Az Anlamlı Bit) doğru okuyoruz
+    for (int i = 7; i >= 0; i--) {
+        if ((etat >> i) & 1) {
+            printf("*");
+        } else {
+            printf("-");
+        }
+    }
+
+    // \n kullanmadığımız için çıktının ekranda hemen görünmesini zorluyoruz
+    fflush(stdout);
+}
+
+int main() {
+    // Rastgele sayı üretecini başlat (Sınavda unutursan hep aynı sürelerde yanıp söner)
+    srand(time(NULL));
+
+    // Başlangıç durumu: *-*-*-*-
+    // Yıldızları 1, tireleri 0 olarak düşün: 10101010 (Binaire) = 0xAA (Hexadecimal)
+    uint8_t guirlande = 0xAA;
+
+    printf("Simulation de la guirlande en cours...\n");
+
+    for (int i = 0; i < CLIGNOTEMENTS; i++) {
+        afficher_guirlande(guirlande);
+
+        // 0.1s (100,000 µs) ile 1.0s (1,000,000 µs) arası rastgele gecikme
+        int delai = (rand() % 900001) + 100000;
+        usleep(delai);
+
+        // Clignotement (Yanıp Sönme) Mantığı:
+        // Tüm bitleri tersine çeviriyoruz (1'ler 0, 0'lar 1 olur).
+        // Bitwise NOT (~) operatörü bu iş için kusursuzdur.
+        guirlande = ~guirlande;
+    }
+
+    printf("\nTermine.\n");
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdint.h>
 
+void activate_bit(uint8_t *val, int bit_index) {
+    if (val == NULL) return;
+    // Pointer kullanarak orijinal değeri heap/stack üzerinde değiştiriyoruz
+    *val |= (1 << bit_index);
+}
+
+int main() {
+    uint8_t status = 0; // Başlangıçta her şey kapalı: 00000000
+
+    printf("Baslangic: %u\n", status);
+
+    activate_bit(&status, 3); // 3. biti yak
+    printf("3. Bit Aktif: %u\n", status); // Ekranda 8 görmelisin
+
+    activate_bit(&status, 0); // 0. biti yak
+    printf("0. ve 3. Bit Aktif: %u\n", status); // 8 + 1 = 9 görmelisin
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <string.h> // strncpy için zorunlu
 
+#define MAX_LIVRES 100
+#define MAX_TITRE 100
+#define MAX_AUTEUR 50
+
+// 1. Struct Tanımlaması (typedef ile)
+typedef struct {
+    char titre[MAX_TITRE];
+    char auteur[MAX_AUTEUR];
+    int annee_publication;
+    int nombre_copies;
+} Livre;
+
+// 2. Yeni kitap ekleme fonksiyonu
+// Envanter dizisini ve mevcut kitap sayısının adresini (&) alıyoruz ki kalıcı olarak artırabilelim.
+int ajouter_livre(Livre inventaire[], int *nb_livres, const char *titre, const char *auteur, int annee, int copies) {
+    if (*nb_livres >= MAX_LIVRES) {
+        printf("Erreur : Inventaire plein.\n");
+        return 0; // Başarısız
+    }
+
+    // DİKKAT: C'de struct içindeki bir array'e '=' ile atama YAPILAMAZ.
+    // Güvenli kopyalama için strncpy kullanılır.
+    strncpy(inventaire[*nb_livres].titre, titre, MAX_TITRE - 1);
+    inventaire[*nb_livres].titre[MAX_TITRE - 1] = '\0'; // Güvenlik kilidi (Null terminator)
+
+    strncpy(inventaire[*nb_livres].auteur, auteur, MAX_AUTEUR - 1);
+    inventaire[*nb_livres].auteur[MAX_AUTEUR - 1] = '\0';
+
+    inventaire[*nb_livres].annee_publication = annee;
+    inventaire[*nb_livres].nombre_copies = copies;
+
+    (*nb_livres)++; // Kitap sayacını bir artır
+
+    return 1; // Başarılı
+}
+
+// 3. Stok güncelleme fonksiyonu (Emprunt / Retour)
+// Kitabın kopyası değil, doğrudan kendisi değişeceği için Livre * (pointer) alıyoruz.
+void maj_stock(Livre *livre, int variation) {
+    if (livre == NULL) return;
+
+    // variation: Ödünç alma için -1, İade için +1 gönderilecek
+    if (livre->nombre_copies + variation < 0) {
+        printf("Erreur : Impossible d'emprunter '%s', stock insuffisant (0 copie).\n", livre->titre);
+    } else {
+        livre->nombre_copies += variation;
+        printf("Succes : Stock de '%s' mis a jour. Nouvel etat : %d copie(s).\n", livre->titre, livre->nombre_copies);
+    }
+}
+
+int main() {
+    Livre bibliotheque[MAX_LIVRES];
+    int total_livres = 0;
+
+    printf("--- INITIALISATION DE L'INVENTAIRE ---\n");
+    ajouter_livre(bibliotheque, &total_livres, "Le C en 20 Heures", "Denis Ritchie", 1972, 3);
+    ajouter_livre(bibliotheque, &total_livres, "Pointeurs Avances", "Jean Michel", 2021, 1);
+
+    printf("\n--- OPERATIONS SUR LE STOCK ---\n");
+
+    // İşlem 1: Birinci kitabı ödünç al (Stok 3 -> 2)
+    maj_stock(&bibliotheque[0], -1);
+
+    // İşlem 2: İkinci kitabı ödünç al (Stok 1 -> 0)
+    maj_stock(&bibliotheque[1], -1);
+
+    // İşlem 3: İkinci kitabı tekrar ödünç almaya çalış (HATA vermelidir)
+    maj_stock(&bibliotheque[1], -1);
+
+    // İşlem 4: Birinci kitabı iade et (Stok 2 -> 3)
+    maj_stock(&bibliotheque[0], 1);
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
 
+#define MAX_TITRE 100
+#define MAX_AUTEUR 50
+#define MAX_INVENTAIRE 1000 // Capacité de notre base de données
+
+// 1. DÉFINITION DE LA STRUCTURE (Le Schéma de Données)
+// On utilise 'typedef' pour éviter d'écrire "struct Livre" à chaque fois.
+typedef struct {
+    char titre[MAX_TITRE];
+    char auteur[MAX_AUTEUR];
+    int annee_publication;
+    int nombre_copies;
+} Livre;
+
+// 2. FONCTION D'AJOUT (Création d'une nouvelle entrée)
+// On passe le total par adresse (*total_livres) pour le mettre à jour dans le main.
+bool ajouter_livre(Livre *inventaire, int *total_livres, const char *titre, const char *auteur, int annee, int copies) {
+    if (inventaire == NULL || total_livres == NULL || *total_livres >= MAX_INVENTAIRE) {
+        printf("[!] Erreur : Inventaire plein ou pointeur invalide.\n");
+        return false;
+    }
+
+    int index = *total_livres;
+
+    // SÉCURITÉ : On utilise strncpy pour éviter les débordements de mémoire (Buffer Overflow)
+    // et on s'assure que le dernier caractère est bien un '\0'.
+    strncpy(inventaire[index].titre, titre, MAX_TITRE - 1);
+    inventaire[index].titre[MAX_TITRE - 1] = '\0';
+
+    strncpy(inventaire[index].auteur, auteur, MAX_AUTEUR - 1);
+    inventaire[index].auteur[MAX_AUTEUR - 1] = '\0';
+
+    inventaire[index].annee_publication = annee;
+    inventaire[index].nombre_copies = copies;
+
+    (*total_livres)++; // On incrémente le compteur global
+
+    printf("[+] Livre ajoute : '%s' (%d copies)\n", titre, copies);
+    return true;
+}
+
+// 3. FONCTION DE MISE À JOUR (Opération Transactionnelle)
+// 'variation' : -1 pour un emprunt, +1 pour un retour, etc.
+bool modifier_stock(Livre *inventaire, int total_livres, const char *titre_recherche, int variation) {
+    if (inventaire == NULL || titre_recherche == NULL) return false;
+
+    // Recherche linéaire dans la base de données
+    for (int i = 0; i < total_livres; i++) {
+        // strcmp renvoie 0 si les chaînes sont identiques
+        if (strcmp(inventaire[i].titre, titre_recherche) == 0) {
+
+            // Vérification de la logique métier (on ne peut pas emprunter un livre en rupture)
+            if (inventaire[i].nombre_copies + variation < 0) {
+                printf("[-] Emprunt refuse : Plus de stock pour '%s'.\n", titre_recherche);
+                return false;
+            }
+
+            // Mise à jour
+            inventaire[i].nombre_copies += variation;
+
+            if (variation < 0) {
+                printf("[>] Emprunt reussi : '%s' (Reste: %d)\n", titre_recherche, inventaire[i].nombre_copies);
+            } else {
+                printf("[<] Retour reussi : '%s' (Nouveau stock: %d)\n", titre_recherche, inventaire[i].nombre_copies);
+            }
+
+            return true; // Opération terminée
+        }
+    }
+
+    printf("[!] Erreur : Le livre '%s' n'existe pas dans l'inventaire.\n", titre_recherche);
+    return false;
+}
+
+// Fonction utilitaire pour l'affichage
+void afficher_inventaire(const Livre *inventaire, int total_livres) {
+    printf("\n--- INVENTAIRE ACTUEL (%d livres) ---\n", total_livres);
+    for (int i = 0; i < total_livres; i++) {
+        printf("ID %d | %s par %s (%d) - Stock : %d\n",
+               i, inventaire[i].titre, inventaire[i].auteur,
+               inventaire[i].annee_publication, inventaire[i].nombre_copies);
+    }
+    printf("------------------------------------\n\n");
+}
+
+int main(void) {
+    // Allocation de l'inventaire dans la pile (Stack)
+    Livre bibliotheque[MAX_INVENTAIRE];
+    int nombre_de_livres = 0;
+
+    // Tests d'ajout
+    ajouter_livre(bibliotheque, &nombre_de_livres, "Le C en 20 Heures", "Dennis Ritchie", 1978, 5);
+    ajouter_livre(bibliotheque, &nombre_de_livres, "Algorithmique Avancee", "Thomas Cormen", 2009, 2);
+
+    afficher_inventaire(bibliotheque, nombre_de_livres);
+
+    // Tests de gestion de stock
+    modifier_stock(bibliotheque, nombre_de_livres, "Le C en 20 Heures", -1); // Emprunt (Reste 4)
+    modifier_stock(bibliotheque, nombre_de_livres, "Algorithmique Avancee", -2); // Emprunt de tout le stock (Reste 0)
+
+    // Tentative d'emprunt sur un stock vide (Doit échouer)
+    modifier_stock(bibliotheque, nombre_de_livres, "Algorithmique Avancee", -1);
+
+    // Retour d'un livre
+    modifier_stock(bibliotheque, nombre_de_livres, "Algorithmique Avancee", +1);
+
+    afficher_inventaire(bibliotheque, nombre_de_livres);
+
+    return 0;
+}
 
 ```
 
