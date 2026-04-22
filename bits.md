@@ -385,12 +385,150 @@ int main(void) {
 ```
 
 ```c
+#include <stdio.h>
 
+// 1. Enum Tanımlaması (typedef ile)
+// Eğer değer atamazsak derleyici otomatik olarak 0'dan başlar:
+// EN_LIGNE=0, HORS_LIGNE=1, EN_JEU=2, EN_PAUSE=3
+typedef enum {
+    EN_LIGNE,
+    HORS_LIGNE,
+    EN_JEU,
+    EN_PAUSE
+} StatutJoueur;
+
+// 2. Durum Güncelleme Fonksiyonu
+// Orijinal değişkeni değiştireceğimiz için Pointer (*) kullanmak ZORUNDAYIZ.
+void maj_statut(StatutJoueur *statut_actuel, StatutJoueur nouveau_statut) {
+    if (statut_actuel == NULL) return;
+    *statut_actuel = nouveau_statut;
+}
+
+// 3. Durum Görüntüleme Fonksiyonu
+// Sadece okuma yapacağımız için doğrudan değeri (Pass by Value) alıyoruz.
+void afficher_statut(StatutJoueur statut) {
+    // Enum'ların en iyi dostu switch bloğudur.
+    switch (statut) {
+        case EN_LIGNE:
+            printf("Le joueur est en ligne.\n");
+            break;
+        case HORS_LIGNE:
+            printf("Le joueur est hors ligne.\n");
+            break;
+        case EN_JEU:
+            printf("Le joueur est actuellement en jeu.\n");
+            break;
+        case EN_PAUSE:
+            printf("Le joueur est en pause.\n");
+            break;
+        default:
+            // Beklenmeyen bir tamsayı gelme ihtimaline karşı her zaman default ekle
+            printf("Statut inconnu.\n");
+            break;
+    }
+}
+
+int main() {
+    // Başlangıç durumu ataması
+    StatutJoueur joueur1 = HORS_LIGNE;
+
+    printf("--- CONNEXION ---\n");
+    afficher_statut(joueur1);
+
+    // Durumu güncelle (Referans adresi & ile gönderilir)
+    maj_statut(&joueur1, EN_LIGNE);
+    afficher_statut(joueur1);
+
+    printf("\n--- DEMARRAGE DE PARTIE ---\n");
+    maj_statut(&joueur1, EN_JEU);
+    afficher_statut(joueur1);
+
+    printf("\n--- AFK (Away From Keyboard) ---\n");
+    maj_statut(&joueur1, EN_PAUSE);
+    afficher_statut(joueur1);
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <string.h>
 
+// 1. DÉFINITION DE L'ENUM (Le vocabulaire des états)
+// Le compilateur assigne automatiquement : HORS_LIGNE=0, EN_LIGNE=1, etc.
+typedef enum {
+    HORS_LIGNE,
+    EN_LIGNE,
+    EN_JEU,
+    EN_PAUSE
+} StatutJoueur;
+
+// Intégration de l'enum dans une structure métier
+typedef struct {
+    char pseudo[50];
+    StatutJoueur statut;
+} Joueur;
+
+// 2. FONCTION DE MISE À JOUR (Passage par adresse pour modifier l'original)
+void mettre_a_jour_statut(Joueur *j, StatutJoueur nouveau_statut) {
+    if (j == NULL) return;
+
+    // On pourrait ajouter une logique métier ici (ex: on ne peut pas
+    // passer de HORS_LIGNE directement à EN_PAUSE sans être EN_LIGNE d'abord).
+    j->statut = nouveau_statut;
+}
+
+// 3. FONCTION D'AFFICHAGE (Le Switch est obligatoire en ingénierie)
+void afficher_statut(StatutJoueur statut) {
+    printf("Statut actuel : ");
+
+    switch (statut) {
+        case HORS_LIGNE:
+            printf("[ ] Le joueur est deconnecte.\n");
+            break; // OBLIGATOIRE pour ne pas exécuter les cas suivants
+        case EN_LIGNE:
+            printf("[*] Le joueur est en ligne, dans les menus.\n");
+            break;
+        case EN_JEU:
+            printf("[!] Le joueur est actuellement en jeu. Ne pas deranger.\n");
+            break;
+        case EN_PAUSE:
+            printf("[zZ] Le joueur est en pause.\n");
+            break;
+        default:
+            // Le filet de sécurité (Au cas où la RAM serait corrompue)
+            printf("[?] Statut inconnu ou erreur systeme.\n");
+            break;
+    }
+}
+
+int main(void) {
+    // Initialisation
+    Joueur joueur1;
+    strncpy(joueur1.pseudo, "AlexData", sizeof(joueur1.pseudo) - 1);
+    joueur1.pseudo[sizeof(joueur1.pseudo) - 1] = '\0';
+
+    // Départ
+    joueur1.statut = HORS_LIGNE;
+    printf("Connexion de %s...\n", joueur1.pseudo);
+
+    // Simulation de la vie du joueur
+    mettre_a_jour_statut(&joueur1, EN_LIGNE);
+    afficher_statut(joueur1.statut);
+
+    mettre_a_jour_statut(&joueur1, EN_JEU);
+    afficher_statut(joueur1.statut);
+
+    mettre_a_jour_statut(&joueur1, EN_PAUSE);
+    afficher_statut(joueur1.statut);
+
+    mettre_a_jour_statut(&joueur1, HORS_LIGNE);
+    afficher_statut(joueur1.statut);
+
+    return 0;
+}
 
 ```
 
