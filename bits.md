@@ -533,32 +533,336 @@ int main(void) {
 ```
 
 ```c
+#include <stdio.h>
+#include <time.h> // time_t ve time() için
 
+// 1. Etiket (Tag) Tanımlaması
+typedef enum {
+    TEMPERATURE,
+    HUMIDITE,
+    OCCUPATION
+} TypeDeCapteur;
+
+// 2. Union Tanımlaması
+// Bu üç değişken bellekte AYNI 4 byte'lık alanı paylaşır.
+// Sadece biri aynı anda aktif olabilir.
+typedef union {
+    float temperature;
+    float humidite;
+    int occupation;
+} DonneesCapteur;
+
+// 3. Kapsayıcı Struct (Tagged Union)
+typedef struct {
+    TypeDeCapteur type;
+    DonneesCapteur donnees;
+    time_t horodatage; // Unix timestamp
+} ReleveCapteur;
+
+// 4. Veri Okuma ve Yazdırma Fonksiyonu
+// Sadece okuma yapacağımız için 'const pointer' kullanmak bir senior standartıdır.
+void afficher_donnees(const ReleveCapteur *releve) {
+    if (releve == NULL) return;
+
+    // Zaman damgasını okunabilir string'e çevir (sonundaki \n karakterini manuel kesmek yerine basitçe yazdırıyoruz)
+    printf("[%ld] Capteur : ", (long)releve->horodatage);
+
+    // Enum değerine göre Union'ın HANGİ değişkenini okuyacağımıza karar veriyoruz.
+    switch (releve->type) {
+        case TEMPERATURE:
+            printf("Temperature = %.2f C\n", releve->donnees.temperature);
+            break;
+        case HUMIDITE:
+            printf("Humidite = %.2f %%\n", releve->donnees.humidite);
+            break;
+        case OCCUPATION:
+            // Boolean mantığı: 0 ise boş, >0 ise dolu
+            printf("Occupation = %s\n", releve->donnees.occupation ? "Detectee" : "Aucune");
+            break;
+        default:
+            printf("Type de capteur inconnu.\n");
+            break;
+    }
+}
+
+int main() {
+    // Örnek 1: Sıcaklık Sensörü
+    ReleveCapteur capteur_temp;
+    capteur_temp.type = TEMPERATURE;
+    capteur_temp.donnees.temperature = 24.5f;
+    capteur_temp.horodatage = time(NULL);
+
+    // Örnek 2: Hareket (Occupation) Sensörü
+    ReleveCapteur capteur_mvt;
+    capteur_mvt.type = OCCUPATION;
+    capteur_mvt.donnees.occupation = 1;
+    capteur_mvt.horodatage = time(NULL);
+
+    printf("--- LECTURE DES DONNEES ---\n");
+    afficher_donnees(&capteur_temp);
+    afficher_donnees(&capteur_mvt);
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h> // Byte bazlı kesin veri tipleri için zorunlu
 
+// 1. DÉFINITION DE LA STRUCTURE COMPRESSÉE (Packed Struct)
+// __attribute__((packed)) derleyiciye şu emri verir: 
+// "Performans için aralara boşluk (padding) ekleme! Verileri sıkıştırarak bitişik yaz."
+typedef struct __attribute__((packed)) {
+    uint16_t id;         // 2 octets (16 bits, unsigned)
+    uint32_t horodatage; // 4 octets (Timestamp in seconds)
+    uint8_t type;        // 1 octet  (8 bits, unsigned byte)
+    float valeur;        // 4 octets (Standard IEEE 754 float)
+} DonneesCapteur;
+
+// 2. FONCTION D'AFFICHAGE
+void afficher_capteur(const DonneesCapteur *capteur) {
+    if (capteur == NULL) return;
+
+    printf("--- Releve du Capteur ---\n");
+    // %u formatı 'unsigned int' (işaretsiz tam sayı) içindir
+    printf("ID         : %u\n", capteur->id);
+    printf("Horodatage : %u\n", capteur->horodatage);
+    printf("Type       : %u\n", capteur->type);
+    printf("Valeur     : %f\n", capteur->valeur);
+    printf("-------------------------\n");
+}
+
+int main(void) {
+    // 3. ALLOCATION DYNAMIQUE D'UNE ZONE CONTIGUË
+    // Malloc, struct'ın kapladığı alan kadar bitişik (contiguë) RAM ayırır.
+    DonneesCapteur *zone_memoire = malloc(sizeof(DonneesCapteur));
+    
+    // Güvenlik Kalkanı
+    if (zone_memoire == NULL) {
+        printf("Erreur : Impossible d'allouer la memoire.\n");
+        return 1;
+    }
+
+    // 4. ÉCRITURE DES VALEURS (Test avec les données de l'exercice)
+    zone_memoire->id = 12345;
+    zone_memoire->horodatage = 161803398;
+    zone_memoire->type = 2;
+    zone_memoire->valeur = 3.14159f; // 'f' harfi float olduğunu derleyiciye kesinleştirir
+
+    // Affichage des données
+    afficher_capteur(zone_memoire);
+
+    // 5. PREUVE DE LA COMPRESSION (Sınavda hocaya şov yapmak için)
+    // Eğer __attribute__((packed)) kullanmasaydık, derleyici float'ı 4'ün katına hizalamak
+    // için araya boşluklar koyar ve boyut 12 veya 16 octet çıkardı.
+    // Şuan tam olarak 2 + 4 + 1 + 4 = 11 Octets çıkacaktır.
+    printf("Taille exacte en RAM : %zu octets\n", sizeof(DonneesCapteur));
+
+    // 6. LIBÉRATION DE LA MÉMOIRE
+    free(zone_memoire);
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h> // Byte bazlı kesin boyutlar için zorunlu (uint16_t, uint8_t vb.)
 
+// "__attribute__((packed))" komutu derleyiciye şunu söyler: 
+// "Performans için aralara boşluk (padding) ekleme, verileri bitişik (contiguë) diz!"
+typedef struct __attribute__((__packed__)) {
+    uint16_t id;          // 2 octets (16 bits)
+    uint32_t horodatage;  // 4 octets (32 bits)
+    uint8_t  type;        // 1 octet  (8 bits)
+    float    valeur;      // 4 octets (IEEE 754 float)
+} CapteurData;
+
+// Görüntüleme fonksiyonu (Sadece okuma yaptığı için const pointer)
+void afficher_capteur(const CapteurData *capteur) {
+    if (capteur == NULL) return;
+    
+    printf("--- DONNEES DU CAPTEUR ---\n");
+    printf("Identifiant : %u\n", capteur->id);
+    printf("Horodatage  : %u\n", capteur->horodatage);
+    printf("Type        : %u\n", capteur->type);
+    printf("Valeur      : %f\n", capteur->valeur);
+    
+    // Struct'ın bellekte ne kadar yer kapladığını kanıtlamak için:
+    printf("\n[INFO] Taille en memoire : %lu octets\n", sizeof(CapteurData));
+}
+
+int main() {
+    // 1. Dinamik bellek tahsisi (Heap üzerinde contiguë bir alan açıyoruz)
+    // sizeof(CapteurData) packed olduğu için tam olarak 11 byte ayıracaktır.
+    CapteurData *zone_memoire = malloc(sizeof(CapteurData));
+    
+    if (zone_memoire == NULL) {
+        printf("Erreur critique : Allocation memoire echouee.\n");
+        return 1; // Güvenlik çıkışı
+    }
+
+    // 2. Sensör verilerini tahsis edilen bellek alanına yazma
+    zone_memoire->id = 12345;
+    zone_memoire->horodatage = 161803398;
+    zone_memoire->type = 2;
+    zone_memoire->valeur = 3.14159f; // 'f' harfi derleyiciye bunun float olduğunu belirtir
+
+    // 3. Verileri görüntüle
+    afficher_capteur(zone_memoire);
+
+    // 4. Tahsis edilen belleği işletim sistemine geri iade et (Kritik!)
+    free(zone_memoire);
+    zone_memoire = NULL; // Güvenlik için pointer'ı sıfırla (Dangling pointer önlemi)
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h> // bool, true, false kullanabilmek için modern C standardı
 
+// 1. Fonksiyon Parametrelerinde Const
+// "const char *" kullanımı, fonksiyonun bu stringleri sadece OKUYACAĞINI,
+// kesinlikle değiştirmeyeceğini derleyiciye ve kodu okuyana garanti eder.
+bool detecter_motif(const char *chaine, const char *motif) {
+    if (chaine == NULL || motif == NULL) return false;
+    
+    // strstr(), hedefi bulursa başlangıç adresini (pointer), bulamazsa NULL döndürür.
+    return strstr(chaine, motif) != NULL;
+}
+
+int main() {
+    // 2. Hedef Kelimede Çift Const Kullanımı (Exam Boss Move)
+    // const char * -> "subcmd" metni değiştirilemez (Read-only memory).
+    // const motif_cible  -> motif_cible pointer'ının kendisi başka bir adrese yönlendirilemez.
+    const char * const motif_cible = "subcmd";
+
+    // 3. String Dizisinde Çift Const Kullanımı
+    // const char * -> Dizinin içindeki cümleler değiştirilemez.
+    // const chaines[]    -> Dizinin elemanları (pointer'lar) yer değiştiremez.
+    const char * const chaines[] = {
+        "commande1 subcmd",
+        "autre commande",
+        "encore subcmd ici",
+        "derniere chaine"
+    };
+
+    // 4. Boyut Hesabında Const
+    // Boyut program çalışırken değişmeyeceği için const int yapmak en güvenli yoldur.
+    const int nb_chaines = sizeof(chaines) / sizeof(chaines[0]);
+
+    printf("--- DETECTION DE MOTIF ---\n\n");
+
+    for (int i = 0; i < nb_chaines; ++i) {
+        if (detecter_motif(chaines[i], motif_cible)) {
+            printf("[TROUVE] : \"%s\"\n", chaines[i]);
+        } else {
+            printf("[ABSENT] : \"%s\"\n", chaines[i]);
+        }
+    }
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <string.h>  // Pour strstr()
+#include <stdbool.h> // Pour les booléens (true/false)
 
+// 1. CONSTANTES DE PRÉPROCESSEUR (Macros)
+// Parfait pour les tailles de tableaux ou les chaînes cibles fixes.
+#define NB_CHAINES 4
+#define CIBLE "subcmd"
+
+// 2. FONCTION DE DÉTECTION (Sécurisée avec const)
+// Les paramètres "const char *" garantissent que la fonction a seulement
+// le droit de LIRE les chaînes, pas de les MODIFIER.
+bool detecter_motif(const char *texte, const char *motif) {
+    if (texte == NULL || motif == NULL) return false;
+
+    // strstr cherche 'motif' dans 'texte'. 
+    // S'il le trouve, il renvoie l'adresse mémoire où le motif commence.
+    // S'il ne le trouve pas, il renvoie NULL.
+    if (strstr(texte, motif) != NULL) {
+        return true;
+    }
+    
+    return false;
+}
+
+int main(void) {
+    // 3. LE NIVEAU MAXIMUM DE CONSTANTE (Le double const)
+    // "const char *"       -> Les textes eux-mêmes sont en lecture seule (Data Segment).
+    // "* const tableau[]"  -> Les cases du tableau (les pointeurs) sont aussi bloquées.
+    const char * const tableau_chaines[NB_CHAINES] = {
+        "commande1 subcmd",
+        "autre commande",
+        "encore subcmd ici",
+        "derniere chaine"
+    };
+
+    printf("--- Analyse des commandes (Recherche de '%s') ---\n\n", CIBLE);
+
+    // Boucle d'analyse
+    for (int i = 0; i < NB_CHAINES; i++) {
+        // On passe chaque chaîne à notre fonction de détection
+        if (detecter_motif(tableau_chaines[i], CIBLE)) {
+            printf("[TROUVE]    : \"%s\"\n", tableau_chaines[i]);
+        } else {
+            printf("[IGNORE]    : \"%s\"\n", tableau_chaines[i]);
+        }
+    }
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
 
+typedef struct {
+    int id;
+    float solde;
+} CompteBancaire;
+
+void crediter(CompteBancaire *compte, float montant) {
+    // Negatif para eklenemez, NULL pointer gelemez
+    if (compte == NULL || montant < 0) return; 
+    compte->solde += montant;
+}
+
+void afficher(const CompteBancaire *c) {
+    if (c == NULL) return; // Sadece NULL kontrolü yeterli
+    printf("ID     : %d\n", c->id);
+    printf("SOLDE  : %.2f\n\n", c->solde);
+}
+
+int main() {
+    // Designated Initializer ve 'f' takısı kullanımı
+    CompteBancaire account = { .id = 1, .solde = 100.9f };
+    
+    printf("--- AVANT CREDIT ---\n");
+    afficher(&account);
+    
+    crediter(&account, 150.0f); // Parametreyi de float olarak gönderiyoruz
+    
+    printf("--- APRES CREDIT ---\n");
+    afficher(&account);
+
+    return 0;
+}
 
 ```
 
