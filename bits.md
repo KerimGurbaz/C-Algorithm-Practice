@@ -685,10 +685,10 @@ typedef struct __attribute__((__packed__)) {
 
 // Görüntüleme fonksiyonu (Sadece okuma yaptığı için const pointer)
 void afficher_capteur(const CapteurData *capteur) {
-    if (capteur == NULL) return;
+    if (capteur == NULL) retur
     
     printf("--- DONNEES DU CAPTEUR ---\n");
-    printf("Identifiant : %u\n", capteur->id);
+    printf("Identifiant :%u \n", capteur->id);
     printf("Horodatage  : %u\n", capteur->horodatage);
     printf("Type        : %u\n", capteur->type);
     printf("Valeur      : %f\n", capteur->valeur);
@@ -867,7 +867,32 @@ int main() {
 ```
 
 ```c
+#include <stdio.h>
+#include <stdint.h>
 
+// 1. Structure Standard (Soumise au Padding du compilateur)
+typedef struct {
+    uint8_t  rouge;       // 1 octet
+    uint32_t identifiant; // 4 octets
+    uint8_t  bleu;        // 1 octet
+} PixelStandard;
+
+// 2. Structure Compressée (Mémoire contiguë forcée)
+typedef struct __attribute__((packed)) {
+    uint8_t  rouge;
+    uint32_t identifiant;
+    uint8_t  bleu;
+} PixelPacked;
+
+int main() {
+    printf("--- ANALYSE DE LA MEMOIRE ---\n");
+    printf("Taille theorique attendue : 1 + 4 + 1 = 6 octets\n\n");
+    
+    printf("Taille PixelStandard : %zu octets\n", sizeof(PixelStandard));
+    printf("Taille PixelPacked   : %zu octets\n", sizeof(PixelPacked));
+
+    return 0;
+}
 
 ```
 
