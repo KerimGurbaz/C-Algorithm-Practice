@@ -141,6 +141,37 @@
 
 // }
 
+#include <stdio.h>
+#include<stdint.h>
 
+#ifndef BITS_EXTRACT_H
+#define BITS_EXTRACT_H
 
+#define EXTRACT_BITS(word, start, length) (((word)>>(start)) & ((1U<<(length)) -1U))
+#define SWAP_BYTES_16(word) (((word)>>8) | ((word)<<8))
+#define CLEAR_UPPER_HALF(word) ((word)&(0x0000FFFF))
 
+#endif
+
+void print_binary(uint32_t w) {
+    for (int i = 31; i >= 0; --i) {
+        printf("%d", (w >> i) & 1);
+        if (i % 4 == 0) printf(" ");
+    }
+}
+
+void print_binary(uint16_t w) {
+    for (int i = 15; i >= 0; --i) {
+        printf("%d", (w >> i) & 1);
+        if (i % 4 == 0)printf(" ");
+    }
+}
+
+int main() {
+
+    uint32_t w1 = 0b1011010011100011;
+    printf("word = 0x%04(", w1);
+    print_binary(w1);
+    printf(")\n\n");
+
+}
