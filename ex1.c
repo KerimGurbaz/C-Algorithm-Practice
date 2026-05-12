@@ -1,177 +1,171 @@
-// #include <stdio.h>
-// #include <stdint.h>
-
-// #define LIRE  0x01
-// #define ECRITURE  0x02
-// #define EXECUTER  0x04
-
-
-// #define USERS{"proprietaire", "groupe", "autres"}
-
-// int main() {
-//     uint16_t droitsAcces = 0x00;
-//     char *users[] = USERS;
-
-//     printf("Entrer un nombre entre 0 et 511 pour coder un accès Linux: ");
-//     if ((scanf("%d", &droitsAcces) != 1) || (droitsAcces > 511)) {
-//         printf("Desole...");
-//         return 1;
-//     }
-
-//     printf("Droits d'accès après modification: 0x%X\n", droitsAcces);
-
-//     int prop = (droitsAcces >> 6) & 0x07;
-//     int groupe = (droitsAcces >> 3) & 0x07;
-//     int autres = droitsAcces & 0x07;
-// }
-// #include <stdio.h>
-// #include <stdint.h>
-
-
-// int verifier_execution_globale(uint16_t droits) {
-//     int prop_x = (droits >> 6) & 0x01;
-//     int grp_x = (droits >> 3) & 0x01;
-//     int aut_x = (droits) & 0x01;
-
-//     return prop_x && grp_x && aut_x;
-// }
-
-
-// int main() {
-//     printf("=== TEST verifier_execution_globale ===\n\n");
-
-//     // Test 1: Hepsi x (111 111 111 = 511)
-//     uint16_t d1 = 511;
-//     printf("Test 1: 511 (rwx rwx rwx)\n");
-//     printf("  Sonuc: %d (beklenen: 1)\n", verifier_execution_globale(d1));
-//     printf("\n");
-
-//     // Test 2: Sadece 2 tanesinde x var (111 111 110 = 510)
-//     uint16_t d2 = 510;
-//     printf("Test 2: 510 (rwx rwx rw-)\n");
-//     printf("  Sonuc: %d (beklenen: 0)\n", verifier_execution_globale(d2));
-//     printf("\n");
-
-//     // Test 3: Hiç x yok (110 110 110 = 438)
-//     uint16_t d3 = 438;
-//     printf("Test 3: 438 (rw- rw- rw-)\n");
-//     printf("  Sonuc: %d (beklenen: 0)\n", verifier_execution_globale(d3));
-//     printf("\n");
-
-//     // Test 4: Sadece autres'de x yok (111 111 001 = 505)
-//     uint16_t d4 = 505;
-//     printf("Test 4: 505 (rwx rwx --x)\n");
-//     printf("  Sonuc: %d (beklenen: 0)\n", verifier_execution_globale(d4));
-//     printf("\n");
-
-//     // Test 5: Hepsi x var farklı kombinasyon (101 101 101 = 365)
-//     uint16_t d5 = 365;
-//     printf("Test 5: 365 (r-x r-x r-x)\n");
-//     printf("  Sonuc: %d (beklenen: 1)\n", verifier_execution_globale(d5));
-//     printf("\n");
-
-//     // Test 6: chmod 111 (001 001 001 = 73)
-//     uint16_t d6 = 73;
-//     printf("Test 6: 73 (--x --x --x)\n");
-//     printf("  Sonuc: %d (beklenen: 1)\n", verifier_execution_globale(d6));
-//     printf("\n");
-
-//     return 0;
-// }
-
-
-// #include <stdint.h>
-
-// int verifier_execution_globale(uint16_t droits) {
-//     uint16_t masque = (1 << 6) | (1 << 3) | (1 << 0);
-
-//     if ((droits & masque) == masque) {
-//         return 1;
-//     } else {
-//         return 0;
-//     }
-
-// }
-
-
-// uint16_t ajouter(uint16_t droits) {
-//     uint16_t masque = (1 << 4);
-
-//     return droits | masque;
-// }
-
-
-// uint16_t revoquer(uint16_t droits) {
-//     uint16_t masque = (1 << 2) | (1 << 1) | (1 << 0);
-
-//     return droits & ~masque;
-// }
-
-// uint16_t basculer(uint16_t droits) {
-//     uint16_t masque = (1 << 8);
-
-//     return droits ^ masque;
-// }
-
 #include <stdio.h>
-#include <stdint.h>
+#include <stdbool.h>
+#include <ctype.h>
 
-// int compteur(const char *nom_fichier) {
-//     FILE *f = fopen(nom_fichier, "rb");
-//     if (f == NULL) {
+
+// int countc(FILE *f) {
+//     int count = 0;
+
+//     while (fgetc() != EOF) {
+//         count++;
+//     }
+//     return count;
+// }
+
+
+// int countw(FILE *f) {
+//     int count = 0;
+//     int c;
+//     bool in_word = false;
+
+//     while ((c = fgetc(f)) != EOF) {
+//         if (isspace(c)) {
+//             in_word = false;
+//         } else if (!in_word) {
+//             in_word = true;
+//             count++;
+//         }
+//     }
+//     return count;
+// }
+
+// int countl(FILE *f) {
+//     int count = 0;
+//     int c;
+//     while ((c = fgetc(f)) != EOF) {
+//         if (c == '\n') {
+//             ++count;
+//         }
+//     }
+//     return count;
+// }
+// #include <stdio.h>
+
+// typedef struct{
+//     int id;
+//     char nom[50];
+//     char prenom[50];
+//     float moyenne;
+// }etudiant;
+
+// int compter_etudiants(const char* filename){
+//     FILE *f = fopen(filename, "rb");
+//     if(!f){
 //         return -1;
 //     }
 
-//     int compteur = 0;
+//     fseek(f, 0, SEEK_END);
 
-//     uint16_t droits;
-
-//     uint16_t masque = (1 << 8) | (1 << 7);
-
-//     while (fread(&droits, sizeof(uint16_t), 1, f) == 1) {
-//         if ((droits & masque) == masque) {
-//             compteur++;
-//         }
-//     }
-
+//     long total = ftell(f);
 
 //     fclose(f);
 
-//     return compteur;
+//     return (int)(total)/sizeof(etudiant);
+// }
+// #include <stdio.h>
+// #include <errno.h>
 
+// typedef struct {
+//     int id;
+//     char nom[50];
+//     char prenom[50];
+//     float moyenne;
+// }etudiant;
+
+// void lire_etudiant_index(const char *filename, int index) {
+//     FILE *f = fopen(filename, "rb");
+//     if (f == NULL) {
+//         perror("introuvable..");
+//         return;
+//     }
+
+//     fseek(f, 0, SEEK_END);
+//     long taille = ftell(f);
+//     int nbEtudiant = (int)(taille) / sizeof(etudiant);
+
+//     if (index < 0 || index >= nbEtudiant) {
+//         perror("invalid index");
+//         return;
+//     }
+
+//     etudiant student;
+
+//     fseek(f, index * sizeof(etudiant), SEEK_SET);
+
+//     fread(&student, sizeof(etudiant), 1, f);
+//     printf("ID : %d\n", student.id );
+//     printf("nom : %s\n", student.nom );
+//     printf("ID : %s\n", student.prenom );
+//     printf("Moyenne : %.2f\n", student.moyenne );
+
+
+//     fclose(f);
 // }
 
+// #include <stdio.h>
+// #include <errno.h>
+
+// typedef struct {
+//     int id;
+//     char nom[50];
+//     char prenom[50];
+//     float moyenne;
+// }etudiant_t;
+
+// void mettre_A_jour_moyenne(const char*filename, int id, float nouvelle_moyenne){
+//     FILE *f = fopen(filename, "r+b");
+//     if(f ==NULL){
+//         perror("Error..");
+//         return;
+//     }
+//     etudiant_t student;
+//     while(fread(&student, sizeof(etudiant_t), 1, f) ==1){
+//         if(student.id == id){
+//             student.moyenne = nouvelle_moyenne;
+//             fseek(f, -(long)sizeof(etudiant_t), SEEK_CUR);
+//             fwrite(&student, sizeof(etudiant_t), 1, f);
+//             printf("mettre a jour moyenne %.2f", student.moyenne);
+//             break;
+//         }
+//     }
+
+//     fclose(f);
+
+//     }
+
+
 #include <stdio.h>
-#include<stdint.h>
+#include <errno.h>
 
-#ifndef BITS_EXTRACT_H
-#define BITS_EXTRACT_H
+typedef struct {
+    int id;
+    char nom[50];
+    char prenom[50];
+    float moyenne;
+}etudiant_t;
 
-#define EXTRACT_BITS(word, start, length) (((word)>>(start)) & ((1U<<(length)) -1U))
-#define SWAP_BYTES_16(word) (((word)>>8) | ((word)<<8))
-#define CLEAR_UPPER_HALF(word) ((word)&(0x0000FFFF))
-
-#endif
-
-void print_binary(uint32_t w) {
-    for (int i = 31; i >= 0; --i) {
-        printf("%d", (w >> i) & 1);
-        if (i % 4 == 0) printf(" ");
+void lire_a_rebours(const char *filename) {
+    FILE *f = fopen(filename, "rb");
+    if (!f) {
+        perror("Error ... ");
+        return;
     }
-}
 
-void print_binary(uint16_t w) {
-    for (int i = 15; i >= 0; --i) {
-        printf("%d", (w >> i) & 1);
-        if (i % 4 == 0)printf(" ");
+    fseek(f, 0, SEEK_END);
+    long taille = ftell(f);
+    int nb_etudiant = (int)taille / sizeof(etudiant_t);
+
+    etudiant_t student;
+
+    for (int i = nb_etudiant - 1; i >= 0; --i) {
+        fseek(f, i * sizeof(etudiant_t), SEEK_SET);
+        fread(&student, sizeof(etudiant_t), 1, f);
+
+        printf("ID %d\n", student.id);
+        printf("nom %s\n", student.nom);
+        printf("ID %s\n", student.prenom);
+        printf("ID %.2f\n", student.moyenne);
     }
-}
 
-int main() {
-
-    uint32_t w1 = 0b1011010011100011;
-    printf("word = 0x%04(", w1);
-    print_binary(w1);
-    printf(")\n\n");
-
+    fclose(f);
 }
