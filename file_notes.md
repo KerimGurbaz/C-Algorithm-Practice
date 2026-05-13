@@ -194,12 +194,111 @@ void mettre_a_jour_moyenne(const char *filename, int id, float nouvelle_moyenne)
 ```
 
 ```c
+#include <stdio.h>
+#include <errno.h>
 
+typedef struct {
+    int id;
+    char nom[50];
+    char prenom[50];
+    float moyenne;
+} etudiant_t;
+
+void lire_a_rebours(const char *filename) {
+    FILE *f = fopen(filename, "rb");
+    if (!f) {
+        perror("Erreur d'ouverture du fichier");
+        return;
+    }
+
+    // Dosya boyutunu ve eleman sayısını bulma
+    fseek(f, 0, SEEK_END);
+    long taille = ftell(f);
+    int nb_etudiant = (int)(taille / sizeof(etudiant_t));
+
+    etudiant_t student;
+
+    // Sondan başa doğru indeksleri say
+    for (int i = nb_etudiant - 1; i >= 0; --i) {
+        // DÜZELTME 1: Dosyanın BAŞINDAN itibaren (SEEK_SET) hesaplanan adrese atla
+        fseek(f, i * sizeof(etudiant_t), SEEK_SET);
+
+        // Kaydı oku
+        fread(&student, sizeof(etudiant_t), 1, f);
+
+        // DÜZELTME 2: Etiketleri doğru yazdır
+        printf("--- Etudiant %d ---\n", i);
+        printf("ID      : %d\n", student.id);
+        printf("Nom     : %s\n", student.nom);
+        printf("Prenom  : %s\n", student.prenom);
+        printf("Moyenne : %.2f\n", student.moyenne);
+    }
+
+    fclose(f);
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <errno.h>
 
+typedef struct {
+    int id;
+    char nom[50];
+    char prenom[50];
+    float moyenne;
+} etudiant_t;
+
+int fusionner_fichiers(const char *fichier1, const char *fichier2, const char *fichier_sortie) {
+    // 1. Çıkış dosyasını "wb" (Write Binary) modunda aç
+    FILE *f_out = fopen(fichier_sortie, "wb");
+    if (!f_out) {
+        perror("Erreur: Impossible de creer le fichier de sortie");
+        return -1;
+    }
+
+    int total_records = 0;
+    etudiant_t student;
+
+    // 2. Birinci dosyayı aç ve kopyala
+    FILE *f1 = fopen(fichier1, "rb");
+    if (f1) {
+        // Okuma başarılı oldukça (1 döndürdükçe) döngüye gir
+        while (fread(&student, sizeof(etudiant_t), 1, f1) == 1) {
+            // DİKKAT: Yazma işlemi de başarılı olmalı
+            if (fwrite(&student, sizeof(etudiant_t), 1, f_out) == 1) {
+                total_records++;
+            } else {
+                // Disk doldu veya yazma hatası
+                break;
+            }
+        }
+        fclose(f1); // 4. Birinciyi kapat
+    } else {
+        perror("Avertissement: Fichier 1 introuvable");
+        // Programı durdurmuyoruz, belki sadece dosya 2 vardır.
+    }
+
+    // 5. İkinci dosyayı aç ve kopyala
+    FILE *f2 = fopen(fichier2, "rb");
+    if (f2) {
+        while (fread(&student, sizeof(etudiant_t), 1, f2) == 1) {
+            if (fwrite(&student, sizeof(etudiant_t), 1, f_out) == 1) {
+                total_records++;
+            } else {
+                break;
+            }
+        }
+        fclose(f2); // 7. İkinciyi kapat
+    } else {
+        perror("Avertissement: Fichier 2 introuvable");
+    }
+
+    // 8. Çıkış dosyasını kapat ve toplamı döndür
+    fclose(f_out);
+    return total_records;
+}
 
 ```
 
