@@ -285,3 +285,115 @@
 //     return a + b;
 // #endif
 // }
+
+
+// #include <CUnit/Basic.h>
+
+// int my_strlen(const char *str) {
+//     int len = 0;
+//     while (*str) {
+//         ++len;
+//         ++str;
+//     }
+//     return len;
+// }
+
+// int my_strcmp(const char *str1, const char *str2) {
+//     while (*str1 && (*str1 == *str2)) {
+//         ++str1;
+//         ++str2;
+//     }
+//     return (int)((unsigned char)*str1 - (unsigned char)*str2);
+// }
+
+// char *my_strcat(char *dest, const char *src) {
+//     char *ptr = dest;
+//     while (*ptr) {
+//         ptr++;
+//     }
+//     while (*src != '\0') {
+//         *ptr = *src;
+//         ++ptr;
+//         ++src;
+//     }
+//     *ptr = '\0';
+//     return dest;
+// }
+
+// void test_my_strlen(void){
+//     CU_ASSERT_EQUAL(my_strlen(""), 0);
+//     CU_ASSERT_EQUAL(my_strlen("hELLO"), 5);
+//     CU_ASSERT_EQUAL(my_strlen("a"), 1);
+//     CU_ASSERT_EQUAL(my_strlen("A B\N"), 0);
+// }
+
+// void test_strcat(void){
+//     CU_ASSERT_EQUAL(my_strcmp("abc", "abc"), 0);
+//     CU_ASSERT_TRUE(my_strcmp("abc", "abd") < 0);
+// }
+
+// #include <CUnit/CUnit.h>
+// #include <CUnit/Basic.h>
+// #include <string.h>
+
+// #define MAX 100
+
+// typedef struct {
+//     int id;
+//     char titre[50];
+//     float prix;
+// }Livre;
+
+// void ajouter_livre(Livre tab[], int *n, Livre l) {
+//     if (*n < MAX) {
+//         tab[*n] = l;
+//         (*n)++;
+//     }
+// }
+
+// Livre *chercher(Livre tab[], int n, int id) {
+//     for (int i = 0;i < n;++i) {
+//         if (tab[i].id == id) {
+//             return &tab[i];
+//         }
+//     }
+//     return NULL;
+// }
+
+// int cop_par_prix(Livre tab[], int n, float min) {
+//     int count = 0;
+//     for (int i = 0; i < n; ++i) {
+//         if (tab[i].prix >= min) {
+//             count++;
+//         }
+//     }
+
+//     return count;
+// }
+
+// void test_ajouter(void) {
+//     Livre bib[MAX];
+//     int n = 0;
+//     Livre l1 = { 1, "Le C en 20 Jours", 45.5 };
+//     ajouter_livre(bib, &n, l1);
+//     CU_ASSERT_EQUAL(n, 1);
+//     CU_ASSERT_EQUAL(bib[0].id, 1);
+//     CU_ASSERT_STRING_EQUAL(bib[0].titre, "Le C en 20 Jours");
+// }
+
+
+#include <stdio.h>
+#include <stdlib.h>
+// #include <CUnit/CUnit.h>
+// #include <CUnit/Basic.h>
+
+int fac(int n) {
+    if (n <= 1) return 1;
+    return n * fac(n - 1);
+}
+
+void test_fac(void) {
+    CU_ASSERT_EQUAL(fac(0), 1);
+    CU_ASSERT_EQUAL(fac(1), 1);
+    CU_ASSERT_EQUAL(fac(5), 120);
+}
