@@ -387,13 +387,64 @@
 // #include <CUnit/CUnit.h>
 // #include <CUnit/Basic.h>
 
-int fac(int n) {
-    if (n <= 1) return 1;
-    return n * fac(n - 1);
-}
+// int fac(int n) {
+//     if (n <= 1) return 1;
+//     return n * fac(n - 1);
+// }
 
-void test_fac(void) {
-    CU_ASSERT_EQUAL(fac(0), 1);
-    CU_ASSERT_EQUAL(fac(1), 1);
-    CU_ASSERT_EQUAL(fac(5), 120);
-}
+// void test_fac(void) {
+//     CU_ASSERT_EQUAL(fac(0), 1);
+//     CU_ASSERT_EQUAL(fac(1), 1);
+//     CU_ASSERT_EQUAL(fac(5), 120);
+// }
+
+#include <stdint.h>
+
+// int check(uint32_t mots) {
+//     int count = 0;
+//     for (int i = 31; i >= 0; --i) {
+//         if ((mots >> i) & 1U) {
+//             ++count;
+//         }
+//     }
+//     return count;
+// }
+
+
+// uint32_t invert_bits(uint32_t word, int start, int length) {
+//     uint32_t mask = (((1U - length) - 1U) << start);
+//     word ^= mask;
+// }
+
+
+#include <stdint.h>
+
+// void droit(uint16_t droits, char *output) {
+//     const char *symboles = "rwxrwxrwx";;
+
+//     for (int i = 0; i < 9; ++i) {
+//         if ((droits >> (8 - i)) & 1U) {
+//             output[i] = symboles[i];
+//         } else {
+//             output[i] = '-';
+//         }
+//     }
+//     output[9] = '\0';
+// }
+
+// void print_binary_full(uint32_t num) {
+//     for (int i = 31; i >= 0; --i) {
+//         if ((num >> i) & 1U) {
+//             putchar('1');
+//         } else {
+//             putchar('0');
+//         }
+//     }
+// }
+
+
+#define SWAP(a, b) do{   \
+    int (temp) = a;  \
+    (a) =(b);             \
+    (b) =(temp);  \
+} while(0)  

@@ -81,17 +81,60 @@ int main() {
 ```
 
 ```c
+#include <stdint.h>
 
+/**
+ * Belirli bir aralıktaki bitleri ters çevirir.
+ * @param word İşlem yapılacak 32-bit sayı
+ * @param start Başlangıç bit pozisyonu (0'dan başlar)
+ * @param length Ters çevrilecek bit sayısı
+ * @return Değiştirilmiş yeni sayı
+ */
+uint32_t invert_bits(uint32_t word, int start, int length) {
+    // 1. İstenilen uzunlukta 1'lerden oluşan bir blok (maske) yarat
+    uint32_t mask = (1U << length) - 1;
+
+    // 2. Bu bloğu hedef başlangıç noktasına kaydır
+    mask <<= start;
+
+    // 3. XOR işlemi ile sadece maskenin 1 olduğu yerlerdeki bitleri takla attır
+    return word ^ mask;
+}
 
 ```
 
 ```c
+#include <stdint.h>
 
+void droits_to_string(uint16_t droits, char *output) {
+    // Referans dizimiz: Sirasiyla User, Group ve Other izinleri
+    const char *symboles = "rwxrwxrwx";
+
+    for (int i = 0; i < 9; ++i) {
+        // En soldaki bit (8. bit) User Read, en sagdaki (0. bit) Other Execute'tur.
+        // Bu yuzden (8 - i) yaparak bitleri soldan saga dogru kontrol ediyoruz.
+        if ((droits >> (8 - i)) & 1U) {
+            output[i] = symboles[i]; // Bit 1 ise ilgili harfi koy
+        } else {
+            output[i] = '-';         // Bit 0 ise tire koy
+        }
+    }
+
+    // C dilinde string'lerin altin kurali: Null-terminator ekle
+    output[9] = '\0';
+}
 
 ```
 
 ```c
+#include <stdint.h>
 
+uint16_t set_others_permissions(uint16_t droits, uint8_t new_others) {
+    // 1. droits & ~0x07 : Eski 'autres' bitlerini kazıyarak temizle.
+    // 2. new_others & 0x07 : Dışarıdan gelen veriyi 3 bit ile sınırla (Güvenlik).
+    // 3. | : Temizlenmiş bölgeye yeni bitleri zerk et.
+    return (droits & ~0x07) | (new_others & 0x07);
+}
 
 ```
 
