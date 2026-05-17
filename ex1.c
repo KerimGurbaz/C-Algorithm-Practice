@@ -443,8 +443,250 @@
 // }
 
 
-#define SWAP(a, b) do{   \
-    int (temp) = a;  \
-    (a) =(b);             \
-    (b) =(temp);  \
-} while(0)  
+// #define SWAP(a, b) do{   \
+//     int (temp) = a;  \
+//     (a) =(b);             \
+//     (b) =(temp);  \
+// } while(0)  
+
+
+// #include <stdio.h>
+// #include <stdint.h>
+
+// typedef struct {
+//     uint32_t flags;
+// }registre_t;
+
+// void set_flag(registre_t *r, int pos) {
+//     r->flags |= (1U << pos);
+// }
+
+// void print_binary(uint32_t w) {
+//     for (int i = 31; i >= 0; --i) {
+//         printf("%d", (w >> i) & 1U);
+//         if (i % 4 == 0) printf(" ");
+//     }
+//     printf("\n");
+// }
+
+// void clear_flag(registre_t *r, int pos) {
+//     r->flags &= ~(1U << pos);
+// }
+
+// void print_compact(uint32_t w) {
+//     while (w == 0) {
+//         printf("0\n");
+//         return;
+//     }
+//     uint32_t mask = 1U << 31;
+//     while ((w & mask) == 0) {
+//         mask >>= 1;
+//     }
+//     while (mask != 0) {
+//         printf("%d", (w & mask) ? 1 : 0);
+//         mask >>= 1;
+//     }
+//     printf("\n");
+// }
+
+// void toggle_flag(registre_t *r, int pos) {
+//     r->flags ^= (1U << pos);
+// }
+
+// int main() {
+//     registre_t start = { 0 };
+
+//     printf("=== REGISTER BIT OPERATIONS ===\n\n");
+
+//     printf("Initial state:\n");
+
+//     printf(" flags =0x%03X = ", start.flags);
+//     print_binary(start.flags);
+
+//     printf("1. SET bits 0, 3, 7:\n");
+
+//     set_flag(&start, 0);
+//     set_flag(&start, 3);
+//     set_flag(&start, 7);
+//     printf(" flags =0x%08X = ", start.flags);
+//     print_binary(start.flags);
+
+//     printf("2. CLEAR bit 3:\n");
+//     clear_flag(&start, 3);
+//     printf(" flags =0x%08X = ", start.flags);
+//     print_binary(start.flags);
+
+//     printf("  Compact: ");
+//     print_compact(start.flags);
+
+//     return 0;
+
+// }
+
+
+// #include <stdio.h>
+// #include <stdint.h>
+
+// typedef struct {
+//     uint32_t flags;
+// }registre_t;
+
+// void set_flag(registre_t *r, int pos) {
+//     if (r && pos >= 0 && pos < 32) {
+//         r->flags |= (1U << pos);
+//     }
+// }
+
+// void clear_flag(registre_t *r, int pos) {
+//     if (r && pos >= 0 && pos < 32) {
+//         r->flags &= ~(1U << pos);
+//     }
+// }
+
+// void toggle_flag(registre_t *r, int pos) {
+//     if (r && pos > 0 && pos < 32) {
+//         r->flags ^= (1U << pos);
+//     }
+// }
+
+
+// void print_binary(uint32_t w) {
+//     for (int i = 31; i >= 0; --i) {
+//         putchar(((w >> i) & 1U) ? '1' : '0');
+//         if (i % 4 == 0) {
+//             putchar(' ');
+//         }
+//     }
+//     printf("\n");
+// }
+
+// int main() {
+//     registre_t reg = { 0 };
+
+//     set_flag(&reg, 0);
+//     set_flag(&reg, 3);
+//     set_flag(&reg, 7);
+
+//     clear_flag(&reg, 3);
+
+//     toggle_flag(&reg, 7);
+
+//     // Sonucu ekrana bas
+//     printf("Resultat final (Binary) : ");
+//     print_binary(reg.flags);
+
+//     return 0;
+// }
+
+
+// #include <stdio.h>
+// #include <stdint.h>
+
+// #define SET_BIT(word, pos) ((word) |= (1U<<(pos)))
+// #define CLEAR_BIT(word, pos) ((word) &= ~(1U<<(pos)))
+// #define TOGGLE_BIT(word, pos) ((word) ^= (1U<<(pos)))
+// #define CHECK_BIT(word, pos) ((word) & (1U<<(pos)))
+
+// #define EXTRACT_BITS(word, start, len)  \
+// (((word)>>(start)) & ((1U<<len) -1U))   \
+
+// void print_binary8(uint8_t w) {
+//     for (int i = 7; i >= 0; --i) {
+//         putchar(((w >> i) & 1U) ? '1' : '0');
+//     }
+//     printf("\n");
+// }
+
+
+
+// int main() {
+//     uint32_t x = 0b11010110;  // 214 decimal
+
+//     printf("=== TEST DES MACROS BITWISE ===\n\n");
+
+//     printf("Valeur initiale:\n");
+//     printf("  x = 0x%02X = ", x);
+//     print_binary8(x);
+//     printf(" (decimal: %u)\n\n", x);
+
+//     // Test 1: CHECK_BIT
+//     printf("1. CHECK_BIT:\n");
+//     printf("  CHECK_BIT(x, 7) = %s (bit 7 = 1? Evet)\n",
+//         CHECK_BIT(x, 7) ? "SET" : "CLEAR");
+//     printf("  CHECK_BIT(x, 4) = %s (bit 4 = 1? Evet)\n",
+//         CHECK_BIT(x, 4) ? "SET" : "CLEAR");
+//     printf("  CHECK_BIT(x, 0) = %s (bit 0 = 0? Evet)\n\n",
+//         CHECK_BIT(x, 0) ? "SET" : "CLEAR");
+
+//     // Test 2: SET_BIT
+//     printf("2. SET_BIT(x, 0):\n");
+//     SET_BIT(x, 0);
+//     printf("  x = ");
+//     print_binary8(x);
+//     printf(" (bit 0 = 1 yapildi)\n\n");
+
+//     // Test 3: CLEAR_BIT
+//     printf("3. CLEAR_BIT(x, 7):\n");
+//     CLEAR_BIT(x, 7);
+//     printf("  x = ");
+//     print_binary8(x);
+//     printf(" (bit 7 = 0 yapildi)\n\n");
+
+//     // Test 4: EXTRACT_BITS - ASIL SORU!
+//     printf("4. EXTRACT_BITS(x, 2, 3):\n");
+//     printf("  bits [2..4] cikariliyor (len=3)\n");
+
+//     uint32_t resultat = EXTRACT_BITS(x, 2, 3);
+//     printf("  x           = ");
+//     print_binary8(x);
+//     printf("\n");
+//     printf("  x >> 2      = ");
+//     print_binary8(x >> 2);
+//     printf("\n");
+//     printf("  maske (0x07) = 00000111\n");
+//     printf("  SONUC       = ");
+//     print_binary8(resultat);
+//     printf(" = %u\n", resultat);
+//     printf("  Beklenen: 0b101 = 5\n\n");
+
+//     // Bonus: Farklı bir aralık testi
+//     printf("5. EXTRACT_BITS(x, 1, 4):\n");
+//     printf("  bits [1..4] cikariliyor (len=4)\n");
+//     uint32_t r2 = EXTRACT_BITS(x, 1, 4);
+//     printf("  SONUC = %u\n", r2);
+
+//     return 0;
+// }
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct noeud {
+    int valeur;
+    struct noeud *next;
+}noeud_t;
+
+void push(noeud_t **head, int val) {
+    noeud_t *nouveau = (noeud_t *)malloc(sizeof(noeud_t));
+    if (nouveau == NULL) {
+        fprintf(stderr, "erreur");
+        return;
+    }
+
+    nouveau->valeur = val;
+
+    nouveau->next = *head;
+    *head = nouveau;
+}
+
+
+void sauvegarder(noeud_t *head, const char *file) {
+    FILE *f = fopen(file, "wb");
+    if (f == NULL) {
+        fprintf(stderr, "erreur");
+    }
+    int count = 0;
+
+    noeud_t *cour
+}

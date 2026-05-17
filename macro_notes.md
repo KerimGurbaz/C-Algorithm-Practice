@@ -139,17 +139,229 @@ uint16_t set_others_permissions(uint16_t droits, uint8_t new_others) {
 ```
 
 ```c
+#include <stdio.h>
+#include <stdint.h>
 
+// 1. Struct Tanımı
+typedef struct {
+    uint32_t flags;
+} registre_t;
+
+// 2. Bit Aktif Etme Fonksiyonu (SET)
+void set_flag(registre_t *r, int pos) {
+    if (r && pos >= 0 && pos < 32) {
+        r->flags |= (1U << pos);
+    }
+}
+
+// 3. Bit Kapatma Fonksiyonu (CLEAR)
+void clear_flag(registre_t *r, int pos) {
+    if (r && pos >= 0 && pos < 32) {
+        r->flags &= ~(1U << pos);
+    }
+}
+
+// 4. Bit Tersleme Fonksiyonu (TOGGLE)
+void toggle_flag(registre_t *r, int pos) {
+    if (r && pos >= 0 && pos < 32) {
+        r->flags ^= (1U << pos);
+    }
+}
+
+// 5. Binary Yazdırma Yardımcı Fonksiyonu
+void print_binary(uint32_t num) {
+    for (int i = 31; i >= 0; --i) {
+        putchar(((num >> i) & 1U) ? '1' : '0');
+        // Okunabilirliği artırmak için her 4 bütte bir boşluk bırakır
+        if (i % 4 == 0) {
+            putchar(' ');
+        }
+    }
+    putchar('\n');
+}
+
+int main() {
+    // Tüm bitleri 0 olan bir kayıt oluşturulur
+    registre_t reg = {0};
+
+    // Adım 1: 0, 3 ve 7. bitleri aktif et (Beklenen: 1000 1001 -> 0x89)
+    set_flag(&reg, 0);
+    set_flag(&reg, 3);
+    set_flag(&reg, 7);
+
+    // Adım 2: 3. biti söndür (Beklenen: 1000 0001 -> 0x81)
+    clear_flag(&reg, 3);
+
+    // Adım 3: 7. biti tersine çevir. 1 idi, 0 olacak (Beklenen: 0000 0001 -> 0x01)
+    toggle_flag(&reg, 7);
+
+    // Sonucu ekrana bas
+    printf("Resultat final (Binary) : ");
+    print_binary(reg.flags);
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdint.h>
 
+// Durum Değiştirici Makrolar (Değişkeni doğrudan günceller)
+#define SET_BIT(word, pos)   ((word) |= (1U << (pos)))
+#define CLEAR_BIT(word, pos) ((word) &= ~(1U << (pos)))
+
+// Okuma Makrosu (Değeri değiştirmez, 1 veya 0 döndürür)
+#define CHECK_BIT(word, pos) (((word) >> (pos)) & 1U)
+
+// Çok Satırlı Veri Çıkarma Makrosu
+#define EXTRACT_BITS(word, start, len) \
+    (((word) >> (start)) & ((1U << (len)) - 1))
+
+int main() {
+    // 0b11010110 sayısı onluk tabanda 214'e denk gelir.
+    uint32_t x = 0b11010110;
+
+    // 2, 3 ve 4. bitleri istiyoruz.
+    // Başlangıç (start) = 2, Çekilecek bit sayısı (len) = 3
+    uint32_t resultat = EXTRACT_BITS(x, 2, 3);
+
+    printf("Valeur extraite : %u\n", resultat); // Çıktı: 5
+
+    // SET, CLEAR ve CHECK makrolarının sağlaması
+    SET_BIT(x, 0);   // x'in son biti 0 idi, 1 oldu.
+    CLEAR_BIT(x, 4); // x'in 4. biti 1 idi, 0 oldu.
+
+    printf("Le bit 0 est-il actif ? %u\n", CHECK_BIT(x, 0)); // Çıktı: 1
+    printf("Le bit 4 est-il actif ? %u\n", CHECK_BIT(x, 4)); // Çıktı: 0
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
 
+// 1. Struct Tanımı
+typedef struct noeud {
+    int valeur;
+    struct noeud *next; // Kendi türünden bir yapıya işaret eden pointer
+} noeud_t;
+
+// 2. Listenin Başına Eleman Ekleme (Push)
+void push(noeud_t **head, int val) {
+    noeud_t *nouveau = (noeud_t *)malloc(sizeof(noeud_t));
+    if (!nouveau) {
+        perror("Erreur d'allocation memoire");
+        return;
+    }
+    nouveau->valeur = val;
+    nouveau->next = *head; // Yeni düğüm eski başı göstersin
+    *head = nouveau;       // Listenin yeni başı bu düğüm olsun
+}
+
+// 3. Listeyi Binary Dosyaya Kaydetme (Serialization)
+void sauvegarder_liste(noeud_t *head, const char *file) {
+    FILE *f = fopen(file, "wb");
+    if (!f) {
+        perror("Erreur d'ouverture en ecriture");
+        return;
+    }
+
+    noeud_t *courant = head;
+    while (courant != NULL) {
+        // SADECE değeri (int) diske yazıyoruz, pointer'ı DEĞİL
+        fwrite(&(courant->valeur), sizeof(int), 1, f);
+        courant = courant->next;
+    }
+    fclose(f);
+}
+
+// 4. Binary Dosyadan Listeyi Yeniden İnşa Etme (Deserialization)
+noeud_t* charger_liste(const char *file) {
+    FILE *f = fopen(file, "rb");
+    if (!f) {
+        perror("Erreur d'ouverture en lecture");
+        return NULL;
+    }
+
+    noeud_t *head = NULL;
+    noeud_t *tail = NULL; // O(1) ekleme yapmak için kuyruk pointer'ı
+    int val;
+
+    // Dosyadan int değerleri tek tek oku
+    while (fread(&val, sizeof(int), 1, f) == 1) {
+        noeud_t *nouveau = (noeud_t *)malloc(sizeof(noeud_t));
+        if (nouveau) {
+            nouveau->valeur = val;
+            nouveau->next = NULL;
+
+            if (head == NULL) {
+                // Liste boşsa ilk eleman hem baş hem kuyruktur
+                head = nouveau;
+                tail = nouveau;
+            } else {
+                // Listede eleman varsa sadece kuyruğa ekle ve kuyruğu ilerlet
+                tail->next = nouveau;
+                tail = nouveau;
+            }
+        }
+    }
+    fclose(f);
+    return head;
+}
+
+// Yardımcı Fonksiyon: Listeyi Yazdır
+void afficher_liste(noeud_t *head) {
+    while (head != NULL) {
+        printf("%d -> ", head->valeur);
+        head = head->next;
+    }
+    printf("NULL\n");
+}
+
+// Yardımcı Fonksiyon: Belleği Temizle (Exam Requirement)
+void liberer_liste(noeud_t *head) {
+    noeud_t *tmp;
+    while (head != NULL) {
+        tmp = head;
+        head = head->next;
+        free(tmp);
+    }
+}
+
+int main() {
+    noeud_t *liste_originale = NULL;
+
+    // Listeyi oluştur (Push başa eklediği için sıra 30 -> 20 -> 10 olur)
+    push(&liste_originale, 10);
+    push(&liste_originale, 20);
+    push(&liste_originale, 30);
+
+    printf("Liste originale : ");
+    afficher_liste(liste_originale);
+
+    // Diske kaydet
+    sauvegarder_liste(liste_originale, "liste.bin");
+
+    // Orijinal belleği temizle (Gerçekten dosyadan geldiğini kanıtlamak için)
+    liberer_liste(liste_originale);
+    liste_originale = NULL;
+
+    // Dosyadan geri yükle
+    noeud_t *liste_restauree = charger_liste("liste.bin");
+
+    printf("Liste restauree : ");
+    afficher_liste(liste_restauree);
+
+    // İş bitiminde tekrar temizle
+    liberer_liste(liste_restauree);
+
+    return 0;
+}
 
 ```
 
