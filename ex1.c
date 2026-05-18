@@ -659,34 +659,152 @@
 // }
 
 
+// #include <stdio.h>
+// #include <stdlib.h>
+
+// typedef struct noeud {
+//     int valeur;
+//     struct noeud *next;
+// }noeud_t;
+
+// void push(noeud_t **head, int val) {
+//     noeud_t *nouveau = (noeud_t *)malloc(sizeof(noeud_t));
+//     if (nouveau == NULL) {
+//         fprintf(stderr, "erreur");
+//         return;
+//     }
+
+//     nouveau->valeur = val;
+
+//     nouveau->next = *head;
+//     *head = nouveau;
+// }
+
+
+// void sauvegarder(noeud_t *head, const char *file) {
+//     FILE *f = fopen(file, "wb");
+//     if (f == NULL) {
+//         fprintf(stderr, "erreur");
+//     }
+//     int count = 0;
+
+//     noeud_t *cour
+// }
 #include <stdio.h>
-#include <stdlib.h>
 
-typedef struct noeud {
-    int valeur;
-    struct noeud *next;
-}noeud_t;
+// typedef struct {
+//     int id;
+//     char nom[50];
+//     float moy;
+// }etudiant_t;
 
-void push(noeud_t **head, int val) {
-    noeud_t *nouveau = (noeud_t *)malloc(sizeof(noeud_t));
-    if (nouveau == NULL) {
-        fprintf(stderr, "erreur");
-        return;
-    }
-
-    nouveau->valeur = val;
-
-    nouveau->next = *head;
-    *head = nouveau;
-}
+// int lire_etudiant(FILE *f, int idx, etudiant_t *out) {
+//     if (f == NULL || out == NULL || idx < 0) {
+//         return 0;
+//     }
 
 
-void sauvegarder(noeud_t *head, const char *file) {
-    FILE *f = fopen(file, "wb");
-    if (f == NULL) {
-        fprintf(stderr, "erreur");
-    }
-    int count = 0;
+//     if (fseek(f, idx * sizeof(etudiant_t), SEEK_SET) != 0) {
+//         return 0;
+//     }
 
-    noeud_t *cour
-}
+//     if (fread(out, sizeof(etudiant_t), 1, f) != 1) {
+//         return 0;
+//     }
+
+//     return 1;
+// }
+
+// typedef struct {
+//     int id;
+//     char nom[50];
+//     float moy;
+// }etudiant_t;
+
+// int lire(FILE *f, int idx, etudiant_t *out) {
+//     if (f == NULL || out == NULL || idx < 0) {
+//         return 0;
+//     }
+
+//     fseek(f, idx * sizeof(etudiant_t), SEEK_SET);
+
+//     fread(out, sizeof(etudiant_t), 1, f);
+// }
+
+
+// #include <stdio.h>
+// #include <CUnit/CUnit.h>
+// #include <CUnit/Basic.h>
+
+// #define MAXSTACK 100
+
+
+// typedef struct {
+//     int data[MAXSTACK];
+//     int top;
+// }Stack;
+
+// void init_stack(Stack *s) {
+//     s->top = -1;
+// }
+
+// int is_empty(Stack *s) {
+//     return s->top == -1;
+// }
+
+
+// int is_full(Stack *s) {
+//     return s->top == MAXSTACK - 1;
+// }
+
+// int push(Stack *s, int val) {
+//     if (is_full(s)) {
+//         return 0;
+//     }
+//     s->top++;
+//     s->data[s->top] = val;
+//     return 1;
+// }
+
+// int pop(Stack *s) {
+//     if (is_empty(s)) {
+//         return -1;
+//     }
+//     int val = s->data[s->top];
+//     s->top--;
+//     retunr val;
+// }
+
+// int peek(Stack *s) {
+//     if (is_empty(s)) {
+//         return -1;
+//     }
+//     return s->data[s->top];
+// }
+
+// void test(void) {
+//     init_stack(&s);
+
+//     CU_ASSERT_EQUAL(push(&s, 10), 1);
+//     CU_ASSEERT_EQUAL(push(&s, 20), 1);
+//     CU_ASSERT_EQUAL(push(&s, 30), 1);
+
+//     CU_ASSERT_EQUAL(pop(&s), 30);
+//     CU_ASSERT_EQUAL(pop(&s), 20);
+// }
+
+// #ifndef DEBUG
+// #define DBG_PRINT(...) do{}while(0)
+// #elif DEBUG == 0
+// #define DBG_PRINT(...)printf(__VA_ARGS__)
+// #elif DEBUG ==1
+// #define DBG_PRINF(...)  \
+//     do{ \
+//         printf("%d", __LINE__); \
+//         printf(__VA_ARGS__);    \
+
+//     }
+// while (0)
+// #else 
+// #define DBG_PRINT(...) do{}while(0)
+// #endif

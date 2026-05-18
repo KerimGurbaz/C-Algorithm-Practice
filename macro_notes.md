@@ -366,17 +366,172 @@ int main() {
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
 
+typedef struct {
+    int id;
+    char nom[50];
+    float moy;
+} etudiant_t;
+
+/**
+ * Dosyadan belirli bir indeksteki öğrenciyi okur (O(1) karmaşıklığı).
+ * @param f Açık dosya göstericisi (okuma modunda olmalı, örn: "rb")
+ * @param index Okunacak kaydın sıfır tabanlı indeksi
+ * @param out Okunan verinin yazılacağı struct adresi
+ * @return Başarılıysa 1, hata veya dosya sonu (EOF) ise 0
+ */
+int lire_etudiant(FILE *f, int index, etudiant_t *out) {
+    // 1. Güvenlik duvarı: Parametrelerin geçerliliğini onayla
+    if (f == NULL || out == NULL || index < 0) {
+        return 0;
+    }
+
+    // 2. Hedef adresi hesapla (Tür dönüşümüne dikkat)
+    long offset = (long)index * sizeof(etudiant_t);
+
+    // 3. Dosya imlecini doğrudan hedef adrese taşı
+    if (fseek(f, offset, SEEK_SET) != 0) {
+        // fseek başarısız oldu (İşletim sistemi seviyesinde I/O hatası)
+        return 0;
+    }
+
+    // 4. Veriyi oku ve diskin bize tam bir struct verip vermediğini doğrula
+    if (fread(out, sizeof(etudiant_t), 1, f) != 1) {
+        // Okuma tamamlanamadı (Dosya sonu EOF veya veri bozulması)
+        return 0;
+    }
+
+    return 1; // İşlem kusursuz
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdbool.h>
+#include <CUnit/CUnit.h>
+#include <CUnit/Basic.h>
 
+#define MAXSTACK 100
+
+// 1. Yığın (Stack) Veri Yapısının Mimarı
+typedef struct {
+    int data[MAXSTACK];
+    int top; // En üstteki elemanın indeksini tutar
+} stack_t;
+
+// Yığını başlatır (Sınavlarda genellikle bu fonksiyonu yazman beklenir)
+void init_stack(stack_t *s) {
+    // Neden 0 değil de -1? (Ampul 1'e bak)
+    s->top = -1;
+}
+
+bool is_empty(stack_t *s) {
+    return s->top == -1;
+}
+
+bool push(stack_t *s, int val) {
+    // Güvenlik Duvarı: Yığın dolu mu? (Stack Overflow koruması)
+    if (s->top >= MAXSTACK - 1) {
+        return false;
+    }
+    // Önce top değerini artır (++), sonra o indekse veriyi yaz
+    s->data[++(s->top)] = val;
+    return true;
+}
+
+int pop(stack_t *s) {
+    if (is_empty(s)) {
+        return -1; // Soruda istenen hata kodu
+    }
+    // Veriyi oku, sonra top değerini bir azalt (--)
+    return s->data[(s->top)--];
+}
+
+int peek(stack_t *s) {
+    if (is_empty(s)) {
+        return -1;
+    }
+    // SADECE OKU! top imlecini değiştirme
+    return s->data[s->top];
+}
+
+/* --------------------------------------------------------- */
+/* 2. CUnit Test Paketi                                      */
+
+void test_stack_operations(void) {
+    stack_t ma_pile;
+    init_stack(&ma_pile);
+
+    // ASSERTION 1: Boş yığın davranışı (Pop -1 dönmeli)
+    CU_ASSERT_EQUAL(pop(&ma_pile), -1);
+    CU_ASSERT_TRUE(is_empty(&ma_pile));
+
+    // ASSERTION 2: Push ve Pop doğruluğu (LIFO Kuralı)
+    push(&ma_pile, 10);
+    push(&ma_pile, 20);
+    // Son giren 20 olduğu için, ilk çıkan 20 olmalıdır
+    CU_ASSERT_EQUAL(pop(&ma_pile), 20);
+
+    // ASSERTION 3: Peek veriyi silmeden okur
+    push(&ma_pile, 99);
+    // Peek 99 döndürmeli...
+    CU_ASSERT_EQUAL(peek(&ma_pile), 99);
+    // ...ve yığın boşalmamış olmalı (çünkü peek veriyi çekip almaz)
+    CU_ASSERT_FALSE(is_empty(&ma_pile));
+
+    // ASSERTION 4: Tekrar Pop yaptığımızda o 99'u başarıyla alabilmeliyiz
+    CU_ASSERT_EQUAL(pop(&ma_pile), 99);
+}
+
+int main() {
+    if (CUE_SUCCESS != CU_initialize_registry()) return CU_get_error();
+
+    CU_pSuite suite = CU_add_suite("Suite_Stack", NULL, NULL);
+    if (NULL == suite) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    if (NULL == CU_add_test(suite, "Test Stack LIFO", test_stack_operations)) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    CU_basic_set_mode(CU_BRM_VERBOSE);
+    CU_basic_run_tests();
+    CU_cleanup_registry();
+    return CU_get_error();
+}
 
 ```
 
 ```c
+#ifndef DEBUG_H
+#define DEBUG_H
 
+#include <stdio.h>
+
+// 1. DURUM: DEBUG hiç tanımlanmadıysa (Makro tamamen sessiz)
+#if !defined(DEBUG)
+    #define DBG_PRINTF(...) do {} while(0)
+
+// 2. DURUM: DEBUG tanımlı ve 0 ise (Standart printf)
+#elif DEBUG == 0
+    #define DBG_PRINTF(...) printf(__VA_ARGS__)
+
+// 3. DURUM: DEBUG tanımlı ve 1 ise (Satır numarası + printf)
+#elif DEBUG == 1
+    #define DBG_PRINTF(...) do { \
+        printf("(%d) ", __LINE__); \
+        printf(__VA_ARGS__); \
+    } while(0)
+
+#endif
+
+#endif // DEBUG_H
 
 ```
 
