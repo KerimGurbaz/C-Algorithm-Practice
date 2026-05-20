@@ -321,36 +321,674 @@ void image_info(const struct Image *img) {
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
 
+// --- VERİ YAPISI ---
+struct Audio {
+    int sample_rate;
+    int nb_samples;
+    short *samples; // Ses verisi için dinamik dizi
+};
+
+// ==========================================
+// 1. YAZMA FONKSİYONU (Serialization)
+// ==========================================
+void write_audio(const struct Audio *a, const char *filename) {
+    // 1. Aç ("wb" -> Write Binary)
+    FILE *f = fopen(filename, "wb");
+    if (!f) {
+        fprintf(stderr, "Dosya yazma icin acilamadi.\n");
+        return;
+    }
+
+    // 2. Header 1: Sample Rate (4 byte)
+    fwrite(&a->sample_rate, sizeof(int), 1, f);
+
+    // 3. Header 2: Number of Samples (4 byte)
+    fwrite(&a->nb_samples, sizeof(int), 1, f);
+
+    // 4. Data: Tüm samples dizisini tek seferde yaz
+    // short *samples zaten bir adres olduğu için başına & konmaz
+    fwrite(a->samples, sizeof(short), a->nb_samples, f);
+
+    // 5. Kapat
+    fclose(f);
+}
+
+// ==========================================
+// 2. OKUMA FONKSİYONU (Deserialization)
+// ==========================================
+struct Audio *read_audio(const char *filename) {
+    // 1. Aç ("rb" -> Read Binary)
+    FILE *f = fopen(filename, "rb");
+    if (!f) return NULL;
+
+    int sr, nb;
+
+    // 2. Header 1: Sample Rate
+    if (fread(&sr, sizeof(int), 1, f) != 1) {
+        fclose(f);
+        return NULL;
+    }
+
+    // 3. Header 2: Number of Samples
+    if (fread(&nb, sizeof(int), 1, f) != 1) {
+        fclose(f);
+        return NULL;
+    }
+
+    // 4. Bellek Tahsisi (Struct ve Dizi)
+    struct Audio *a = malloc(sizeof(struct Audio));
+    if (!a) {
+        fclose(f);
+        return NULL;
+    }
+
+    a->sample_rate = sr;
+    a->nb_samples = nb;
+    a->samples = malloc(nb * sizeof(short));
+
+    if (!a->samples) {
+        free(a);
+        fclose(f);
+        return NULL;
+    }
+
+    // 5. Data: Tüm samples dizisini tek seferde oku
+    if (fread(a->samples, sizeof(short), nb, f) != (size_t)nb) {
+        free(a->samples);
+        free(a);
+        fclose(f);
+        return NULL;
+    }
+
+    // 6. Kapat ve Döndür
+    fclose(f);
+    return a;
+}
+
+// ==========================================
+// 3. TEST (MAIN)
+// ==========================================
+int main(void) {
+    // A. TEST VERİSİ HAZIRLA
+    struct Audio a_out;
+    a_out.sample_rate = 44100;
+    a_out.nb_samples = 4;
+
+    short test_data[] = {100, 200, -100, -200};
+    a_out.samples = test_data;
+
+    // B. DOSYAYA YAZ
+    printf("Dosyaya yaziliyor...\n");
+    write_audio(&a_out, "audio.bin");
+
+    // C. DOSYADAN GERİ OKU
+    printf("Dosyadan okunuyor...\n");
+    struct Audio *a_in = read_audio("audio.bin");
+
+    // D. SONUÇLARI KONTROL ET VE YAZDIR
+    if (a_in) {
+        printf("Sample Rate: %d\n", a_in->sample_rate);
+        printf("Samples: ");
+        for (int i = 0; i < a_in->nb_samples; i++) {
+            printf("%d ", a_in->samples[i]);
+        }
+        printf("\n");
+
+        // E. BELLEĞİ TEMİZLE (Sadece read_audio içinde malloc yaptığımız için)
+        free(a_in->samples);
+        free(a_in);
+    }
+
+    return 0;
+}
+// Okurken ekstradan yapman gereken tek şey, veriyi koyacağın "kabı" (malloc) hazırlamaktır. Header değişkenlerini okurken de güvenli tarafta kalmak için önce yerel değişkenlere (int sr, nb;) alıp, dosyanın sağlam olduğundan emin olduktan sonra malloc yapmak kodu çöküşlerden koruyan en sağlam mimari tekniktir.
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h> // offsetof makrosu icin (Çok önemli!)
 
+// --- VERİ YAPISI ---
+struct Student {
+    int id;
+    char name[50];
+    float grade;
+};
+
+// ==========================================
+// 1. BELİRLİ BİR KAYDI OKUMA (Random Read)
+// ==========================================
+int read_student(FILE *f, int index, struct Student *out) {
+    // FORMÜL: Header (int) + atlamak istediğin kadar Student bloğu
+    long offset = sizeof(int) + (index * sizeof(struct Student));
+
+    // Cursor'ı dosyanın başından (SEEK_SET) itibaren offset kadar ileri taşı
+    if (fseek(f, offset, SEEK_SET) != 0) {
+        return -1; // Atlama başarısız
+    }
+
+    // Oraya ulaştık, şimdi tam o noktadan 1 tane Student oku
+    if (fread(out, sizeof(struct Student), 1, f) != 1) {
+        return -1; // Okuma başarısız
+    }
+
+    return 0; // Başarılı
+}
+
+// ==========================================
+// 2. SADECE NOTU GÜNCELLEME (Targeted Update)
+// ==========================================
+int update_grade(FILE *f, int index, float new_grade) {
+    // FORMÜL: Header + Atlanan Student Blokları + Grade değişkeninin Struct içindeki konumu
+    // offsetof(struct_adi, degisken_adi) makrosu bu işin endüstri standardıdır.
+    long offset = sizeof(int) + (index * sizeof(struct Student)) + offsetof(struct Student, grade);
+
+    // Cursor'ı tam olarak değiştireceğimiz float'ın üzerine koy!
+    if (fseek(f, offset, SEEK_SET) != 0) {
+        return -1;
+    }
+
+    // Tam o noktaya yeni float değerini yazarak eskisini ez.
+    if (fwrite(&new_grade, sizeof(float), 1, f) != 1) {
+        return -1;
+    }
+
+    // Çoğu sistemde okuma ve yazma arasında cursor senkronizasyonu için flush yapmak güvenlidir
+    fflush(f);
+    return 0;
+}
+
+// ==========================================
+// 3. TEST (MAIN)
+// ==========================================
+int main(void) {
+    const char *filename = "db.bin";
+
+    // --- A. TEST İÇİN SAHTE DOSYA YARATMA (Sınavda hoca bunu hazır verir) ---
+    FILE *init = fopen(filename, "wb");
+    int total_students = 2;
+    fwrite(&total_students, sizeof(int), 1, init); // Header
+
+    struct Student s0 = {100, "Ahmet", 45.5};
+    struct Student s1 = {101, "Ayse", 60.0};
+    fwrite(&s0, sizeof(struct Student), 1, init); // Index 0
+    fwrite(&s1, sizeof(struct Student), 1, init); // Index 1
+    fclose(init);
+
+    // --- B. ASIL İŞLEM: r+b MODUYLA GÜNCELLEME ---
+    // "r+b" = Dosyayı okumak ve yazmak için aç, ama İÇERİĞİNİ SİLME.
+    FILE *f = fopen(filename, "r+b");
+    if (!f) {
+        fprintf(stderr, "Dosya acilamadi!\n");
+        return 1;
+    }
+
+    struct Student current;
+
+    // 1. Index 1'i (Ayse) oku ve notunu gör
+    printf("--- Guncellemeden Once ---\n");
+    if (read_student(f, 1, &current) == 0) {
+        printf("ID: %d, Isim: %s, Not: %.2f\n", current.id, current.name, current.grade);
+    }
+
+    // 2. Index 1'in notunu 95.5 olarak güncelle
+    printf("\nNot guncelleniyor (Hedef: 95.50)...\n");
+    update_grade(f, 1, 95.5f);
+
+    // 3. Index 1'i tekrar oku ve değiştiğini doğrula
+    printf("\n--- Guncellemeden Sonra ---\n");
+    if (read_student(f, 1, &current) == 0) {
+        printf("ID: %d, Isim: %s, Not: %.2f\n", current.id, current.name, current.grade);
+    }
+
+    fclose(f);
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdint.h>
+#include <stdlib.h>
+#include <CUnit/CUnit.h>
+#include <CUnit/Basic.h>
 
+// --- VERİ YAPISI VE PROTOTİPLER ---
+struct Image {
+    uint32_t w;
+    uint32_t h;
+    uint32_t bpp;
+    uint8_t pixels[]; // Flexible array (tek free ile temizlenir)
+};
+
+struct Image *read_image(const char *filename);
+void init_image_file(void); // Kara kutu
+
+// ==========================================
+// 1. GEÇERLİ DOSYA TESTİ (Success Path)
+// ==========================================
+void test_read_valid(void) {
+    // 1. HAZIRLA (Arrange)
+    init_image_file();
+
+    // 2. ÇALIŞTIR (Act)
+    struct Image *img = read_image("image1.img");
+
+    // 3. ASSERT ET (Assert)
+    CU_ASSERT_PTR_NOT_NULL(img);
+
+    // Çökme yaşamamak için pointer'ın NULL olmadığını teyit edip değerleri okuyoruz
+    if (img != NULL) {
+        CU_ASSERT_TRUE(img->w > 0);
+        CU_ASSERT_TRUE(img->h > 0);
+
+        // Temizlik (Bellek sızıntısını önler)
+        free(img);
+    }
+}
+
+// ==========================================
+// 2. GEÇERSİZ DOSYA TESTİ (Failure Path)
+// ==========================================
+void test_read_invalid(void) {
+    // 1. HAZIRLA
+    // Olmayan bir dosyayı test edeceğimiz için init_image_file() çağırmaya gerek yok.
+
+    // 2. ÇALIŞTIR
+    struct Image *img = read_image("kesinlikle_olmayan_dosya.img");
+
+    // 3. ASSERT ET
+    // Dosya okunamadığı için fonksiyon kesinlikle NULL döndürmelidir
+    CU_ASSERT_PTR_NULL(img);
+}
+
+// ==========================================
+// 3. TEST MOTORU (Main)
+// ==========================================
+int main(void) {
+    // Kayıt defterini başlat
+    if (CUE_SUCCESS != CU_initialize_registry()) {
+        return CU_get_error();
+    }
+
+    // Suite oluştur (Hazırlık ve temizlik fonksiyonlarına ihtiyacımız yok -> NULL, NULL)
+    CU_pSuite suite = CU_add_suite("Read_Image_Suite", NULL, NULL);
+    if (suite == NULL) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    // Testleri suite'e bağla
+    CU_add_test(suite, "Gecerli Dosya Okuma Testi", test_read_valid);
+    CU_add_test(suite, "Gecersiz Dosya Okuma Testi", test_read_invalid);
+
+    // Testleri Basic arayüz ile detaylı (VERBOSE) modda çalıştır
+    CU_basic_set_mode(CU_BRM_VERBOSE);
+    CU_basic_run_tests();
+
+    // Sistemi temizle ve çık
+    CU_cleanup_registry();
+    return CU_get_error();
+}
 
 ```
 
 ```c
+#include <CUnit/CUnit.h>
+#include <CUnit/Basic.h>
 
+// --- TEST EDİLECEK FONKSİYON (Prototip) ---
+int calculer(int a, int b, char op);
+
+// ==========================================
+// 1. TEST FONKSİYONLARI (Hazırla -> Çalıştır -> Assert)
+// ==========================================
+
+void test_addition(void) {
+    // CU_ASSERT_EQUAL(gerceklesen_deger, beklenen_deger);
+    CU_ASSERT_EQUAL(calculer(3, 4, '+'), 7);
+    CU_ASSERT_EQUAL(calculer(-2, 5, '+'), 3);
+}
+
+void test_soustraction(void) {
+    CU_ASSERT_EQUAL(calculer(10, 3, '-'), 7);
+    CU_ASSERT_EQUAL(calculer(0, 5, '-'), -5);
+}
+
+void test_division_zero(void) {
+    // Sınavın trick noktası: Özel hata durumunun doğru değeri (-1) döndürdüğünü kanıtlamak
+    CU_ASSERT_EQUAL(calculer(8, 0, '/'), -1);
+}
+
+// ==========================================
+// 2. ANA TEST MOTORU (Değişmez 5 Adımlı Şablon)
+// ==========================================
+int main(void) {
+    // ADIM 1: Initialize (Kayıt defterini başlat)
+    if (CUE_SUCCESS != CU_initialize_registry()) {
+        return CU_get_error();
+    }
+
+    // ADIM 2: Add Suite (Test grubunu oluştur)
+    // Init ve cleanup fonksiyonlarına ihtiyacımız yoksa NULL, NULL geçeriz
+    CU_pSuite s = CU_add_suite("Calculatrice_Suite", NULL, NULL);
+    if (s == NULL) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    // ADIM 3: Add Test (Fonksiyonları suite'e bağla)
+    CU_add_test(s, "Test de l'addition", test_addition);
+    CU_add_test(s, "Test de la soustraction", test_soustraction);
+    CU_add_test(s, "Test de la division par zero", test_division_zero);
+
+    // ADIM 4: Run (Testleri detaylı/verbose modda çalıştır)
+    CU_basic_set_mode(CU_BRM_VERBOSE);
+    CU_basic_run_tests();
+
+    // ADIM 5: Cleanup (Sistemi temizle)
+    CU_cleanup_registry();
+    return CU_get_error();
+}
 
 ```
 
 ```c
+#include <stdlib.h>
+#include <string.h>
+#include <CUnit/CUnit.h>
+#include <CUnit/Basic.h>
 
+// ============ STRUCT VE FONKSİYON ============
+struct Person {
+    int id;
+    char name[50];
+    int age;
+};
+
+struct Person *find_by_name(struct Person arr[], int n, const char *name) {
+    for (int i = 0; i < n; i++) {
+        if (strcmp(arr[i].name, name) == 0) {
+            return &arr[i];
+        }
+    }
+    return NULL;
+}
+
+// ============ TEST VERİSİ ============
+struct Person people[4] = {
+    {1, "Ali", 25},
+    {2, "Ayse", 30},
+    {3, "Mehmet", 22},
+    {4, "Zeynep", 28}
+};
+int nb = 4;
+
+// ============ TEST 1: BAŞARILI ARAMA ============
+void test_find_success(void) {
+    // 1. ÇALIŞTIR
+    struct Person *found = find_by_name(people, nb, "Ayse");
+
+    // 2. NULL DEĞİL MI? (bulundu mu?)
+    CU_ASSERT_PTR_NOT_NULL(found);
+
+    // 3. DOĞRU ADRES MI?
+    CU_ASSERT_PTR_EQUAL(found, &people[1]);  // Ayse = index 1
+
+    // 4. İÇERİK DOĞRU MU?
+    CU_ASSERT_EQUAL(found->id, 2);
+    CU_ASSERT_STRING_EQUAL(found->name, "Ayse");
+    CU_ASSERT_EQUAL(found->age, 30);
+}
+
+// ============ TEST 2: BAŞARISIZ ARAMA ============
+void test_find_fail(void) {
+    // Olmayan isim
+    struct Person *found = find_by_name(people, nb, "Ahmet");
+    CU_ASSERT_PTR_NULL(found);
+
+    // Boş string
+    found = find_by_name(people, nb, "");
+    CU_ASSERT_PTR_NULL(found);
+}
+
+// ============ TEST 3: SINIR TESTLERİ ============
+void test_find_boundaries(void) {
+    // İlk eleman
+    struct Person *first = find_by_name(people, nb, "Ali");
+    CU_ASSERT_PTR_NOT_NULL(first);
+    CU_ASSERT_PTR_EQUAL(first, &people[0]);
+    CU_ASSERT_EQUAL(first->id, 1);
+
+    // Son eleman
+    struct Person *last = find_by_name(people, nb, "Zeynep");
+    CU_ASSERT_PTR_NOT_NULL(last);
+    CU_ASSERT_PTR_EQUAL(last, &people[3]);
+    CU_ASSERT_EQUAL(last->age, 28);
+}
+
+// ============ MAIN ============
+int main(void) {
+    CU_initialize_registry();
+    CU_pSuite suite = CU_add_suite("find_by_name Tests", NULL, NULL);
+
+    CU_add_test(suite, "Bulma başarılı", test_find_success);
+    CU_add_test(suite, "Bulma başarısız", test_find_fail);
+    CU_add_test(suite, "Sınır testleri", test_find_boundaries);
+
+    CU_basic_set_mode(CU_BRM_VERBOSE);
+    CU_basic_run_tests();
+    CU_cleanup_registry();
+    return CU_get_error();
+}
 
 ```
 
 ```c
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <CUnit/CUnit.h>
+#include <CUnit/Basic.h>
 
+// Fonksiyon prototipleri
+struct Image {
+    unsigned int w, h, bpp;
+    unsigned char *pixels;
+};
+struct Image *read_image(const char *filename);
+void init_image_file(void);
+
+// ============ TEST 1: GEÇERLİ DOSYA ============
+void test_read_image_ok(void) {
+    // 1. HAZIRLA
+    init_image_file();
+
+    // 2. ÇALIŞTIR
+    struct Image *img = read_image("image1.img");
+
+    // 3. ASSERT
+    CU_ASSERT_PTR_NOT_NULL(img);
+    if (img) {
+        CU_ASSERT_TRUE(img->w > 0);
+        CU_ASSERT_TRUE(img->h > 0);
+        CU_ASSERT_TRUE(img->bpp > 0);
+        free(img->pixels);
+        free(img);
+    }
+}
+
+// ============ TEST 2: OLMAYAN DOSYA ============
+void test_read_image_bad_file(void) {
+    char buf[256] = {0};
+
+    // ADIM 1: stderr'i DOSYAYA yönlendir
+    // Artık stderr'e yazılan her şey "err.txt"ye gidecek!
+    freopen("err.txt", "w", stderr);
+
+    // ADIM 2: Hata üreten fonksiyonu ÇAĞIR
+    // Bu fonksiyon stderr'e "Impossible d'ouvrir..." yazacak
+    struct Image *img = read_image("nonexistent.img");
+
+    // ADIM 3: stderr'i GERİ AL (çok önemli!)
+    // Yoksa sonraki testler de err.txt'ye yazar!
+    freopen("/dev/tty", "w", stderr);
+
+    // ADIM 4: Dosyayı OKU ve KONTROL ET
+    FILE *f = fopen("err.txt", "r");
+    CU_ASSERT_PTR_NOT_NULL(f);  // Dosya açılabilmeli
+
+    fgets(buf, sizeof(buf), f);  // İlk satırı oku
+    fclose(f);
+
+    // ASSERT'ler
+    CU_ASSERT_PTR_NULL(img);  // Fonksiyon NULL döndürmeli
+    CU_ASSERT_STRING_EQUAL(buf, "Impossible d'ouvrir le fichier\n");
+    // VEYA içinde geçiyor mu diye:
+    // CU_ASSERT_TRUE(strstr(buf, "Impossible d'ouvrir") != NULL);
+}
+
+// ============ TEST 3: BOŞ DOSYA (BOZUK HEADER) ============
+void test_read_image_bad_header(void) {
+    char buf[256] = {0};
+
+    // ADIM 1: Boş bir dosya oluştur
+    FILE *f = fopen("empty.img", "wb");
+    fclose(f);  // 0 byte'lık dosya
+
+    // ADIM 2: stderr'i yönlendir
+    freopen("err.txt", "w", stderr);
+
+    // ADIM 3: Fonksiyonu çağır (header okuyamayacak!)
+    struct Image *img = read_image("empty.img");
+
+    // ADIM 4: stderr'i geri al
+    freopen("/dev/tty", "w", stderr);
+
+    // ADIM 5: Dosyayı oku
+    FILE *err = fopen("err.txt", "r");
+    CU_ASSERT_PTR_NOT_NULL(err);
+
+    fgets(buf, sizeof(buf), err);
+    fclose(err);
+
+    // ASSERT
+    CU_ASSERT_PTR_NULL(img);
+    CU_ASSERT_TRUE(strstr(buf, "Impossible de lire le header") != NULL);
+}
+
+// ============ MAIN ============
+int main(void) {
+    CU_initialize_registry();
+    CU_pSuite suite = CU_add_suite("read_image Tests", NULL, NULL);
+
+    CU_add_test(suite, "Geçerli dosya", test_read_image_ok);
+    CU_add_test(suite, "Olmayan dosya", test_read_image_bad_file);
+    CU_add_test(suite, "Bozuk header", test_read_image_bad_header);
+
+    CU_basic_set_mode(CU_BRM_VERBOSE);
+    CU_basic_run_tests();
+    CU_cleanup_registry();
+    return CU_get_error();
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
+#include <CUnit/CUnit.h>
+
+// --- VERİ YAPISI VE PROTOTİP ---
+struct Image {
+    uint32_t w, h, bpp;
+    uint8_t pixels[];
+};
+
+struct Image *read_image(const char *filename);
+void init_image_file(void); // Siyah kutu
+
+// ==========================================
+// 1. BAŞARILI DOSYA OKUMA TESTİ
+// ==========================================
+void test_read_image_ok(void) {
+    init_image_file(); // Siyah kutu geçerli dosyayı (örn: image1.img) üretir
+
+    struct Image *img = read_image("image1.img");
+
+    CU_ASSERT_PTR_NOT_NULL(img);
+    if (img != NULL) {
+        CU_ASSERT_TRUE(img->w > 0);
+        CU_ASSERT_TRUE(img->h > 0);
+        CU_ASSERT_TRUE(img->bpp > 0);
+        free(img);
+    }
+}
+
+// ==========================================
+// 2. OLMAYAN DOSYA TESTİ (Dosya Açılamadı)
+// ==========================================
+void test_read_image_bad_file(void) {
+    // 1. Yönlendir
+    freopen("stderr_out.txt", "w", stderr);
+
+    // 2. Çalıştır (Kesinlikle olmayan bir isim veriyoruz)
+    struct Image *img = read_image("kesinlikle_yok_olan_dosya.img");
+
+    // 3. Geri Al (Test çıktılarının bozulmaması için çok önemli)
+    freopen("/dev/tty", "w", stderr);
+
+    // 4. Dosyayı Oku ve Doğrula
+    FILE *f = fopen("stderr_out.txt", "r");
+    char buf[200] = {0};
+    if (f != NULL) {
+        fgets(buf, sizeof(buf), f);
+        fclose(f);
+    }
+
+    // Hocanın tam istediği \n karakterli String Equal kontrolü
+    CU_ASSERT_STRING_EQUAL(buf, "Impossible d'ouvrir le fichier\n");
+    CU_ASSERT_PTR_NULL(img);
+}
+
+// ==========================================
+// 3. BOZUK HEADER TESTİ (Eksik Veri)
+// ==========================================
+void test_read_image_bad_header(void) {
+    // A. HAZIRLIK: Kasıtlı olarak içi BOŞ bir dosya yarat (0 byte)
+    // Bu sayede fopen başarılı olacak ama fread(header) anında patlayacak.
+    FILE *empty = fopen("empty.img", "wb");
+    if (empty != NULL) {
+        fclose(empty);
+    }
+
+    // 1. Yönlendir
+    freopen("stderr_out.txt", "w", stderr);
+
+    // 2. Çalıştır (Boş dosyayı ver)
+    struct Image *img = read_image("empty.img");
+
+    // 3. Geri Al
+    freopen("/dev/tty", "w", stderr);
+
+    // 4. Dosyayı Oku ve Doğrula
+    FILE *f = fopen("stderr_out.txt", "r");
+    char buf[200] = {0};
+    if (f != NULL) {
+        fgets(buf, sizeof(buf), f);
+        fclose(f);
+    }
+
+    CU_ASSERT_STRING_EQUAL(buf, "Impossible de lire le header\n");
+    CU_ASSERT_PTR_NULL(img);
+}
 
 
 ```

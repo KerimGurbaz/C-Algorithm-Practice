@@ -1077,61 +1077,393 @@
 // }
 
 
-#include <stdint.h>
+// #include <stdint.h>
 
-struct Image {
-    uint32_t w;
-    uint32_t h;
-    uint32_t bpp;
-    unsigned char *pixels;
-};
+// struct Image {
+//     uint32_t w;
+//     uint32_t h;
+//     uint32_t bpp;
+//     unsigned char *pixels;
+// };
 
-struct Image *read_image(const char *filename) {
-    FILE *f = fopen(filename, "rb");
-    if (f == NULL) {
-        fprintf(stderr, "Error..\n");
-        return NULL;
-    }
-
-
-    uint32_t header[3];
-    if (fread(header, sizeof(uint32_t), 3, f) != 3) {
-        fprintf(stderr, "Error..\n");
-        fclose(f);
-        return NULL;
-    }
-
-    uint32_t w = header[0];
-    uint32_t h = header[1];
-    uint32_t bpp = header[2];
-
-    if (w == 0 || h == 0 || bpp == 0) {
-        fprintf(stderr, "error..\n");
-        fclose(f);
-        return NULL;
-    }
-
-    struct Image *img = malloc(sizeof(struct Image));
-    if (img == NULL) {
-        fprintf(stderr, "Error..\n");
-        fclose(f);
-        return NULL;
-    }
-    img->w = w;
-    img->h = h;
-    img->bpp = bpp;
-
-    size_t total_bytes = (size_t)(w * h * bpp);
-
-    img->pixels = malloc(total_bytes);
-    if (img->pixels = NULL) {
-        fprintf(stderr, "Impossible d'allouer la mémoire\n");
-        free(img);
-        fclose(f);
-        return NULL;
-    }
+// struct Image *read_image(const char *filename) {
+//     FILE *f = fopen(filename, "rb");
+//     if (f == NULL) {
+//         fprintf(stderr, "Error..\n");
+//         return NULL;
+//     }
 
 
+//     uint32_t header[3];
+//     if (fread(header, sizeof(uint32_t), 3, f) != 3) {
+//         fprintf(stderr, "Error..\n");
+//         fclose(f);
+//         return NULL;
+//     }
 
+//     uint32_t w = header[0];
+//     uint32_t h = header[1];
+//     uint32_t bpp = header[2];
+
+//     if (w == 0 || h == 0 || bpp == 0) {
+//         fprintf(stderr, "error..\n");
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     struct Image *img = malloc(sizeof(struct Image));
+//     if (img == NULL) {
+//         fprintf(stderr, "Error..\n");
+//         fclose(f);
+//         return NULL;
+//     }
+//     img->w = w;
+//     img->h = h;
+//     img->bpp = bpp;
+
+//     size_t total_bytes = (size_t)(w * h * bpp);
+
+//     img->pixels = malloc(total_bytes);
+//     if (img->pixels = NULL) {
+//         fprintf(stderr, "Impossible d'allouer la mémoire\n");
+//         free(img);
+//         fclose(f);
+//         return NULL;
+//     }
+
+// }
+
+// #include <stdio.h>
+// #include <stdlib.h>
+
+// typedef struct {
+//     int sample_rate;
+//     int nb_samples;
+//     short *samples;
+
+// }Audio;
+
+// void write_audio(Audio *a, const char *filename) {
+//     FILE *f = fopen(filename, "wb");
+//     if (f == NULL) {
+//         fprintf(stderr, "Imposible d'ouvrir le fichier..\n");
+//         return;
+//     }
+
+//     fwrite(&a->sample_rate, sizeof(int), 1, f);
+
+//     fwrite(&a->nb_samples, sizeof(int), 1, f);
+
+//     fwrite(a->samples, sizeof(short), a->nb_samples, f);
+
+//     fclose(f);
+// }
+
+// Audio *read_audio(const char *filename) {
+//     FILE *f = fopen(filename, "rb");
+//     if (f == NULL) {
+
+//         fprintf(stderr, "Impossible...\n");
+//         return NULL;
+//     }
+
+//     int sr;
+//     if (fread(&sr, sizeof(int), 1, f) != 1) {
+//         fprintf(stderr, "Impossible...\n");
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     int nb;
+//     if (fread(&nb, sizeof(int), 1, f) != 1) {
+//         fprintf(stderr, "Impossible...\n");
+//         fclose(f);
+//         NULL;
+//     }
+
+//     Audio *a = malloc(sizeof(Audio));
+//     if (!a) {
+//         fprintf(stderr, "Impossible..\n");
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     a->sample_rate = sr;
+//     a->nb_samples = nb;
+
+//     a->samples = malloc(nb * sizeof(short));
+//     if (a->samples == NULL) {
+//         fprintf(stderr, "impossible...\n");
+//         free(a);
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     if (fread(a->samples, sizeof(short), nb, f) != nb) {
+//         fprintf(stderr, "impossibles...");
+//         free(a->samples);
+//         free(a);
+//         fclose(f);
+//         return NULL;
+
+//     }
+
+//     fclose(f);
+//     return a;
+// }
+// #include <stdio.h>
+// #include <stdlib.h>
+
+// struct Audio {
+//     int sample_rate;
+//     int nb_samples;
+//     short *samples;
+// };
+
+// void write_audio(const struct Audio *a, const char *filename) {
+//     FILE *f = fopen(filename, "wb");
+//     if (f == NULL) return;
+//     fwrite(&a->sample_rate, sizeof(int), 1, f);
+//     fwrite(&a->nb_samples, sizeof(int), 1, f);
+//     fwrite(&a->samples, sizeof(short), a->nb_samples, f);
+//     fclose(f);
+// }
+
+// struct Audio *read_audio(const char *filename) {
+//     FILE *f = fopen(filename, "rb");
+//     if (f == NULL) return NULL;
+
+//     int sr, nb;
+//     if (fread(&sr, sizeof(int), 1, f) != 1 ||
+//         fread(&nb, sizeof(int), 1, f) != 1) {
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     if (nb <= 0) {
+//         fclose(f);
+//         return NULL;
+//     }
+// }
+
+
+// struct Audio *read_audio(const char *filename) {
+//     FILE *f = fopen(filename, "rb");
+//     if (!f) return NULL;
+
+
+//     int sr, nb;
+
+//     if (fread(&sr, sizeof(int), 1, f) != 1 ||
+//         fread(&nb, sizeof(int), 1, f) != 1) {
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     if (nb <= 0) {
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     struct Audio *a = malloc(sizeof(struct Audio));
+//     if (!a) {
+//         fclose(f);
+//         return NULL;
+//     }
+//     a->sample_rate = sr;
+//     a->nb_samples = nb;
+
+//     a->samples = malloc(nb * sizeof(short));
+
+//     if (!a->samples) {
+//         free(a);
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     if (fread(a->samples, sizeof(short), nb, f) != (size_t)nb) {
+//         free(a->samples);
+//         free(a);
+//         fclose(f);
+//         return  NULL;
+//     }
+// }
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// struct Audio {
+//     int sample_rate;
+//     int nb_samples;
+//     short *samples;
+// };
+
+
+// struct Audio *write_audio(const struct Audio *a, const char *filename) {
+//     FILE *f = fopen(filename, "wb");
+//     if (!f) {
+//         fprintf(stderr, "Impossible...\n");
+//         return NULL;
+//     }
+//     fwrite(&a->sample_rate, sizeof(int), 1, f);
+//     fwrite(&a->nb_samples, sizeof(int), 1, f);
+//     fwrite(a->samples, sizeof(short), a->nb_samples, f);
+//     fclose(f);
+// }
+
+// struct Audio *read_audio(const char *filename) {
+//     FILE *f = fopen(filename, "rb");
+//     if (f == NULL) {
+//         return NULL;
+//     }
+
+//     int sr, nb;
+
+
+//     if (fread(&sr, sizeof(int), 1, f) != 1) {
+//         fclose(f);
+//         return NULL;
+//     }
+
+
+//     if (fread(&nb, sizeof(int), 1, f) != 1) {
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     struct Audio *a = malloc(sizeof(struct Audio));
+//     if (a == NULL) {
+//         fclose(f);
+//         return NULL;
+//     }
+//     a->sample_rate = sr;
+//     a->nb_samples = nb;
+//     a->samples = malloc(nb * sizeof(short));
+
+//     if (a->samples) {
+//         free(a);
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     if (fread(a->samples, sizeof(short), nb, f) != (size_t)nb) {
+//         free(a->samples);
+//         free(a);
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     fclose(f);
+//     return a;
+
+// }
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+
+// struct Student {
+//     int id;
+//     char name[50];
+//     float grade;
+// };
+
+// int read_student(FILE *f, int index, struct Student *out) {
+
+//     if (!f || !out || index < 0)return;
+
+//     long offset = sizeof(int) + index * sizeof(struct Student);
+
+//     if (fseek(f, offset, SEEK_SET) != 0) return 0;
+
+//     return 1;
+// }
+
+// int update_grade(FILE *f, int index, float new_grade) {
+//     if (!f || index < 0) return 0;
+
+//     long offset = sizeof(int) + index * sizeof(struct Student) + sizeof(int) + 50;
+
+//     if (fseek(f, offset, SEEK_SET) != 0) return 0;
+//     if (fwrite(&new_grade, sizeof(float), 1, f) != 1) return 0;
+//     return 0;
+// }
+
+
+
+// #include <stdint.h>
+// #include <stdlib.h>
+// // #include <CUnit/CUnit.h>
+// // #include <CUnit/Basic.h>
+
+// struct Image{
+//     uint32_t w;
+//     uint32_t h;
+//     uint32_t bpp;
+//     uint32_t pixels[];
+// };
+
+// struct Image *read_image(const char *filename);
+// void init_image_file(void);
+
+
+
+// void test_read_valid(void){
+//     init_image_file();
+
+//     struct Image *img = read_image("Image1.img");
+
+//     CU_ASSERT_PTR_NOT_NULL(img);
+
+//     if(!img==NULL){
+//         CU_ASSERT_TRUE(img->h>0);
+//          CU_ASSERT_TRUE(img->w>0);
+
+//          free(img);
+//     }
+// }
+
+
+// int main(){
+//     if(CUE_SUCCESS != CU_initialize_registry()){
+//         return CU_get_error();
+//     }
+
+//     CU_pSuite suite = CU_add_suite("Read_Image_Suite", NULL, NULL);
+//     if(suite ==NULL){
+//         CU_cleanup_registry();
+
+//         return CU_get_error();
+//     }
+
+//     CU_add_test(suite, "gecerli test", test_read_valid);
+//     Cu_add_test(suite, "Gecersiz", test_read_invalide);
+
+//     CU_basic_set_mode(CU_BRM_VERBOSE);
+//     CU_basic_run_tests();
+
+//     CU_cleanup_registry();
+//     return CU_get_error();
+// }
+
+#include <stdlib.h>
+// #include <CUnit/CUnit.h>
+// #include <CUnit/Basic.h>
+int calculer(int a, int b, char op);
+
+void test_addition(void) {
+
+    CU_ASSERT_EQUAL(calculer(3, 4, '+'), 7);
+    CU_ASSERT_EQUAL(calculer(3, 4, '+'), 7);
 }
 
+int main() {
+    CU_initialize_registry();
+    CU_pSuite suite = CU_add_suite("Calculatrice test", NULL, NULL);
+
+    CU_add_test(suite, "test addition", test_addition);
+
+    CU_basic_set_mode(CU_BRM_VERBOSE);
+    CU_basic_run_tests();
+    CU_cleanup_registry();
+    return CU_get_error();
+}
