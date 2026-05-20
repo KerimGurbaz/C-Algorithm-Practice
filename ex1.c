@@ -808,3 +808,330 @@
 // #else 
 // #define DBG_PRINT(...) do{}while(0)
 // #endif
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+
+
+// struct image{
+//     unsigned int width;
+//     unsigned int height;
+//     unsigned int bpp;
+//     unsigned char *pixels;
+// };
+
+// struct image *read_image(const char *filename){
+//     FILE *f= fopen(filename, "rb");
+//     if(f==NULL){
+//         fprintf(stderr, "Impossible d'ouvrir le fichier..\n");
+//         return NULL;
+//     }
+
+//     if
+
+
+// }
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// struct Record {
+//     int score;
+//     char name[20];
+// };
+
+// struct Record *read_record(const char *filename) {
+//     FILE *f = // ???
+
+//     if (!f) {
+//         // stderr'e hata yaz
+//         return NULL;
+//     }
+
+//     struct Record *r = // malloc
+
+//     if (!r) {
+//         // hata
+//         // dosyayı kapat!
+//         return NULL;
+//     }
+
+//     // fread ile struct'ı tek seferde oku
+//     // VEYA score ve name'i ayrı ayrı oku
+
+//     fclose(f);
+//     return r;
+// }
+
+// struct Record {
+//     int score;
+//     char name[20];
+// };
+
+// struct Record *read_record(const char *filename) {
+//     FILE *f = fopen(filename, "rb");
+//     if (f == NULL) {
+//         fprintf(stderr, "Erreur...%s\n", filename);
+//         return NULL;
+//     }
+
+//     struct Record *rec = (struct Record *)malloc(sizeof(struct Record));
+//     if (rec == NULL) {
+//         fprintf(stderr, "Erreur....%s\n", filename);
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     if (fread(rec, sizeof(struct Record), 1, f) != 1) {
+//         fprintf(stderr, "Erreur...");
+//         free(rec);
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     fclose(f);
+//     return rec;
+// }
+
+// #include <stdlib.h>
+
+
+// struct Record {
+//     int score;
+//     char name[20];
+// };
+
+// struct Record *read_record(const char *file_name) {
+//     FILE *f = fopen(file_name, "rb");
+//     if (f == NULL) {
+//         fprintf(stderr, "error...impossoible d'ouvrir le fichier%s\n", file_name);
+//         return NULL;
+//     }
+
+//     struct Record *rec = malloc(sizeof(struct Record));
+
+//     if (rec == NULL) {
+//         fprintf(stderr, "error...");
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     if (fread(rec, sizeof(struct Record), 1, f) != 1) {
+//         if (f == NULL) {
+//             fprintf(stderr, "error...impossoible d'ouvrir le fichier%s\n", file_name);
+//             free(rec);
+//             fclose(f);
+//             return NULL;
+//         }
+//     }
+
+//    fclose(f);
+//    return rec;
+// }
+
+// #include <stdio.h>
+
+// #include <stdlib.h>
+
+// struct Record {
+//     int score;
+//     char name[20];
+// };
+
+// struct Record *read_record(const char *file_name) {
+//     FILE *f = fopen(file_name, "rb");
+//     if (f == NULL) {
+//         fprintf(stderr, "error...\n");
+//         return NULL;
+//     }
+
+//     struct Record *rec = malloc(sizeof(struct Record));
+//     if (rec == NULL) {
+//         fprintf(stderr, "error...\n");
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     if (fread(rec, sizeof(struct Record), 1, f) != 1) {
+
+//         fprintf(stderr, "error...\n");
+//         free(rec);
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     fclose(f);
+//     return rec;
+
+// }
+
+// #include <stdio.h>
+// #include <stdlib.h>
+
+// struct Notes {
+//     int n;
+//     float *vals;
+// };
+
+// struct Notes *read_notes(const char *filename) {
+//     FILE *f = fopen(filename, "rb");
+//     if (f == NULL) {
+//         fprintf(stderr, "Error...\n");
+//         return NULL;
+//     }
+
+//     struct Notes *img = malloc(sizeof(struct Notes));
+//     if (img == NULL) {
+//         fprintf(stderr, "Error...\n");
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     if (fread(img->n, sizeof(int), 1, f) != 1) {
+//         fprintf(stderr, "Error...\n");
+//         free(img);
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     if (img->n <= 0) {
+//         fprintf(stderr, "error..\n");
+//         free(img);
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     img->vals = malloc(img->n * sizeof(float));
+//     if (img->vals == NULL) {
+//         fprintf(stderr, "error..\n");
+//         free(img);
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     if (fread(img->vals, sizeof(float), img->n, f) != img->n) {
+//         fprintf(stderr, "Hata: Dizi elemanlari eksik veya hatali okundu.\n");
+//         free(img->vals);
+//         free(img);
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     fclose(f);
+//     return img;
+
+
+
+// }
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// struct Notes {
+//     int n;
+//     float *vals;
+// };
+
+// struct Notes *read_notes(const char *filename) {
+//     FILE *f = fopen(filename, "rb");
+//     if (f == NULL) {
+//         fprintf(stderr, "Error ...\n");
+//         return NULL;
+//     }
+
+//     struct Notes *notes = malloc(sizeof(struct Notes));
+//     if (notes == NULL) {
+//         fprintf(stderr, "Error ...\n");
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     if (fread(&(notes->n), sizeof(int), 1, f) != 1) {
+//         fprintf(stderr, "Error ...\n");
+//         free(notes);
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     notes->vals = malloc(notes->n * sizeof(float));
+//     if (notes->vals == NULL) {
+//         fprintf(stderr, "Error ...\n");
+//         free(notes);
+//         fclose(f);
+//         return NULL;
+//     }
+
+//     if(fread(notes->vals, sizeof(float), notes->n, f) != (size_t)notes->n){
+//         fprintf(stderr, "Erreur : Impossible de lire les donnees (float)\n");
+
+//         // ZİNCİRLEME TEMİZLİK (Sıfır bellek sızıntısı kuralı)
+//         free(notes->vals); // İçteki dinamik diziyi sil
+//         free(notes);       // Dıştaki ana struct'ı sil
+//         fclose(f);         // Dosyayı kapat
+//         return NULL;
+//     }
+
+//     fclose(f);
+//     return notes;
+// }
+
+
+#include <stdint.h>
+
+struct Image {
+    uint32_t w;
+    uint32_t h;
+    uint32_t bpp;
+    unsigned char *pixels;
+};
+
+struct Image *read_image(const char *filename) {
+    FILE *f = fopen(filename, "rb");
+    if (f == NULL) {
+        fprintf(stderr, "Error..\n");
+        return NULL;
+    }
+
+
+    uint32_t header[3];
+    if (fread(header, sizeof(uint32_t), 3, f) != 3) {
+        fprintf(stderr, "Error..\n");
+        fclose(f);
+        return NULL;
+    }
+
+    uint32_t w = header[0];
+    uint32_t h = header[1];
+    uint32_t bpp = header[2];
+
+    if (w == 0 || h == 0 || bpp == 0) {
+        fprintf(stderr, "error..\n");
+        fclose(f);
+        return NULL;
+    }
+
+    struct Image *img = malloc(sizeof(struct Image));
+    if (img == NULL) {
+        fprintf(stderr, "Error..\n");
+        fclose(f);
+        return NULL;
+    }
+    img->w = w;
+    img->h = h;
+    img->bpp = bpp;
+
+    size_t total_bytes = (size_t)(w * h * bpp);
+
+    img->pixels = malloc(total_bytes);
+    if (img->pixels = NULL) {
+        fprintf(stderr, "Impossible d'allouer la mémoire\n");
+        free(img);
+        fclose(f);
+        return NULL;
+    }
+
+
+
+}
+

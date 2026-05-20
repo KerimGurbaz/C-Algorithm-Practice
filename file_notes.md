@@ -303,7 +303,92 @@ int fusionner_fichiers(const char *fichier1, const char *fichier2, const char *f
 ```
 
 ```c
+// /src/image.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
 
+// 1. Flexible Array Member (Esnek Dizi Elemanı) kullanımı zorunludur.
+// main() fonksiyonunda sadece free(image) çağrıldığı için, struct ve
+// pixel verisi tek bir malloc ile bitişik tahsis edilmelidir.
+struct Image {
+    uint32_t width;
+    uint32_t height;
+    uint32_t bpp;
+    uint8_t pixels[]; // Boyutu çalışma zamanında belirlenecek
+};
+
+struct Image *read_image(const char *filename) {
+    // Dosyayı Binary (rb) modda açmak hayati önem taşır
+    FILE *f = fopen(filename, "rb");
+    if (!f) {
+        fprintf(stderr, "Impossible d'ouvrir le fichier\n");
+        return NULL;
+    }
+
+    // Header: W (4 byte), H (4 byte), BPP (4 byte)
+    uint32_t header[3];
+    if (fread(header, sizeof(uint32_t), 3, f) != 3) {
+        fprintf(stderr, "Impossible de lire le header\n");
+        fclose(f);
+        return NULL;
+    }
+
+    uint32_t w = header[0];
+    uint32_t h = header[1];
+    uint32_t bpp = header[2];
+
+    // Pixel verisinin toplam bayt boyutunu hesapla
+    size_t total_bytes = (size_t)w * h * bpp;
+
+    // Struct başlığı + Pixel verisi için tek bir yekpare bellek bloğu ayır
+    struct Image *img = malloc(sizeof(struct Image) + total_bytes);
+    if (!img) {
+        fprintf(stderr, "Impossible d'allouer la mémoire\n");
+        fclose(f);
+        return NULL;
+    }
+
+    img->width = w;
+    img->height = h;
+    img->bpp = bpp;
+
+    // Tüm pikselleri tek seferde esnek diziye (pixels) oku
+    if (total_bytes > 0 && fread(img->pixels, 1, total_bytes, f) != total_bytes) {
+        fprintf(stderr, "Impossible de lire les pixels\n");
+        free(img);
+        fclose(f);
+        return NULL;
+    }
+
+    // Her durumda dosyayı kapat ve başarılı okunan resmi döndür
+    fclose(f);
+    return img;
+}
+
+void image_info(struct Image* image) {
+    if (!image) return;
+
+    printf("Taille: %u x %u\n", image->width, image->height);
+    printf("BPP : %u\n", image->bpp);
+
+    size_t num_pixels = (size_t)image->width * image->height;
+    if (num_pixels == 0) return;
+
+    // Her bir renk bileşeni (0, 1, 2...) için ayrı ayrı dolaş
+    for (uint32_t c = 0; c < image->bpp; ++c) {
+        double sum = 0.0;
+
+        // Bellekteki doğru komponente atlayarak (BPP kadar ilerleyerek) oku
+        for (size_t p = 0; p < num_pixels; ++p) {
+            sum += image->pixels[p * image->bpp + c];
+        }
+
+        // Ortalamayı yazdır (%f double yazdırır)
+        printf("Valeur moyenne composante %u : %f\n", c, sum / num_pixels);
+    }
+}
 
 ```
 
