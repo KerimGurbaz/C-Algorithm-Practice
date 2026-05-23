@@ -1445,25 +1445,119 @@
 //     return CU_get_error();
 // }
 
-#include <stdlib.h>
-// #include <CUnit/CUnit.h>
-// #include <CUnit/Basic.h>
-int calculer(int a, int b, char op);
+// #include <stdio.h>
+// #include <stdint.h>
 
-void test_addition(void) {
+// // ============ MACRO'LAR ============
 
-    CU_ASSERT_EQUAL(calculer(3, 4, '+'), 7);
-    CU_ASSERT_EQUAL(calculer(3, 4, '+'), 7);
+// #define SET_BIT(word, pos)         ((word) |= (1U << (pos)))
+// #define CLEAR_BIT(word, pos)       ((word) &= ~(1U << (pos)))
+// #define TOGGLE_BIT(word, pos)      ((word) ^= (1U << (pos)))
+// #define CHECK_BIT(word, pos)       (((word) >> (pos)) & 1U)
+
+// #define SET_BITS_RANGE(word, start, length, value) \
+//     do { \
+//         uint32_t mask = ((1U << (length)) - 1U) << (start); \
+//         (word) = ((word) & ~mask) | (((value) << (start)) & mask); \
+//     } while(0)
+
+// // ============ YARDIMCI FONKSİYON ============
+
+// void print_binary(uint32_t w) {
+//     for (int i = 31; i >= 0; i--) {
+//         printf("%d", (w >> i) & 1);
+//         if (i % 4 == 0)
+//             printf(" ");
+//     }
+//     printf("\n");
+// }
+
+// // ============ MAIN ============
+
+// int main() {
+//     uint32_t word = 0;
+
+//     printf("Initial value:\n");
+//     print_binary(word);
+
+//     // 1. SET_BIT
+//     SET_BIT(word, 13);
+//     printf("\nSET_BIT(13):\n");
+//     print_binary(word);
+
+//     // 2. TOGGLE_BIT
+//     TOGGLE_BIT(word, 8);
+//     printf("\nTOGGLE_BIT(8):\n");
+//     print_binary(word);
+
+//     // 3. CLEAR_BIT
+//     CLEAR_BIT(word, 5);
+//     printf("\nCLEAR_BIT(5):\n");
+//     print_binary(word);
+
+//     // 4. SET_BITS_RANGE: écrire 0b1010 dans les bits 8 à 11
+//     SET_BITS_RANGE(word, 8, 4, 0b1010);
+//     printf("\nSET_BITS_RANGE(8, 4, 0b1010):\n");
+//     print_binary(word);
+
+//     // 5. CHECK_BIT : tester le bit 10
+//     printf("\nCHECK_BIT(10): ");
+//     if (CHECK_BIT(word, 10)) {
+//         printf("bit 10 is set\n");
+//     } else {
+//         printf("bit 10 is not set\n");
+//     }
+
+//     // 6. Remplacer 5 bits à partir du bit 0
+//     SET_BITS_RANGE(word, 0, 5, 0b11111);
+//     printf("\nSET_BITS_RANGE(0, 5, 0b11111):\n");
+//     print_binary(word);
+
+//     return 0;
+// }
+
+
+// #include <stdio.h>
+
+// int main() {
+// #ifdef DEBUG
+//     printf("Mode debug actif\n");
+// #else
+//     printf("mode release\n");
+// #endif
+
+// return 0;
+// }
+#include <stdio.h>
+
+// 1. HATALI MAKRO (Sadece kopyala-yapıştır)
+#define DOUBLE_BAD(x) x + x
+
+// 2. DOĞRU MAKRO (Kalkanlı yapı)
+// Her x kendi parantezinde, tüm ifade genel parantezde.
+#define DOUBLE_GOOD(x) ((x) + (x))
+
+// KIYASLAMA İÇİN GERÇEK FONKSİYON
+int double_fn(int x) {
+    return x + x;
 }
 
-int main() {
-    CU_initialize_registry();
-    CU_pSuite suite = CU_add_suite("Calculatrice test", NULL, NULL);
+int main(void) {
+    // Test 1: Bit Kaydırma (1 << 2 yani 4)
+    int arg1 = 1 << 2;
+    printf("--- ARG1: 1 << 2 ---\n");
+    printf("Fonksiyon beklenen: %d\n", double_fn(1 << 2));       // 8
+    printf("Hatali Makro      : %d\n", DOUBLE_BAD(1 << 2));      // 32 (HATA!)
+    printf("Dogru Makro       : %d\n", DOUBLE_GOOD(1 << 2));     // 8  (DÜZELDİ)
 
-    CU_add_test(suite, "test addition", test_addition);
+    printf("\n");
 
-    CU_basic_set_mode(CU_BRM_VERBOSE);
-    CU_basic_run_tests();
-    CU_cleanup_registry();
-    return CU_get_error();
+    // Test 2: Bitsel VEYA (1 | 2 yani 3)
+    int arg2 = 1 | 2;
+    printf("--- ARG2: 1 | 2 ---\n");
+    printf("Fonksiyon beklenen: %d\n", double_fn(1 | 2));        // 6
+    printf("Hatali Makro      : %d\n", DOUBLE_BAD(1 | 2));       // 3  (HATA!)
+    printf("Dogru Makro       : %d\n", DOUBLE_GOOD(1 | 2));      // 6  (DÜZELDİ)
+
+    return 0;
 }
