@@ -1528,36 +1528,107 @@
 
 // return 0;
 // }
+// #include <stdio.h>
+
+// // 1. HATALI MAKRO (Sadece kopyala-yapıştır)
+// #define DOUBLE_BAD(x) x + x
+
+// // 2. DOĞRU MAKRO (Kalkanlı yapı)
+// // Her x kendi parantezinde, tüm ifade genel parantezde.
+// #define DOUBLE_GOOD(x) ((x) + (x))
+
+// // KIYASLAMA İÇİN GERÇEK FONKSİYON
+// int double_fn(int x) {
+//     return x + x;
+// }
+
+// int main(void) {
+//     // Test 1: Bit Kaydırma (1 << 2 yani 4)
+//     int arg1 = 1 << 2;
+//     printf("--- ARG1: 1 << 2 ---\n");
+//     printf("Fonksiyon beklenen: %d\n", double_fn(1 << 2));       // 8
+//     printf("Hatali Makro      : %d\n", DOUBLE_BAD(1 << 2));      // 32 (HATA!)
+//     printf("Dogru Makro       : %d\n", DOUBLE_GOOD(1 << 2));     // 8  (DÜZELDİ)
+
+//     printf("\n");
+
+//     // Test 2: Bitsel VEYA (1 | 2 yani 3)
+//     int arg2 = 1 | 2;
+//     printf("--- ARG2: 1 | 2 ---\n");
+//     printf("Fonksiyon beklenen: %d\n", double_fn(1 | 2));        // 6
+//     printf("Hatali Makro      : %d\n", DOUBLE_BAD(1 | 2));       // 3  (HATA!)
+//     printf("Dogru Makro       : %d\n", DOUBLE_GOOD(1 | 2));      // 6  (DÜZELDİ)
+
+//     return 0;
+// }
+// #include <stdio.h>
+// #define SQUARE_BAD(x)  x*x
+// #define SQUARE_GOOD(x) ((x) * (x))
+
+// int square_fn(int x) {
+//     return x * x;
+// }
+
+// #ifndef POINT_H
+// #define POINT_H
+
+// struct Point{
+//     int y;
+//     int y;
+// };
+
+// #endif
+
+// #define SWAP(a, b) do{int t =(a); (a)=(b); (b)=t; }while(0)
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <time.h>
+#include <unistd.h>
 
-// 1. HATALI MAKRO (Sadece kopyala-yapıştır)
-#define DOUBLE_BAD(x) x + x
+#define CLIGNOTEMENTS 20
 
-// 2. DOĞRU MAKRO (Kalkanlı yapı)
-// Her x kendi parantezinde, tüm ifade genel parantezde.
-#define DOUBLE_GOOD(x) ((x) + (x))
+// Guirlande'ı ekrana basan fonksiyon
+void afficher_guirlande(uint8_t etat) {
+    // \r (Carriage Return) imleci satırın en başına alır, alt satıra geçmez.
+    printf("\r");
 
-// KIYASLAMA İÇİN GERÇEK FONKSİYON
-int double_fn(int x) {
-    return x + x;
+    // 8 biti MSB'den (En Anlamlı Bit) LSB'ye (En Az Anlamlı Bit) doğru okuyoruz
+    for (int i = 7; i >= 0; i--) {
+        if ((etat >> i) & 1) {
+            printf("*");
+        } else {
+            printf("-");
+        }
+    }
+
+    // \n kullanmadığımız için çıktının ekranda hemen görünmesini zorluyoruz
+    fflush(stdout);
 }
 
-int main(void) {
-    // Test 1: Bit Kaydırma (1 << 2 yani 4)
-    int arg1 = 1 << 2;
-    printf("--- ARG1: 1 << 2 ---\n");
-    printf("Fonksiyon beklenen: %d\n", double_fn(1 << 2));       // 8
-    printf("Hatali Makro      : %d\n", DOUBLE_BAD(1 << 2));      // 32 (HATA!)
-    printf("Dogru Makro       : %d\n", DOUBLE_GOOD(1 << 2));     // 8  (DÜZELDİ)
+int main() {
+    // Rastgele sayı üretecini başlat (Sınavda unutursan hep aynı sürelerde yanıp söner)
+    srand(time(NULL));
 
-    printf("\n");
+    // Başlangıç durumu: *-*-*-*-
+    // Yıldızları 1, tireleri 0 olarak düşün: 10101010 (Binaire) = 0xAA (Hexadecimal) --;
+    uint8_t guirlande = 0xAA;
 
-    // Test 2: Bitsel VEYA (1 | 2 yani 3)
-    int arg2 = 1 | 2;
-    printf("--- ARG2: 1 | 2 ---\n");
-    printf("Fonksiyon beklenen: %d\n", double_fn(1 | 2));        // 6
-    printf("Hatali Makro      : %d\n", DOUBLE_BAD(1 | 2));       // 3  (HATA!)
-    printf("Dogru Makro       : %d\n", DOUBLE_GOOD(1 | 2));      // 6  (DÜZELDİ)
+    printf("Simulation de la guirlande en cours...\n");
 
+    for (int i = 0; i < CLIGNOTEMENTS; i++) {
+        afficher_guirlande(guirlande);
+
+        // 0.1s (100,000 µs) ile 1.0s (1,000,000 µs) arası rastgele gecikme
+        int delai = (rand() % 900001) + 100000;
+        usleep(delai);
+
+        // Clignotement (Yanıp Sönme) Mantığı:
+        // Tüm bitleri tersine çeviriyoruz (1'ler 0, 0'lar 1 olur).
+        // Bitwise NOT (~) operatörü bu iş için kusursuzdur.
+        guirlande = ~guirlande;
+    }
+
+    printf("\nTermine.\n");
     return 0;
 }
