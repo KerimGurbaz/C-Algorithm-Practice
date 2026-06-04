@@ -994,62 +994,548 @@ void test_read_image_bad_header(void) {
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h> // atoi fonksiyonu buradadır
 
+int main(int argc, char *argv[]) {
 
-```
+    // ADIM 1: KAPI KONTROLÜ (Sayım)
+    // Kapıda tam olarak 4 paket yoksa içeri kimseyi alma.
+    if (argc != 4) {
+        fprintf(stderr, "Kullanim hatasi: %s <dosya> <seed> <size>\n", argv[0]);
+        return 1; // Programı hata koduyla bitir
+    }
 
-```c
+    // ADIM 2: DÖNÜŞÜM (Metinden Sayıya)
+    // 2. ve 3. vagondaki kelimeleri ('4' '5') sayıya (45) dönüştür.
+    int seed = atoi(argv[2]);
+    int size = atoi(argv[3]);
 
+    // ADIM 3: GÜVENLİK KONTROLÜ (Sınırlar)
+    // Elde ettiğimiz sayılar mantıklı mı?
+    if (seed < 1 || seed > 0x7FFFFFFF) {
+        fprintf(stderr, "Hata: Seed degeri sinirlarin disinda.\n");
+        return 1;
+    }
 
-```
+    if (size < 1 || size > 256) {
+        fprintf(stderr, "Hata: Size degeri sinirlarin disinda.\n");
+        return 1;
+    }
 
-```c
+    // ADIM 4: MUTLU SON
+    // Her şey yolundaysa işleme devam et.
+    printf("Basarili! seed=%d ve size=%d\n", seed, size);
 
-
-```
-
-```c
-
-
-```
-
-```c
-
-
-```
-
-```c
-
-
-```
-
-```c
-
-
-```
-
-```c
-
-
-```
-
-```c
-
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
 
+// ==========================================
+// RASTGELE SAYI ÜRETİCİ FONKSİYON
+// ==========================================
+int myrand(int seed) {
+    // 1. HAFIZA: 'static' sayesinde bu değişken ilk çağrılışta 5669 olur,
+    // sonraki çağrılarda önceki hesaplamadan kalan değerini korur.
+    static int myrand_state = 5669;
+
+    // 2. KAOS: Mevcut durumu seed ile çarparak karıştırıyoruz
+    myrand_state = myrand_state * seed;
+
+    // 3. SINIR: 32-bit sınırını aşmasın diye devasa bir sayıya bölüp kalanını alıyoruz
+    myrand_state = myrand_state % 0x7FFFFFFF;
+
+    // 4. FİLTRE: Sadece en düşük byte'ı (0-255) bırak, gerisini sıfırla
+    myrand_state = myrand_state & 0xFF;
+
+    return myrand_state;
+}
+
+// ==========================================
+// TEST (MAIN)
+// ==========================================
+int main(void) {
+    int seed = 100;
+
+    printf("Seed %d ile 5 adet rastgele sayi uretiliyor:\n", seed);
+
+    // Aynı seed değeriyle fonksiyonu 5 kez çağırıyoruz.
+    // Eger 'static' kelimesini yazmasaydık, bu 5 sonucun hepsi AYNI çıkardı!
+    for (int i = 1; i <= 5; i++) {
+        int rastgele_deger = myrand(seed);
+        printf("%d. Cagri -> Sonuc: %d\n", i, rastgele_deger);
+    }
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
 
+// Geçmiş konudan hatırladığımız kalıcı (static) durumlu rastgele sayı üretici
+int myrand(int seed) {
+    static int state = 5669;
+    state = state * seed;
+    state = state % 0x7FFFFFFF;
+    state = state & 0xFF;
+    return state;
+}
+
+int main(int argc, char *argv[]) {
+
+    // ADIM 1: Girdileri Kontrol Et ve Dönüştür
+    if (argc != 4) {
+        fprintf(stderr, "Usage: %s <filepath> <seed> <size>\n", argv[0]);
+        return 1;
+    }
+
+    const char *filepath = argv[1];
+    int seed = atoi(argv[2]);
+    int size = atoi(argv[3]);
+
+    if (size <= 0) {
+        fprintf(stderr, "Hata: Gecersiz boyut.\n");
+        return 1;
+    }
+
+    // ADIM 2: Buffer İçin Bellek Ayır ve Rastgele Veriyle Doldur
+    unsigned char *buffer = malloc(size);
+    if (!buffer) {
+        perror("malloc basarisiz");
+        return 1;
+    }
+
+    // myrand çarkını size kadar çevirip buffer'a sırayla diziyoruz
+    for (int i = 0; i < size; i++) {
+        buffer[i] = (unsigned char)myrand(seed);
+    }
+
+    // ADIM 3: Dosyayı Yazma Modunda (wb) Aç
+    FILE *f = fopen(filepath, "wb");
+    if (!f) {
+        perror("fopen hatasi"); // İşletim sisteminin hatasını ekrana basar
+        free(buffer);           // Çıkmadan önce RAM'i temizlemeyi unutma
+        return 1;
+    }
+
+    // ADIM 4: Header'ı Yaz (Sadece boyut bilgisini tutan 1 adet int)
+    // Ne yazılacak? -> &size
+    // Boyutu ne? -> sizeof(int)
+    // Kaç tane? -> 1
+    if (fwrite(&size, sizeof(int), 1, f) != 1) {
+        perror("Header yazilamadi");
+        fclose(f);
+        free(buffer);
+        return 1;
+    }
+
+    // ADIM 5: Buffer'ı (Asıl Veriyi) Yaz
+    // Ne yazılacak? -> buffer (zaten adres olduğu için & yok)
+    // Boyutu ne? -> sizeof(unsigned char) (yani 1 byte)
+    // Kaç tane? -> size adet
+    if (fwrite(buffer, sizeof(unsigned char), size, f) != (size_t)size) {
+        perror("Veri yazilamadi");
+        fclose(f);
+        free(buffer);
+        return 1;
+    }
+
+    // ADIM 6: İşlemi Kapat ve Başarı Mesajı Ver
+    fclose(f);
+    free(buffer);
+
+    printf("Basarili! Toplam %d byte '%s' dosyasina yazildi.\n", size, filepath);
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
 
+// ==========================================
+// BİNARY DOSYA OKUMA VE DOĞRULAMA
+// ==========================================
+int read_bloc(const char *filepath) {
+    // ----------------------------------------------------
+    // 1. AÇ (Read Binary)
+    // ----------------------------------------------------
+    FILE *f = fopen(filepath, "rb");
+    if (!f) {
+        perror("fopen"); // İşletim sistemi hatasını basar
+        return 1;        // Hata durumu
+    }
+
+    // ----------------------------------------------------
+    // 2. TABELAYI OKU (Header)
+    // ----------------------------------------------------
+    int size;
+    // Soru: Nereye yazılacak? '&size'. Kaç tane? 1 tane int.
+    if (fread(&size, sizeof(int), 1, f) != 1) {
+        fprintf(stderr, "Hata: Dosyadan boyut bilgisi (header) okunamadi.\n");
+        fclose(f);
+        return 1;
+    }
+
+    // Mantık kontrolü: Boyut 0'dan küçük veya saçma sapan bir değer mi?
+    if (size <= 0) {
+        fprintf(stderr, "Hata: Gecersiz boyut okundu (size = %d).\n", size);
+        fclose(f);
+        return 1;
+    }
+
+    // ----------------------------------------------------
+    // 3. KOVA HAZIRLA (Dinamik Bellek)
+    // ----------------------------------------------------
+    // Diskte ne kadar veri olduğunu artık 'size' değişkeni sayesinde biliyoruz.
+    // O yüzden int buf[256] gibi sabit bir dizi YAZMIYORUZ. Tam gerektiği kadar yer istiyoruz.
+    unsigned char *buf = malloc(size * sizeof(unsigned char));
+    if (!buf) {
+        fprintf(stderr, "Hata: %d byte icin bellek ayrilamadi.\n", size);
+        fclose(f);
+        return 1;
+    }
+
+    // ----------------------------------------------------
+    // 4. VERİYİ DOLDUR (Data)
+    // ----------------------------------------------------
+    // Soru: Nereye yazılacak? 'buf' adresine. Kaç tane? 'size' kadar byte.
+    if (fread(buf, 1, size, f) != (size_t)size) {
+        fprintf(stderr, "Hata: Veri eksik veya okunamadi.\n");
+        free(buf);
+        fclose(f);
+        return 1;
+    }
+
+    // ----------------------------------------------------
+    // 5. İŞLE VE DOĞRULA (Hexadecimal Çıktı)
+    // ----------------------------------------------------
+    printf("Dosya icerigi (%d byte):\n", size);
+    for (int i = 0; i < size; i++) {
+        // %02X: Sayıyı 16'lık tabanda (Hex) yaz. Tek haneliyse başına '0' koy (Örn: 0A, 1F).
+        printf("%02X ", buf[i]);
+    }
+    printf("\n"); // Döngü bitince alt satıra geç, konsol düzenli görünsün.
+
+    // ----------------------------------------------------
+    // 6. TEMİZLE VE ÇIK (Ayna işleminin sonu)
+    // ----------------------------------------------------
+    free(buf);
+    fclose(f);
+
+    return 0; // Başarılı
+}
+
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+// Endüstri standardı: Sihirli sayıları (magic numbers) her zaman #define ile tepeye yaz.
+#define SEED_MAX 0x7FFFFFFF
+#define BLOCK_SIZE 256
+
+// ==========================================
+// 1. RASTGELE SAYI ÜRETİCİ (PRNG)
+// ==========================================
+int myrand(int seed) {
+    static int state = 5669;
+
+    state = state * seed;
+    state = state % SEED_MAX;
+    state = state & 0xFF; // Sadece en düşük byte (0-255)
+
+    return state;
+}
+
+// ==========================================
+// 2. ANA PROGRAM (TE2B - Final Sorusu)
+// ==========================================
+int main(int argc, char *argv[]) {
+    // ----------------------------------------------------
+    // ADIM 1: Argüman Sayısı Kontrolü
+    // ----------------------------------------------------
+    if (argc != 4) {
+        fprintf(stderr, "Usage: %s <filepath> <seed> <size>\n", argv[0]);
+        return 1;
+    }
+
+    // ----------------------------------------------------
+    // ADIM 2: Argümanları Ayrıştırma (Parse)
+    // ----------------------------------------------------
+    const char *filepath = argv[1];
+    int seed = atoi(argv[2]);
+    int size = atoi(argv[3]);
+
+    // ----------------------------------------------------
+    // ADIM 3 ve 4: Sınır Doğrulamaları (Validation)
+    // ----------------------------------------------------
+    if (seed < 1 || seed > SEED_MAX) {
+        fprintf(stderr, "Hata: Seed 1 ile %d arasinda olmalidir.\n", SEED_MAX);
+        return 1;
+    }
+
+    if (size < 1 || size > BLOCK_SIZE) {
+        fprintf(stderr, "Hata: Size 1 ile %d arasinda olmalidir.\n", BLOCK_SIZE);
+        return 1;
+    }
+
+    // ----------------------------------------------------
+    // ADIM 5: Dosyayı Açma ve Hata Kontrolü
+    // ----------------------------------------------------
+    FILE *f = fopen(filepath, "wb");
+    if (!f) {
+        perror("fopen"); // İşletim sisteminden net hata sebebini al
+        return 1;
+    }
+
+    // ----------------------------------------------------
+    // ADIM 6: Veri Tamponunu (Buffer) Oluştur ve Doldur
+    // ----------------------------------------------------
+    unsigned char *buffer = malloc(size * sizeof(unsigned char));
+    if (!buffer) {
+        fprintf(stderr, "Hata: Bellek ayrilamadi.\n");
+        fclose(f); // GERİ SARMA: Dosyayı kapatmadan çıkma!
+        return 1;
+    }
+
+    for (int i = 0; i < size; i++) {
+        buffer[i] = (unsigned char)myrand(seed);
+    }
+
+    // ----------------------------------------------------
+    // ADIM 7: Header'ı (Boyut Bilgisini) Yaz
+    // ----------------------------------------------------
+    if (fwrite(&size, sizeof(int), 1, f) != 1) {
+        fprintf(stderr, "Hata: Header dosyaya yazilamadi.\n");
+        free(buffer); // GERİ SARMA (Merdiven tipi)
+        fclose(f);
+        return 1;
+    }
+
+    // ----------------------------------------------------
+    // ADIM 8: Veriyi (Buffer) Dosyaya Dök
+    // ----------------------------------------------------
+    if (fwrite(buffer, sizeof(unsigned char), size, f) != (size_t)size) {
+        fprintf(stderr, "Hata: Veriler dosyaya yazilamadi.\n");
+        free(buffer);
+        fclose(f);
+        return 1;
+    }
+
+    // ----------------------------------------------------
+    // ADIM 9 ve 10: Temizlik ve Onay
+    // ----------------------------------------------------
+    free(buffer);
+    fclose(f);
+
+    printf("Islem basarili! %d byte boyutundaki blok '%s' dosyasina yazildi.\n", size, filepath);
+
+    return 0;
+}
+
+```
+
+```c
+#include <stdio.h>
+
+int main(void) {
+
+#ifdef DEBUG
+    printf("Mode debug actif\n");
+#else
+    printf("Mode release\n");
+#endif
+
+    return 0;
+}
+
+```
+
+```c
+#include <stdio.h>
+
+int main(void) {
+
+#ifdef A1
+    #if A1 == 1
+        printf("Birinci satir: A1 1'dir\n");
+    #elif A1 == 2
+        printf("Ikinci satir: A1 2'dir\n");
+    #else
+        printf("Ucuncu satir: A1 tanimli ama 1 veya 2 degil\n");
+    #endif
+#else
+    printf("Dorduncu satir: A1 hic tanimli degil\n");
+#endif
+
+    return 0;
+}
+
+```
+
+```c
+#ifdef SEMBOL          // 1. ÖNCE: tanımlı mı?
+    #if SEMBOL == 1    // 2. SONRA: değeri 1 mi?
+        // ...
+    #elif SEMBOL == 2  // 3. Değilse: değeri 2 mi?
+        // ...
+    #else              // 4. Hiçbiri değilse
+        // ...
+    #endif
+#else                  // 5. Tanımlı DEĞİLSE
+    // ...
+#endif
+
+```
+
+```c
+#ifdef = "Acaba A1 diye biri VAR MI?"
+#if    = "A1'in DEĞERİ NE?"
+
+Sıralama: ÖNCE var mı, SONRA değeri ne!
+
+```
+
+```c
+#include <stdio.h>
+
+// 1. HATALI MAKRO (Sadece kopyala-yapıştır)
+#define DOUBLE_BAD(x) x + x
+
+// 2. DOĞRU MAKRO (Kalkanlı yapı)
+// Her x kendi parantezinde, tüm ifade genel parantezde.
+#define DOUBLE_GOOD(x) ((x) + (x))
+
+// KIYASLAMA İÇİN GERÇEK FONKSİYON
+int double_fn(int x) {
+    return x + x;
+}
+
+int main(void) {
+    // Test 1: Bit Kaydırma (1 << 2 yani 4)
+    int arg1 = 1 << 2;
+    printf("--- ARG1: 1 << 2 ---\n");
+    printf("Fonksiyon beklenen: %d\n", double_fn(1 << 2));       // 8
+    printf("Hatali Makro      : %d\n", DOUBLE_BAD(1 << 2));      // 32 (HATA!)
+    printf("Dogru Makro       : %d\n", DOUBLE_GOOD(1 << 2));     // 8  (DÜZELDİ)
+
+    printf("\n");
+
+    // Test 2: Bitsel VEYA (1 | 2 yani 3)
+    int arg2 = 1 | 2;
+    printf("--- ARG2: 1 | 2 ---\n");
+    printf("Fonksiyon beklenen: %d\n", double_fn(1 | 2));        // 6
+    printf("Hatali Makro      : %d\n", DOUBLE_BAD(1 | 2));       // 3  (HATA!)
+    printf("Dogru Makro       : %d\n", DOUBLE_GOOD(1 | 2));      // 6  (DÜZELDİ)
+
+    return 0;
+}
+
+```
+
+```c
+#include <stdio.h>
+
+// 1. HATALI MAKRO
+// (Not: Kodu derleyebilmek ve mantık hatasını gösterebilmek için XOR swap kullandık.
+// Çünkü if'in hemen altında 'int t = a;' tanımlamaya kalkarsan C derleyicisi anında çöker.)
+#define SWAP_BAD(a, b)  (a) ^= (b); (b) ^= (a); (a) ^= (b)
+
+// 2. DOĞRU MAKRO (Endüstri Standardı)
+// Kendi scope'u (süslü parantezleri) olduğu için içine güvenle değişken (temp) tanımlayabilirsin.
+#define SWAP_GOOD(a, b) do { int temp = (a); (a) = (b); (b) = temp; } while(0)
+
+int main(void) {
+    int x = 10, y = 20;
+
+    // ----------------------------------------------------
+    // TEST 1: HATALI MAKRO (Koşul: YANLIŞ)
+    // ----------------------------------------------------
+    // Koşul 0 (false) olduğu için makronun hiç çalışmaması, değerlerin 10 ve 20 kalması gerekir.
+    if (0)
+        SWAP_BAD(x, y);
+
+    /* Derleyici burayı şöyle gördü:
+       if (0)
+           x ^= y;    // SADECE İLK SATIR if'e dahil oldu ve ATLANDI.
+       y ^= x;        // HER ZAMAN ÇALIŞIR!
+       x ^= y;        // HER ZAMAN ÇALIŞIR!
+    */
+
+    printf("SWAP_BAD (Hata): x = %d, y = %d\n", x, y); // Beklenen 10,20 ama 20,30 çıkacak!
+
+    // ----------------------------------------------------
+    // TEST 2: DOĞRU MAKRO
+    // ----------------------------------------------------
+    int a = 10, b = 20;
+
+    if (0)
+        SWAP_GOOD(a, b);
+
+    // do-while(0) tüm bloğu tek bir satır gibi paketlediği için if kuralı bozulmaz.
+    printf("SWAP_GOOD (OK)  : a = %d, b = %d\n", a, b); // Beklendiği gibi 10, 20 kalır.
+
+    return 0;
+
+    Eğer hocan senden 2'den fazla işlem yapan bir makro yazmanı isterse, hiç düşünmeden kodu do { ... } while(0) içine yaz.
+
+
+}
+
+```
+
+```c
+#include <stdio.h>
+
+// ==========================================
+// 1. ZIRHLI MAX MAKROSU (Tam Kalkan)
+// ==========================================
+// Kural: Her argüman kendi parantezine, tüm işlem dış paranteze.
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+
+// ==========================================
+// 2. KONDİSYONEL LOG MAKROSU (Sentez)
+// ==========================================
+#ifndef VERBOSE
+    // VERBOSE tanımlı değilse, LOG makrosu hiçbir şey yapmaz.
+    // 'do {} while(0)' kullanıyoruz çünkü if(cond) LOG("m"); yazıldığında syntax'ı bozmasın.
+    #define LOG(msg) do {} while(0)
+#else
+    #if VERBOSE == 1
+        #define LOG(msg) printf("[INFO] %s\n", msg)
+    #elif VERBOSE == 2
+        #define LOG(msg) printf("[DEBUG] %s\n", msg)
+    #else
+        // Hayat kurtaran hamle: Yanlış bir değer girildiyse derlemeyi anında durdur.
+        #error "HATA: VERBOSE degeri sadece 1 veya 2 olabilir!"
+    #endif
+#endif
+
+// ==========================================
+// TEST (MAIN)
+// ==========================================
+int main(void) {
+
+    // MAX makrosunu tehlikeli operatörlerle test ediyoruz
+    int sonuc = MAX(1 + 2, 4 - 2); // (((1 + 2) > (4 - 2)) ? (1 + 2) : (4 - 2))
+    printf("MAX(3, 2) sonucu: %d\n", sonuc);
+
+    // LOG makrosu derleme anında VERBOSE değerine göre şekillenecek
+    LOG("Sistem basariyla baslatildi.");
+
+    return 0;
+}
 
 ```
 
