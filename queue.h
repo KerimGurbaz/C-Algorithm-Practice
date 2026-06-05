@@ -1,20 +1,15 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-typedef struct Node {
-    int value;
-    struct Node *next;
-}Node;
+void *q = new_queue();
+push_in_queue(q, i *i);
+front_of_queue(q);
+pop_from_queue(q);
+size_of_queue(q);
+back_of_queue();
+free_queue(q);
 
-typedef struct {
-    Node *head;
-    Node *tail;
-    int size;
-}Queue;
-
-void init_queue(Queue *q);
-void push_in_queue(Queue *q, int value);
-int pop_from_queue(Queue *q);
-int is_empty(Queue *q);
 
 #endif
+
+
