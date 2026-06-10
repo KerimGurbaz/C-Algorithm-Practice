@@ -242,7 +242,7 @@ int main() {
     printf("\n");
 
     // 6. BELLEĞİ TEMİZLE
-    free(tab);-
+    free(tab);
     // tab = NULL;  // İyi pratik: dangling pointer'ı önle
 
     return 0;
@@ -791,42 +791,470 @@ int main() {
 ```
 
 ```c
+#include <stdio.h>
 
+// 1. Fonksiyon işaretçisi tipini (op_func) tanımla
+// Anlamı: "İki int alıp bir int döndüren fonksiyonun adresi"
+typedef int (*op_func)(int, int);
+
+// --- TEST İÇİN HİPOTETİK FONKSİYONLAR ---
+int add(int a, int b) {
+    return a + b;
+}
+
+int sub(int a, int b) {
+    return a - b;
+}
+
+int main() {
+    // 2. Fonksiyon işaretçilerinden oluşan diziyi tanımla ve başlat
+    op_func operations[] = {add, sub};
+
+    // --- SINAV SENARYOSU: KULLANIM TESTİ ---
+    int x = 10;
+    int y = 4;
+
+    // operations[0] -> add fonksiyonuna işaret eder
+    // operations[1] -> sub fonksiyonuna işaret eder
+
+    printf("Toplama (operations[0]): %d + %d = %d\n", x, y, operations[0](x, y));
+    printf("Cikarma (operations[1]): %d - %d = %d\n", x, y, operations[1](x, y));
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h> // assert makrosu için gerekli kütüphane
 
+// Düğüm yapısı
+typedef struct Node {
+    int data;
+    struct Node *next;
+} Node;
+
+// DİKKAT: Sınav sorusundaki imza Node **head olarak düzeltilmiştir.
+void push_front(Node **head, int value) {
+    // 1. Yeni düğüm için bellek ayır
+    Node *new_node = (Node *)malloc(sizeof(Node));
+
+    // 2. Bellek tahsisinin başarılı olduğundan emin ol
+    // Eğer new_node NULL ise, program burada hata verip durur (abort).
+    assert(new_node != NULL);
+
+    // 3. Veriyi yeni düğüme kopyala
+    new_node->data = value;
+
+    // 4. Yeni düğümü mevcut listenin en başına bağla
+    new_node->next = *head;
+
+    // 5. Listenin başlangıç işaretçisini (head) yeni düğümü gösterecek şekilde güncelle
+    *head = new_node;
+}
+
+// --- EKRANA YAZDIRMA (YARDIMCI FONKSİYON) ---
+void print_list(Node *head) {
+    Node *current = head;
+    while (current != NULL) {
+        printf("%d -> ", current->data);
+        current = current->next;
+    }
+    printf("NULL\n");
+}
+
+// --- BELLEĞİ TEMİZLEME (YARDIMCI FONKSİYON) ---
+void free_list(Node *head) {
+    Node *tmp;
+    while (head != NULL) {
+        tmp = head;
+        head = head->next;
+        free(tmp);
+    }
+}
+
+int main() {
+    // Başlangıçta listemiz boş (head işaretçisi NULL)
+    Node *head = NULL;
+
+    printf("Listeye elemanlar ekleniyor...\n");
+
+    // Fonksiyonu çağırırken 'head' işaretçisinin ADRESİNİ gönderiyoruz (&head)
+    push_front(&head, 10);
+    push_front(&head, 20);
+    push_front(&head, 30);
+
+    // Beklenen çıktı: 30 -> 20 -> 10 -> NULL
+    print_list(head);
+
+    // İşimiz bitince ayırdığımız dinamik belleği işletim sistemine iade ediyoruz
+    free_list(head);
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
 
+typedef struct Node {
+    int data;
+    struct Node *next;
+} Node;
+
+/**
+ * Insère un nouveau maillon en tête de liste.
+ * @param head  adresse du pointeur de tête (double pointeur pour modification)
+ * @param value valeur à stocker dans le nouveau maillon
+ */
+void push_front(Node **head, int value) {
+    // Allocation du nouveau maillon
+    Node *new_node = (Node *)malloc(sizeof(Node));
+
+    // Gestion des erreurs d'allocation avec assert
+    assert(new_node != NULL);  // Stoppe le programme si malloc échoue
+
+    // Initialisation du maillon
+    new_node->data = value;
+    new_node->next = *head;    // L'ancien premier devient le suivant
+
+    // Mise à jour de la tête de liste
+    *head = new_node;
+}
+
+int main() {
+    Node *head = NULL;
+
+    push_front(&head, 10);
+    push_front(&head, 20);
+    push_front(&head, 30);
+
+    // Affichage : 30 -> 20 -> 10
+    for (Node *p = head; p != NULL; p = p->next)
+        printf("%d ", p->data);
+    printf("\n");
+
+    // Libération (basique)
+    while (head) {
+        Node *tmp = head;
+        head = head->next;
+        free(tmp);
+    }
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
 
+int main() {
+    // 1. Gerekli değişkenlerin tanımlanması
+    int num1, num2;
+    float float_num;
+
+    // 2. Kullanıcıdan verilerin alınması
+    printf("Iki tam sayi girin (aralarinda bosluk birakarak): ");
+    // scanf fonksiyonunda '&' kullanımı kritiktir, değerin yazılacağı adresi gösterir.
+    scanf("%d %d", &num1, &num2);
+
+    printf("Bir ondalikli sayi girin: ");
+    scanf("%f", &float_num);
+
+    // 3. Hesaplamaların yapılması
+    int sum = num1 + num2;
+
+    // sum (int) ve float_num (float) toplandığında sonuç float olur.
+    // 2 yerine 2.0 (veya 2.0f) kullanarak bölme işleminin float formatında kalmasını garantiliyoruz.
+    float average = (sum + float_num) / 2.0f;
+
+    // 4. Sonuçların formatlı şekilde ekrana yazdırılması
+    printf("Tam sayilarin toplami: %d\n", sum);
+
+    // %.3f belirleyicisi ile virgülden sonra tam olarak 3 basamak gösterilir.
+    printf("Toplam ve ondalikli sayinin ortalamasi: %.3f\n", average);
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
 
+// Makro tanımı. Derleyici kodda VALUES gördüğü her yere süslü parantezli bloğu yazar.
+#define VALUES {1, 2, 3, 4, 5, 6}
+
+// Fonksiyon prototipi. int *arr yerine int arr[] de yazılabilir, derleyici için ikisi de aynıdır.
+// Sadece bir bellek adresi (pointer) beklediğini belirtir.
+void afficher_pairs(int *arr, int size) {
+    printf("Elements pairs : ");
+
+    // Gelen adresten başlayıp, boyut kadar ileri gidiyoruz
+    for (int i = 0; i < size; i++) {
+        if (arr[i] % 2 == 0) {
+            printf("%d ", arr[i]);
+        }
+    }
+    printf("\n");
+}
+
+int main() {
+    // 1. Diziyi makro ile başlat.
+    int my_array[] = VALUES;
+
+    // 2. Boyutu main içerisinde HESAPLA.
+    // sizeof(my_array) -> Tüm dizinin bayt boyutu (örneğin 6 * 4 = 24 byte)
+    // sizeof(my_array[0]) -> Tek bir int elemanın boyutu (örneğin 4 byte)
+    // 24 / 4 = 6 eleman.
+    int size = sizeof(my_array) / sizeof(my_array[0]);
+
+    // 3. Fonksiyonu çağır. Dizinin adını yazmak, adresini (&my_array[0]) vermekle aynıdır.
+    afficher_pairs(my_array, size);
+
+    return 0;
+}
+
+void hatali_fonksiyon(int arr[]) {
+    // BURASI YANLIŞTIR!
+    int size = sizeof(arr) / sizeof(arr[0]);
+    // arr artık bir dizi değil, sadece bir İŞARETÇİDİR (pointer).
+    // 64-bit bir sistemde sizeof(arr) her zaman 8 byte döndürür.
+    // 8 / 4 yaparsın ve size her zaman 2 çıkar. Dizi kaç elemanlı olursa olsun döngün 2. turda biter.
+}
+
+// KURAL: Dizi bir fonksiyona geçirildiği an boyut bilgisini kaybeder ve bir pointer'a dönüşür.
+// Boyut hesaplaması her zaman dizinin orijinal olarak tanımlandığı scope'ta (kapsamda) yapılmalıdır.
 
 ```
 
 ```c
+#include <stdio.h>
 
+// Fonksiyon sadece işaretçi kabul ediyor.
+void inverser_chaine(char *str) {
+    // Güvenlik: Eğer boş bir adres gelirse çökmeyi engelle
+    if (str == NULL) {
+        return;
+    }
+
+    // 1. İşaretçileri başlangıç noktasına koy
+    char *start = str;
+    char *end = str;
+
+    // 2. 'end' işaretçisini string'in sonuna ('\0') kadar götür
+    while (*end != '\0') {
+        end++;
+    }
+
+    // 3. '\0' karakterini ters çevirmek istemiyoruz, bir adım geri gelip son harfe odaklan
+    end--;
+
+    // 4. İşaretçiler ortada buluşana kadar karakterleri takas et (Swap)
+    // Bellek adreslerini kıyaslıyoruz: start adresi, end adresinden daha küçük (solda) olduğu sürece
+    while (start < end) {
+        // Geçici değişkende start'ın GÖSTERDİĞİ değeri tut
+        char temp = *start;
+
+        // end'in gösterdiği değeri, start'ın gösterdiği yere kopyala
+        *start = *end;
+
+        // geçici değişkeni end'in gösterdiği yere kopyala
+        *end = temp;
+
+        // İşaretçileri birbirine doğru birer adım kaydır (Pointer Arithmetic)
+        start++;
+        end--;
+    }
+}
+
+int main() {
+    // --- KRİTİK NOKTA ---
+    // char *text = "HEIG-VD"; YAZILAMAZ! (Read-Only)
+    // char text[] formatı karakterleri değiştirilebilir Stack belleğine kopyalar.
+    char text[] = "HEIG-VD";
+
+    printf("Orijinal hali: %s\n", text);
+
+    // Fonksiyonu çağırıyoruz. Dizinin ismi (text), ilk elemanın bellekteki adresini temsil eder.
+    inverser_chaine(text);
+
+    printf("Ters cevrilmis hali: %s\n", text);
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
 
+int main() {
+    int capacite = 2;            // Başlangıç kapasitesi
+    int nb_elements = 0;         // Dizideki mevcut eleman sayısı
+    int valeur;                  // Kullanıcıdan okunan sayı
+    char fin;                    // 'q' kontrolü için karakter
+
+    // 1. BAŞLANGIÇ BELLEĞİNİ AYIR (2 elemanlık)
+    int *tab = (int*)malloc(capacite * sizeof(int));
+    if (tab == NULL) {
+        fprintf(stderr, "Erreur d'allocation mémoire\n");
+        return 1;
+    }
+
+    printf("Entrez des nombres ('q' pour quitter):\n");
+
+    // 2. KULLANICIDAN VERİ OKUMA DÖNGÜSÜ
+    while (1) {
+        // Önce bir tam sayı okumayı DENE
+        if (scanf("%d", &valeur) == 1) {
+            // Sayı başarıyla okundu
+
+            // 2.1. DİZİ DOLU MU? → KAPASİTEYİ İKİ KATINA ÇIKAR
+            if (nb_elements >= capacite) {
+                int nouvelle_capacite = capacite * 2;
+
+                // realloc: eski veriyi KORUR, yeni boyuta GENİŞLETİR
+                int *temp = (int*)realloc(tab, nouvelle_capacite * sizeof(int));
+
+                if (temp == NULL) {
+                    fprintf(stderr, "Erreur de réallocation mémoire\n");
+                    free(tab);  // Eski belleği temizle!
+                    return 1;
+                }
+
+                // Başarılı: yeni adresi ata, kapasiteyi güncelle
+                tab = temp;
+                capacite = nouvelle_capacite;
+
+                printf("  [Capacité augmentée à %d]\n", capacite);
+            }
+
+            // 2.2. SAYIYI DİZİYE EKLE
+            tab[nb_elements] = valeur;
+            nb_elements++;
+        }
+        else {
+            // Sayı okunamadı → buffer'da ne var?
+            scanf("%c", &fin);
+
+            if (fin == 'q') {
+                break;  // 'q' girildi → DÖNGÜDEN ÇIK
+            }
+            else {
+                printf("  Entrée invalide, recommencez\n");
+                // Buffer'ı temizle (kalan karakterleri at)
+                while (getchar() != '\n');
+            }
+        }
+    }
+
+    // 3. SONUÇLARI YAZDIR
+    printf("Vous avez saisi %d nombres\n", nb_elements);
+    for (int i = 0; i < nb_elements; i++) {
+        printf("%d", tab[i]);
+        if (i < nb_elements - 1) {
+            printf(" ");  // Son elemandan sonra boşluk YOK
+        }
+    }
+    printf("\n");
+
+    // 4. BELLEĞİ TEMİZLE
+    free(tab);
+    // tab = NULL;  // İyi pratik: dangling pointer'ı önle
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
 
+/**
+ * Matrisin her satırının toplamını hesaplar ve ekrana yazdırır.
+ *
+ * @param matrice  Satır başlıklarının başlangıç adresi (int **)
+ * @param lignes   Toplam satır sayısı
+ * @param colonnes Toplam sütun sayısı
+ */
+void somme_lignes(int **matrice, int lignes, int colonnes) {
+    for (int i = 0; i < lignes; i++) {
+        int somme = 0;
+
+        // i. satırdaki tüm sütunları topla
+        for (int j = 0; j < colonnes; j++) {
+            somme += matrice[i][j];
+        }
+
+        printf("Somme ligne %d : %d\n", i, somme);
+    }
+}
+
+int main() {
+    int lignes, colonnes;
+
+    // ===== 1. BOYUTLARI AL =====
+    printf("Lignes : ");
+    scanf("%d", &lignes);
+    printf("Colonnes : ");
+    scanf("%d", &colonnes);
+
+    if (lignes <= 0 || colonnes <= 0) {
+        printf("Dimensions invalides!\n");
+        return 1;
+    }
+
+    // ===== 2. SATIR BAŞLIKLARI İÇİN BELLEK AYIR =====
+    int **matrice = (int**)malloc(lignes * sizeof(int*));
+    if (matrice == NULL) {
+        fprintf(stderr, "Erreur d'allocation mémoire\n");
+        return 1;
+    }
+
+    // ===== 3. HER SATIR İÇİN BELLEK AYIR =====
+    for (int i = 0; i < lignes; i++) {
+        matrice[i] = (int*)malloc(colonnes * sizeof(int));
+        if (matrice[i] == NULL) {
+            fprintf(stderr, "Erreur d'allocation mémoire\n");
+            // Hata durumunda önceki satırları temizle!
+            for (int j = 0; j < i; j++) {
+                free(matrice[j]);
+            }
+            free(matrice);
+            return 1;
+        }
+    }
+
+    // ===== 4. KULLANICIDAN DEĞERLERİ AL =====
+    printf("Entrez les valeurs (%d x %d) :\n", lignes, colonnes);
+    for (int i = 0; i < lignes; i++) {
+        for (int j = 0; j < colonnes; j++) {
+            printf("Ligne %d, colonne %d : ", i, j);
+            scanf("%d", &matrice[i][j]);  // & UNUTMA!
+        }
+    }
+
+    // ===== 5. SATIR TOPLAMLARINI HESAPLA VE YAZDIR =====
+    printf("\n");
+    somme_lignes(matrice, lignes, colonnes);
+
+    // ===== 6. BELLEĞİ TEMİZLE (TERS SIRADA!) =====
+    for (int i = 0; i < lignes; i++) {
+        free(matrice[i]);  // ÖNCE her satır
+    }
+    free(matrice);          // SONRA satır başlıkları
+
+    return 0;
+}
 
 ```
 

@@ -529,15 +529,321 @@
 
 //     return 0;
 // }
-#include <stdio.h>
+// #include <stdio.h>
 
-#define DEFINE_AND_PRINT(type, name, val) \
-type var_##name = (val);                   \
-    printf("%s = %d\n", #name, var_##name)
+// #define DEFINE_AND_PRINT(type, name, val) \
+// type var_##name = (val);                   \
+//     printf("%s = %d\n", #name, var_##name)
+
+// int main() {
+//     DEFINE_AND_PRINT(int, age, 38);
+
+//     DEFINE_AND_PRINT(int, size, 100);
+//     return 0;
+// }
+
+
+// typedef int(*op_func)(int, int);
+
+// int add(int a, int b) { return a + b; };
+// int sub(int a, int b) { return a - b; };
+
+
+
+// int main() {
+//     op_func operations[] = { add, sub };
+
+//     int x = 10, y = 5;
+//     printf("add(%d, %d) = %d\n", x, y, operations[0](x, y));
+//     printf("add(%d, %d) = %d\n", x, y, operations[1](x, y));
+
+// }
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <assert.h>
+
+// typedef struct Node {
+//     int data;
+//     struct Node *next;
+// }Node;
+
+// void push_front(Node **head, int value) {
+//     Node *new_node = (Node *)malloc(sizeof(Node));
+//     assert(new_node != NULL);
+
+//     new_node->data = value;
+//     new_node->next = *head;
+
+//     *head = new_node;
+// }
+
+
+// int main() {
+//     Node *head = NULL;
+//     push_front(&head, 10);
+//     push_front(&head, 20);
+//     push_front(&head, 30);
+
+//     for (Node *p = head; p != NULL; p->next) {
+//         printf("%d ", p->data);
+//         printf('\n');
+//     }
+
+//     while (head) {
+//         Node *temp = head;
+//         head = head->next;
+//         free(temp);
+//     }
+//     return 0;
+// }
+
+// #include <stdlib.h>
+// #include <stdio.h>
+// #include <assert.h>
+
+// typedef struct Node {
+//     int data;
+//     struct Node *next;
+// }Node;
+
+// void push_front(Node **head, int value) {
+//     Node *new_node = (Node *)malloc(sizeof(Node));
+//     assert(new_node != NULL);
+
+//     new_node->data = value;
+//     new_node->next = *head;
+
+//     *head = new_node;
+// }
+
+// void print_list(Node *head) {
+//     for (Node *p = head; p != NULL; ++p) {
+//         printf("%d\n", p->data);
+//     }
+//     printf("\n");
+// }
+
+// void free_list(Node *head) {
+//     while (head) {
+//         Node *temp = head;
+//         head = head->next;
+//         free(temp);
+//     }
+// }
+
+// int main() {
+//     Node *head = NULL;
+//     // Fonksiyonu çağırırken 'head' işaretçisinin ADRESİNİ gönderiyoruz (&head)
+//     push_front(&head, 10);
+//     push_front(&head, 20);
+//     push_front(&head, 30);
+
+//     print_list(head);
+
+//     free_list(head);
+//     return 0;
+
+
+// }
+
+// #define PRINT_VAR(val) _Generic((val), \
+//     int: printf("%s = %d\n", #val, val), \
+//     float: printf("%s = %.2f\n", #val, val), \
+//     double: printf("%s = %.2f\n", #val, val), \
+//     char: printf("%s = %c\n", #val, val) \
+// )
+
+// int main() {
+//     int a = 42;
+//     float b = 3.14;
+//     char c = 'Z';
+
+//     PRINT_VAR(a);
+//     PRINT_VAR(b);
+//     PRINT_VAR(c);
+
+//     return 0;
+// }
+
+
+// int main() {
+//     int say1, say2;
+//     float ondalik;
+//     int top;
+//     float ort;
+
+//     scanf("%d, %d", &say1, &say2);
+//     scanf("%f", &ondalik);
+//     top = say1 + say2;
+
+//     ort=( top+ondalik)/2.0f;
+
+// }
+
+// #define VALUES {1,2,3,4,5,6}
+
+// void afficher_pairs(int tab[], int size) {
+//     for (int i = 0; i < size; ++i) {
+//         if (tab[i] % 2 == 0) {
+//             printf("%d ", tab[i]);
+//         }
+//     }
+//     printf("\n");
+// }
+
+// int main() {
+//     int my_array[] = VALUES;
+
+//     int size = sizeof(my_array) / sizeof(my_array[0]);
+//     afficher_pairs(my_array, size);
+// }
+
+// void inverser_chaine(char *str) {
+//     if (str == NULL || *str == '\0') return;
+
+//     char *end = str;
+//     while (*end) {
+//         ++end;
+//     }
+//     --end;
+//     char *start = str;
+
+//     while (start < end) {
+//         char temp = *start;
+//         *start = *end;
+//         *end = temp;
+
+//         ++start;
+//         --end;
+//     }
+// }
+
+
+// int main() {
+//     char str[] = "HEIG-VD";
+
+//     printf("=== STRING TERS ÇEVİRME ===\n\n");
+//     printf("Orijinal: \"%s\"\n", str);
+//     inverser_chaine(str);
+//     printf("Ters:     \"%s\"\n", str);
+//     printf("Beklenen: \"DV-GIEH\"\n\n");
+
+
+// }
+// #include <stdlib.h>
+// #include <ctype.h>
+
+// int main() {
+
+//     int capacite = 2;
+//     int nb_elements = 0;
+//     int valuer;
+//     char fin;
+
+//     int *tab = malloc(capacite * sizeof(int));
+//     if (tab == NULL) {
+//         fprintf(stderr, "Erreur allocation");
+//         return 1;
+//     }
+//     printf("Entrez des nombres ('q' pour quitter):\n");
+
+//     while (1) {
+
+//         if (scanf("%d", &valuer) == 1) {
+//             if (nb_elements >= capacite) {
+//                 capacite *= 2;
+
+//                 int *temp = realloc(tab, capacite * sizeof(int));
+//                 if (temp == NULL) {
+//                     fprintf(stderr, "erreur de reallocation..");
+//                     free(tab);
+//                     return 1;
+//                 }
+//                 tab = temp;
+//                 printf("  [Capacité augmentée à %d]\n", capacite);
+//             }
+
+//             tab[nb_elements++] = valuer;
+//         } else {
+//             scanf("%c", &fin);
+//             if (fin == 'q') {
+//                 break;
+//             } else {
+//                 printf("  Entrée invalide, recommencez\n");
+//                 while (getchar() != '\n');
+//             }
+//         }
+//     }
+//     printf("Vous avez saisi %d nombres\n", nb_elements);
+//     for (int i = 0; i < nb_elements; i++) {
+//         printf("%d", tab[i]);
+//         if (i < nb_elements - 1) {
+//             printf(" ");  // Son elemandan sonra boşluk YOK
+//         }
+//     }
+//     printf("\n");
+
+//     free(tab);
+// }
+
+void somme_lignes(int **mat, int lignes, int colonnes) {
+    for (int i = 0; i < lignes;++i) {
+        int somme = 0;
+        for (int j = 0; j < colonnes; ++j) {
+            somme += mat[i][j];
+        }
+        printf("Somme lignes %d : %d\n", i, somme);
+    }
+}
+
 
 int main() {
-    DEFINE_AND_PRINT(int, age, 38);
+    int lignes, colonnes;
 
-    DEFINE_AND_PRINT(int, size, 100);
+    printf("Lignes : ");
+    scanf("%d", &lignes);
+    printf("Colonnes : ");
+    scanf("%d", &colonnes);
+
+    if (lignes <= 0 || colonnes <= 0) {
+        printf("Erreur..");
+        return 1;
+    }
+
+    int **matrice = malloc(lignes * sizeof(int *));
+    if (matrice == NULL) {
+        fprintf(stderr, "Erreur..");
+        return 1;
+    }
+
+    for (int i = 0; i < lignes; ++i) {
+        matrice[i] = malloc(colonnes * sizeof(int));
+        if (matrice[i] == NULL) {
+            fprintf(stderr, "Erreur..\n");
+            for (int j = 0; j < i; ++j) {
+                free(matrice[j]);
+            }
+            free(matrice);
+            return 1;
+        }
+    }
+    printf("Entrez les valeurs (%d x %d) :\n", lignes, colonnes);
+    for (int i = 0; i < lignes; i++) {
+        for (int j = 0; j < colonnes; j++) {
+            printf("Ligne %d, colonne %d : ", i, j);
+            scanf("%d", &matrice[i][j]);  // & UNUTMA!
+        }
+    }
+
+    printf("\n");
+    somme_lignes(matrice, lignes, colonnes);
+
+    for (int i = 0; i < lignes; ++i) {
+        free(matrice[i]);
+    }
+    free(matrice);
+
     return 0;
 }
