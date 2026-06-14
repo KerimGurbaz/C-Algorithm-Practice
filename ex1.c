@@ -788,62 +788,520 @@
 //     free(tab);
 // }
 
-void somme_lignes(int **mat, int lignes, int colonnes) {
-    for (int i = 0; i < lignes;++i) {
-        int somme = 0;
-        for (int j = 0; j < colonnes; ++j) {
-            somme += mat[i][j];
-        }
-        printf("Somme lignes %d : %d\n", i, somme);
+// void somme_lignes(int **mat, int lignes, int colonnes) {
+//     for (int i = 0; i < lignes;++i) {
+//         int somme = 0;
+//         for (int j = 0; j < colonnes; ++j) {
+//             somme += mat[i][j];
+//         }
+//         printf("Somme lignes %d : %d\n", i, somme);
+//     }
+// }
+
+
+// int main() {
+//     int lignes, colonnes;
+
+//     printf("Lignes : ");
+//     scanf("%d", &lignes);
+//     printf("Colonnes : ");
+//     scanf("%d", &colonnes);
+
+//     if (lignes <= 0 || colonnes <= 0) {
+//         printf("Erreur..");
+//         return 1;
+//     }
+
+//     int **matrice = malloc(lignes * sizeof(int *));
+//     if (matrice == NULL) {
+//         fprintf(stderr, "Erreur..");
+//         return 1;
+//     }
+
+//     for (int i = 0; i < lignes; ++i) {
+//         matrice[i] = malloc(colonnes * sizeof(int));
+//         if (matrice[i] == NULL) {
+//             fprintf(stderr, "Erreur..\n");
+//             for (int j = 0; j < i; ++j) {
+//                 free(matrice[j]);
+//             }
+//             free(matrice);
+//             return 1;
+//         }
+//     }
+//     printf("Entrez les valeurs (%d x %d) :\n", lignes, colonnes);
+//     for (int i = 0; i < lignes; i++) {
+//         for (int j = 0; j < colonnes; j++) {
+//             printf("Ligne %d, colonne %d : ", i, j);
+//             scanf("%d", &matrice[i][j]);  // & UNUTMA!
+//         }
+//     }
+
+//     printf("\n");
+//     somme_lignes(matrice, lignes, colonnes);
+
+//     for (int i = 0; i < lignes; ++i) {
+//         free(matrice[i]);
+//     }
+//     free(matrice);
+
+//     return 0;
+// }
+
+
+// int combien(int n) {
+//     int count = 0;
+//     do {
+//         n /= 10;
+//         ++count;
+//     }
+//     while (n > 0);
+//     return count;
+
+// }
+// int main() {
+//     int n;
+//     int c;
+//     if (scanf("%d", &n) != 1) {
+//         fprintf(stderr, "erreor..");
+//         while ((c = getchar()) != '\n' && c != EOF) {
+//             continue;
+//         }
+//         return 1;
+//     };
+
+//     int result = combien(n);
+//     printf("%d", result);
+
+//     return 0;
+// }
+
+// float produit_scalaire(const float *tab1, const float *tab2, int size) {
+//     float somme = 0.0f;
+//     const float *fin = size + tab1;
+
+//     while (tab1 < fin) {
+//         somme += (*tab1++) * (*tab2++);
+//     }
+//     return somme;
+
+// }
+
+
+// int main() {
+
+//     float v1[] = { 1.0f, 2.0f, 3.0f };
+//     float v2[] = { 4.0f, 5.0f, 6.0f };
+
+//     int taille = sizeof(v1) / sizeof(v1[0]);
+
+//     float result = produit_scalaire(v1, v2, taille);
+
+//     printf("Result : %.0f\n", result);
+// }
+
+// int est_palindrome(const char *str) {
+
+//     if (str == NULL) {
+//         return 0;
+//     }
+
+//     const char *start = str;
+//     const char *end = str;
+
+//     while (*end) {
+//         ++end;
+//     }
+//     if (start == end) {
+//         return 1;
+//     }
+//     end--;
+//     while (start < end) {
+//         if (*start != *end) {
+//             return 0;
+//         }
+//         ++start;
+//         --end;
+//     }
+
+//     return 1;
+// }
+
+
+// int main() {
+//     char *test1 = "kayak";
+//     char *test2 = "radar";
+//     printf("'%s' palindrom mu? %d\n", test1, est_palindrome(test1));
+//     printf("'%s' palindrom mu? %d\n", test2, est_palindrome(test2));
+
+// }
+
+
+// int main() {
+//     int capacite = 1;
+//     int nb_elements = 0;
+//     int valeur;
+
+//     int *tab = malloc(capacite * sizeof(int));
+//     if (tab == NULL) {
+//         fprintf(stderr, "Erreur d'allocation memoire\n");
+//         return 1;
+//     }
+//     printf("Entrez des nombres entiers ('q' pour quitter):\n");
+//     printf("(Seuls les nombres pairs seront stockés)\n\n");
+
+//     while (1) {
+//         if (scanf("%d", &valeur) == 1) {
+//             if (valeur % 2 != 0) {
+//                 printf("  %d est impair, ignoré.\n", valeur);
+//                 continue;
+//             }
+//             if (nb_elements >= capacite) {
+//                 capacite *= 2;
+
+//                 int *temp = realloc(tab, capacite * sizeof(int));
+//                 if (temp == NULL) {
+//                     fprintf(stderr, "Erreur de reallocation memoire\n");
+//                     free(tab);
+//                     return 1;
+//                 }
+//                 tab = temp;
+//                 printf("  [Capacité augmentée à %d]\n", capacite);
+//             }
+//             tab[nb_elements] = valeur;
+//             nb_elements++;
+//             printf("  %d stocké.\n", valeur);
+//         } else {
+//             char fin;
+//             scanf("%c", &fin);
+
+//             if (fin == 'q' || fin == 'Q') {
+//                 break;
+//             } else {
+//                 printf("  Entrée invalide. Utilisez 'q' pour quitter.\n");
+//                 while (getchar() != '\n');
+//             }
+//         }
+//     }
+
+//     printf("\n=== RÉSULTATS ===\n");
+//     printf("Vous avez stocké %d nombre(s) pair(s) :\n", nb_elements);
+//     if (nb_elements > 0) {
+//         for (int i = 0; i < nb_elements; i++) {
+//             printf("%d", tab[i]);
+//             if (i < nb_elements - 1) printf(" ");
+//         }
+//         printf("\n");
+//     } else {
+//         printf("(aucun)\n");
+//     }
+//     printf("Capacité finale du tableau : %d\n", capacite);
+
+//     free(tab);
+
+// }
+
+
+// #include <stdlib.h>
+
+// int main() {
+//     int N;
+//     printf("Satir sayisini (N) girin: ");
+//     if (scanf("%d", &N) != 1 || N <= 0) return 1;
+
+//     int **jagged_array = malloc(N * sizeof(int *));
+//     if (jagged_array == NULL) {
+//         printf("Erreur..");
+//         return 1;
+//     }
+//     for (int i = 0; i < N; ++i) {
+//         jagged_array[i] = malloc((i + 1) * sizeof(int));
+//         if (jagged_array[i] == NULL) {
+//             printf("%d. satir bellek tahsisi basarisiz..\n", i);
+//             for (int k = 0; k < i; ++k) {
+//                 free(jagged_array[k]);
+//             }
+//             free(jagged_array);
+//             return 1;
+//         }
+
+
+//         for (int j = 0; j < (i + 1); ++j) {
+//             jagged_array[i][j] = i;
+//         }
+//     }
+//     printf("\nTableau 'en escalier' (%d lignes):\n", N);
+//     for (int i = 0; i < N; i++) {
+//         for (int j = 0; j < (i + 1); j++) {
+//             printf("%d ", jagged_array[i][j]);
+//         }
+//         printf("\n"); // Her satır bitiminde alt satıra geç
+//     }
+
+//     for (int i = 0; i < N; i++) {
+//         free(jagged_array[i]);
+//     }
+
+//     free(jagged_array);
+//     return 0;
+// }
+
+
+// #define DEFINE_AND_PRINT(type, name, val) \
+//     type var_##name = val; \
+//     printf("%s = %d\n", #name, var_##name)
+//     // printf(#name " = %d\n", var_##name)
+
+// int main() {
+//     // Sınav sorusundaki örnek çağrı
+//     DEFINE_AND_PRINT(int, age, 38);
+
+//     // İşlemin başarılı olduğunu ve 'var_age' değişkeninin
+//     // makro dışında da gerçekten var olduğunu kanıtlayalım:
+//     printf("Makro disinda erisim: var_age'in karesi = %d\n", var_age * var_age);
+
+//     // Farklı tiplerle de çalıştığını görelim
+//     DEFINE_AND_PRINT(char, initial, 65); // 65, 'A' karakterinin ASCII kodudur (integer olarak yazdırılır)
+
+//     return 0;
+// }
+
+
+// #include <stdio.h>
+// #include <stddef.h>
+
+// void reserve_array(int *tab, size_t n) {
+//     if (tab == NULL || n < 0)return;
+
+//     int *start = tab;
+//     int *fin = tab + n - 1;
+
+//     while (start < fin) {
+//         int temp = *start;
+//         *start = *fin;
+//         *fin = temp;
+//         ++start;
+//         --fin;
+//     }
+
+// }
+
+
+
+// int main() {
+//     int tab[] = { 1,2,3,4,5,6,7 };
+//     size_t taille = sizeof(tab) / sizeof(tab[0]);
+
+//     printf("Avant : ");
+//     for (size_t i = 0; i < taille; i++) printf("%d ", tab[i]);
+
+//     reserve_array(tab, taille);
+
+//     printf("Apres : ");
+//     for (size_t i = 0; i < taille; i++) printf("%d ", tab[i]);
+
+//     printf("\n");
+//     return 0;
+
+// }
+
+// #define MAX(a,b) ((a) > (b) ? (a) :(b))
+
+
+// char *my_strdup(const char *s) {
+//     if (s == NULL) {
+//         return NULL;
+//     }
+
+//     size_t len = 0;
+//     const char *p = s;
+//     while (*p++) ++len;
+
+//     char *copy = malloc((len + 1) * sizeof(char));
+//     if (copy == NULL) {
+//         return NULL;
+//     }
+//     char *dest = copy;
+//     while (*dest++ = *s++);
+
+//     return copy;
+
+
+// }
+
+
+// int main() {
+//     const char *originale = "HEIG_VD";
+//     char *dupliquee = my_strdup(originale);
+
+//     if (dupliquee) {
+//         printf("Originale : %s\n", originale);
+//         printf("Dupliquée : %s\n", dupliquee);
+//         printf("Adresses différentes : %p vs %p\n", &originale, &dupliquee);
+//         free(dupliquee);
+//     } else {
+//         printf("Erreur d'allocation\n");
+//     }
+
+//     return 0;
+
+// }
+
+
+// int main() {
+//     const char *original = "HEIG-VD Data Engineering";
+
+//     char *kopya = my_strdup(original);
+
+//     if (kopya != NULL) {
+//         printf("Orijinal : %s\n", original);
+//         printf("Kopya    : %s\n", kopya);
+
+//         kopya[0] = 'X';
+//         printf("Orijinal : %s\n", original);
+//         printf("degistirilmis_Kopya    : %s\n", kopya);
+
+//         free(kopya);
+
+//     } else {
+//         printf("Bellek tahsisi basarisiz oldu.\n");
+//     }
+
+//     return 0;
+// }
+
+// typedef struct {
+//     int id;
+//     char nom[50];
+//     float moyenne;
+// }etudiant_t;
+
+
+// int save_students(const char *filename, const etudiant_t *tab, size_t count) {
+//     if (filename == NULL || tab == NULL || count == 0) {
+//         return 0;
+//     }
+
+//     FILE *f = fopen(filename, "wb");
+//     if (f == NULL) {
+//         perror("Error d'ouverture du fcihier");
+//         return 0;
+//     }
+
+//     size_t written = fwrite(tab, sizeof(etudiant_t), count, f);
+//     fclose(f);
+
+//     if (written == count) {
+//         return 1;
+//     } else {
+//         return 0;
+//     }
+// }
+
+// int main() {
+//     etudiant_t etudiants[] = {
+//        {1, "Ali Yilmaz", 85.5},
+//        {2, "Ayse Demir", 92.0},
+//        {3, "Mehmet Kaya", 78.5}
+//     };
+
+//     size_t count = sizeof(etudiants) / sizeof(etudiants[0]);
+
+//     if (save_students("etudiants.dat", etudiants, count)) {
+//         printf("✅ %zu öğrenci başarıyla kaydedildi.\n", count);
+
+//         // Dosya boyutunu kontrol et
+//         printf("   Beklenen dosya boyutu: %zu byte\n",
+//             count * sizeof(etudiant_t));
+//     } else {
+//         printf("❌ Kayıt başarısız!\n");
+//     }
+
+//     return 0;
+// }
+
+
+// union FloatBytes {
+//     float f;
+//     unsigned char bytes[4];
+// };
+
+// int main() {
+//     union FloatBytes fb;
+//     fb.f = 3.14f;
+
+//     printf("Float degeri : %.2f\n", fb.f);
+//     printf("\nByte'lar (hex olarak):\n");
+
+//     for (int i = 0; i < 4; ++i) {
+//         printf("Byte %d : 0x%02X\n", i, fb.bytes[i]);
+//     }
+//     // 3. İLK byte'ı hex olarak yazdır
+//     printf("\nİlk byte (hex): 0x%02X\n", fb.bytes[0]);
+
+//     printf("\nBellek adresi: %p\n", (void *)&fb);
+//     printf("sizeof(FloatBytes) = %zu byte\n", sizeof(union FloatBytes));
+
+// }
+
+// typedef struct DNode {
+//     int data;
+//     struct DNode *prev;
+//     struct DNode *next;
+
+// }DNode;
+
+// void delete_note(DNode **head, DNode *to_delete) {
+//     if (head == NULL || *head == NULL || to_delete == NULL) {
+
+//         return;
+//     }
+
+//     if (*head == to_delete) {
+//         *head = to_delete->next;
+//     }
+//     if (to_delete->prev != NULL) {
+//         to_delete->prev->next = to_delete->next;
+//     }
+//     if (to_delete->next != NULL) {
+//         to_delete->next->prev = to_delete->prev;
+//     }
+
+//     free(to_delete);
+
+// }
+// void push_front(DNode **head, int data) {
+//     DNode *n = malloc(sizeof(DNode));
+
+//     n->data = data;
+//     n->prev = NULL;
+//     n->next = *head;
+//     if (*head) {
+//         (*head)->prev = n;
+//         *head = n;
+//     }
+// }
+
+// void free_list(DNode *head) {
+//     while (head) {
+//         DNode *tmp = head;
+//         head = head->next;
+//         free(tmp);
+//     }
+// }
+
+typedef struct DNode {
+    int data;
+    struct DNode *prev;
+    struct DNode *next;
+}DNode;
+
+void delete_node(DNode **head, DNode *to_delete) {
+    if (*head == NULL || to_delete == NULL) {
+        return;
     }
-}
 
-
-int main() {
-    int lignes, colonnes;
-
-    printf("Lignes : ");
-    scanf("%d", &lignes);
-    printf("Colonnes : ");
-    scanf("%d", &colonnes);
-
-    if (lignes <= 0 || colonnes <= 0) {
-        printf("Erreur..");
-        return 1;
+    if (*head == to_delete) {
+        *head = to_delete->next;
     }
-
-    int **matrice = malloc(lignes * sizeof(int *));
-    if (matrice == NULL) {
-        fprintf(stderr, "Erreur..");
-        return 1;
-    }
-
-    for (int i = 0; i < lignes; ++i) {
-        matrice[i] = malloc(colonnes * sizeof(int));
-        if (matrice[i] == NULL) {
-            fprintf(stderr, "Erreur..\n");
-            for (int j = 0; j < i; ++j) {
-                free(matrice[j]);
-            }
-            free(matrice);
-            return 1;
-        }
-    }
-    printf("Entrez les valeurs (%d x %d) :\n", lignes, colonnes);
-    for (int i = 0; i < lignes; i++) {
-        for (int j = 0; j < colonnes; j++) {
-            printf("Ligne %d, colonne %d : ", i, j);
-            scanf("%d", &matrice[i][j]);  // & UNUTMA!
-        }
-    }
-
-    printf("\n");
-    somme_lignes(matrice, lignes, colonnes);
-
-    for (int i = 0; i < lignes; ++i) {
-        free(matrice[i]);
-    }
-    free(matrice);
-
-    return 0;
 }

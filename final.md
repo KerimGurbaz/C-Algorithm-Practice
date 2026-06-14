@@ -1259,52 +1259,515 @@ int main() {
 ```
 
 ```c
+#include <stdio.h>
 
+int main() {
+    int nombre;
 
-```
+    // 1. KULLANICIDAN SAYI AL
+    printf("Entrez un entier positif : ");
+    if (scanf("%d", &nombre) != 1 || nombre <= 0) {
+        printf("Veuillez entrer un entier positif valide.\n");
+        return 1;
+    }
 
-```c
+    // 2. BASAMAK SAYISINI BUL (do..while)
+    int compteur = 0;
+    int temp = nombre;  // Orijinali koru
 
+    do {
+        temp = temp / 10;   // Sayıyı 10'a böl (bir basamak eksilt)
+        compteur++;         // Basamak sayacını artır
+    } while (temp > 0);     // Sayı 0 olana kadar DEVAM
 
-```
+    // 3. SONUCU YAZDIR
+    printf("Le nombre %d contient %d chiffres\n", nombre, compteur);
 
-```c
-
-
-```
-
-```c
-
-
-```
-
-```c
-
-
-```
-
-```c
-
-
-```
-
-```c
-
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
 
+// Fonksiyon imzası: İki float işaretçisi ve dizinin boyutu
+float produit_scalaire(float *v1, float *v2, int size) {
+    float sum = 0.0f; // Toplamı tutacak değişken
+
+    // Dizinin eleman sayısı kadar dönüyoruz
+    for (int i = 0; i < size; i++) {
+        // İşaretçilerin GÖSTERDİĞİ değerleri (*) al, çarp ve toplama ekle
+        sum += (*v1) * (*v2);
+
+        // İşaretçilerin kendisini (adresleri) bellekte bir sonraki elemana kaydır
+        v1++;
+        v2++;
+    }
+
+    return sum;
+}
+
+int main() {
+    // --- SINAV SENARYOSU: KULLANIM TESTİ ---
+    // Örnek iki vektör (dizi) tanımlıyoruz
+    float array_A[] = {1.5f, 2.0f, 3.0f};
+    float array_B[] = {2.0f, -1.0f, 4.0f};
+
+    // Boyutu hesapla (sizeof numarasını önceki sorudan hatırlıyorsun)
+    int size = sizeof(array_A) / sizeof(array_A[0]);
+
+    // Dizilerin isimleri ilk elemanlarının adresleridir, bu yüzden doğrudan gönderiyoruz
+    float result = produit_scalaire(array_A, array_B, size);
+
+    // Beklenen hesap: (1.5 * 2.0) + (2.0 * -1.0) + (3.0 * 4.0) = 3.0 - 2.0 + 12.0 = 13.0
+    printf("Produit scalaire: %.2f\n", result);
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
 
+// 1 ise palindrom, 0 ise değil
+int est_palindrome(char *str) {
+    // Güvenlik kontrolü
+    if (str == NULL) {
+        return 0;
+    }
+
+    char *start = str;
+    char *end = str;
+
+    // 1. 'end' işaretçisini string'in sonuna ('\0') kadar götür
+    while (*end != '\0') {
+        end++;
+    }
+
+    // İstisnai Durum: String tamamen boşsa (""), start ve end aynı yerdedir ('\0').
+    // end-- yaparsak bellekte kendimize ait olmayan bir yere kayarız.
+    // Boş string genelde palindrom kabul edilir (1 döndürürüz).
+    if (start == end) {
+        return 1;
+    }
+
+    // 2. İşaretçiyi '\0' karakterinden son gerçek karaktere geri çek
+    end--;
+
+    // 3. İşaretçiler birbirine doğru yaklaşırken karakterleri kıyasla
+    while (start < end) {
+        // Karakterler eşleşmiyorsa anında reddet (Büyük/küçük harf duyarlı)
+        if (*start != *end) {
+            return 0;
+        }
+
+        // Eşleşiyorsa bir sonraki harflere geç
+        start++;
+        end--;
+    }
+
+    // Döngü sorunsuz bittiyse kelime palindromdur
+    return 1;
+}
+
+int main() {
+    // --- SINAV SENARYOSU: KULLANIM TESTLERİ ---
+
+    // Palindrom olanlar
+    char *test1 = "kayak";
+    char *test2 = "radar";
+    char *test3 = "a";          // Tek harf palindromdur
+
+    // Palindrom olmayanlar
+    char *test4 = "HEIG-VD";
+    char *test5 = "Radar";      // Büyük 'R' ve küçük 'r' eşit değildir (Sensible à la casse)
+    char *test6 = "kayak ";     // Sonda boşluk var, baştaki 'k' ile eşleşmez
+
+    printf("'%s' palindrom mu? %d\n", test1, est_palindrome(test1));
+    printf("'%s' palindrom mu? %d\n", test2, est_palindrome(test2));
+    printf("'%s' palindrom mu? %d\n", test3, est_palindrome(test3));
+    printf("'%s' palindrom mu? %d\n", test4, est_palindrome(test4));
+    printf("'%s' palindrom mu? %d\n", test5, est_palindrome(test5));
+    printf("'%s' palindrom mu? %d\n", test6, est_palindrome(test6));
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
 
+int main() {
+    int capacity = 1;
+    int count = 0;
+    int input;
+
+    // 1. Başlangıç için 1 elemanlık bellek tahsisi (malloc)
+    int *arr = (int *)malloc(capacity * sizeof(int));
+    if (arr == NULL) {
+        printf("Baslangic bellek tahsisi basarisiz!\n");
+        return 1;
+    }
+
+    printf("Tam sayilar girin (Durdurmak icin 'q' veya herhangi bir harf girin):\n");
+
+    // 2. Kullanıcı geçerli bir tam sayı girdiği sürece döngü çalışır.
+    // 'q' girildiğinde scanf 0 döndüreceği için döngü otomatik biter.
+    while (scanf("%d", &input) == 1) {
+
+        // 3. Sadece çift sayıları kabul et (Filtreleme)
+        if (input % 2 == 0) {
+
+            // 4. Kapasite doldu mu kontrolü
+            if (count == capacity) {
+                int new_capacity = capacity * 2;
+
+                // KRİTİK NOKTA: Realloc işlemi için geçici bir pointer kullanıyoruz.
+                int *temp = (int *)realloc(arr, new_capacity * sizeof(int));
+
+                if (temp == NULL) {
+                    // Bellek tahsisi başarısız oldu!
+                    printf("Yeniden boyutlandirma sirasinda bellek hatasi!\n");
+                    // Eski belleği kaybetmedik, güvenle iade edebiliriz.
+                    free(arr);
+                    return 1; // Programı hata koduyla sonlandır
+                }
+
+                // Tahsis başarılıysa, orijinal pointer'ımızı yeni adrese yönlendir
+                arr = temp;
+                capacity = new_capacity;
+            }
+
+            // 5. Sayıyı diziye kaydet ve eleman sayısını artır
+            arr[count] = input;
+            count++;
+        }
+    }
+
+    // 6. Sonuçları ekrana yazdır
+    printf("\nStocked even numbers:\n");
+    for (int i = 0; i < count; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+
+    // 7. Belleği iade et (Memory leak önleme)
+    free(arr);
+
+    return 0;
+}
+
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int N;
+
+    // 1. Kullanıcıdan N değerini al
+    printf("Satir sayisini (N) girin: ");
+    if (scanf("%d", &N) != 1 || N <= 0) {
+        printf("Gecersiz giris.\n");
+        return 1;
+    }
+
+    // 2. Ana omurgayı tahsis et (N adet int işaretçisi tutacak dizi)
+    int **jagged_array = (int **)malloc(N * sizeof(int *));
+    if (jagged_array == NULL) {
+        printf("Omurga bellek tahsisi basarisiz!\n");
+        return 1;
+    }
+
+    // 3. Her satır için merdiven mantığıyla bellek tahsis et ve doldur
+    for (int i = 0; i < N; i++) {
+        // i. satır için (i + 1) adet tam sayılık yer ayır
+        jagged_array[i] = (int *)malloc((i + 1) * sizeof(int));
+
+        // Hata Yönetimi: Eğer bu satırda bellek dolarsa,
+        // şu ana kadar başarılı olan önceki satırları silip çıkmalıyız.
+        if (jagged_array[i] == NULL) {
+            printf("%d. satir icin bellek tahsisi basarisiz!\n", i);
+            for (int k = 0; k < i; k++) {
+                free(jagged_array[k]);
+            }
+            free(jagged_array);
+            return 1;
+        }
+
+        // Veriyi doldur
+        for (int j = 0; j < (i + 1); j++) {
+            jagged_array[i][j] = i;
+        }
+    }
+
+    // 4. Ekrana Yazdırma
+    printf("\nTableau 'en escalier' (%d lignes):\n", N);
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < (i + 1); j++) {
+            printf("%d ", jagged_array[i][j]);
+        }
+        printf("\n"); // Her satır bitiminde alt satıra geç
+    }
+
+    // 5. Belleği Temizleme (İçten dışa doğru)
+    // Önce satırların (basamakların) kendisini iade et
+    for (int i = 0; i < N; i++) {
+        free(jagged_array[i]);
+    }
+
+    // Son olarak ana omurgayı (işaretçi dizisini) iade et
+    free(jagged_array);
+
+    return 0;
+}
+
+```
+
+```c
+#include <stdio.h>
+
+int main() {
+    char letter;
+    int number;
+    int scanf_result;
+
+    printf("Saisissez un identifiant (Lettre-Chiffre, ex: X-42) : ");
+
+    // Doğru giriş yapılana kadar sonsuz döngü
+    while (1) {
+        // 1. scanf'in kaç tane veriyi başarıyla okuduğunu değişkene kaydet
+        scanf_result = scanf(" %c-%d", &letter, &number);
+
+        // 2. BUFFER TEMİZLİĞİ (Vider le buffer d'entrée)
+        // scanf okumayı başarsa da başaramasa da, kullanıcının bastığı 'Enter' (\n)
+        // ve sonrasındaki olası çöp karakterleri bellekten siliyoruz.
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF) {
+            // İçeride hiçbir şey yapmıyoruz. Sadece karakterleri buffer'dan çekip yok ediyoruz.
+        }
+
+        // 3. Formata uyulup uyulmadığını kontrol et
+        if (scanf_result == 2) {
+            // Başarılı! İki eleman da formata uygun okundu.
+            break; // Döngüden çık
+        } else {
+            // Hata! İstenen format sağlanmadı.
+            printf("Format invalide, réessayez : ");
+        }
+    }
+
+    // 4. Sonucu yazdır
+    printf("\nIdentifiant valide !\n");
+    printf("Lettre extraite : %c\n", letter);
+    printf("Chiffre extrait : %d\n", number);
+
+    return 0;
+}
+
+```
+
+```c
+#include <stdio.h>
+
+// Fonksiyon sadece işaretçi ve boyut (size_t) kabul ediyor
+void reverse_array(int *arr, size_t size) {
+    // 1. Güvenlik kontrolü
+    if (arr == NULL || size == 0) {
+        return;
+    }
+
+    // 2. İşaretçileri konumlandır
+    // Doğrudan son elemanın adresine zıpla (Pointer Arithmetic)
+    // n - 1 yapıyoruz çünkü indisler 0'dan başlıyor.
+    int *start = arr;                  // İlk elemanın adresi
+    int *end = arr + size - 1;         // Son elemanın adresi
+
+    // 3. İşaretçiler ortada buluşana kadar takas et
+    while (start < end) {
+        // Değerleri oku ve yer değiştir
+        int temp = *start;
+        *start = *end;
+        *end = temp;
+
+        // 4. İşaretçileri birbirine doğru kaydır (Pointer Arithmetic)
+        start++;
+        end--;
+    }
+}
+
+int main() {
+    // --- SINAV SENARYOSU: KULLANIM TESTİ ---
+    int numbers[] = {1, 2, 3, 4, 5, 6};
+
+    // Dizinin eleman sayısını hesapla
+    size_t size = sizeof(numbers) / sizeof(numbers[0]);
+
+    printf("Orijinal dizi: ");
+    for (size_t i = 0; i < size; i++) {
+        printf("%d ", numbers[i]);
+    }
+    printf("\n");
+
+    // Fonksiyonu çağır (dizinin adını göndermek, ilk elemanın adresini göndermektir)
+    reverse_array(numbers, size);
+
+    printf("Ters cevrilmis dizi: ");
+    for (size_t i = 0; i < size; i++) {
+        printf("%d ", numbers[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
+
+```
+
+```c
+#include <stdio.h>
+
+// 1 ise Little-Endian, 0 ise Big-Endian döndürür
+int is_little_endian(void) {
+    // 1. Test sayımızı oluştur (Hex: 0x00000001)
+    unsigned int test_val = 1;
+
+    // 2. Sayının bellek adresini al ve bir karakter işaretçisine (char *) dönüştür.
+    // char pointer, belleği sadece 1 baytlık (8-bit) pencerelerden görmemizi sağlar.
+    char *first_byte = (char *)&test_val;
+
+    // 3. İşaretçinin gösterdiği ilk baytı oku.
+    // Eğer mimari Little-Endian ise (örn: Intel mimarisi), 1 değeri en başa yazılmıştır (*first_byte == 1).
+    // Eğer Big-Endian ise, 0 değeri en başa yazılmıştır (*first_byte == 0).
+    if (*first_byte == 1) {
+        return 1;
+    } else {
+        return 0;
+    }
+
+    // Not: Sınavda zaman kazanmak için tüm fonksiyonu tek satırda şöyle yazabilirsin:
+    // return (int)(*((char *)&test_val));
+}
+
+int main() {
+    // --- SINAV SENARYOSU: KULLANIM TESTİ ---
+    if (is_little_endian()) {
+        printf("Mimari: Little-Endian\n");
+    } else {
+        printf("Mimari: Big-Endian\n");
+    }
+
+    return 0;
+}
+
+```
+
+```c
+#include <stdio.h>
+
+/**
+ * Makinenin Little-Endian olup olmadığını test eder.
+ *
+ * Mantık: int x = 1 bellekte ya [01][00][00][00] (Little)
+ *         ya da [00][00][00][01] (Big) olarak saklanır.
+ *         İlk byte'a bakarak anlarız.
+ *
+ * @return 1 → Little-Endian, 0 → Big-Endian
+ */
+int is_little_endian(void) {
+    int x = 1;                           // 0x00000001
+    char *ptr = (char*)&x;               // int'in adresini char* olarak al
+
+    // ptr[0] = bellekteki İLK byte
+    if (*ptr == 1) {                     // İlk byte 1 ise
+        return 1;                        // → Little-Endian [01][00][00][00]
+    } else {
+        return 0;                        // → Big-Endian    [00][00][00][01]
+    }
+}
+
+int main() {
+    if (is_little_endian()) {
+        printf("Bu makine Little-Endian.\n");
+        printf("(Intel x86/AMD64 gibi)\n");
+    } else {
+        printf("Bu makine Big-Endian.\n");
+        printf("(Motorola, PowerPC gibi)\n");
+    }
+
+    return 0;
+}
+
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h> // malloc ve free için gerekli
+
+// Parametredeki 'const' kelimesi, kopyalanacak orijinal string'i
+// kazara değiştirmeyeceğimizin garantisini derleyiciye verir.
+char *my_strdup(const char *s) {
+    // 1. Güvenlik: Boş (NULL) bir pointer gelirse direkt NULL döndür.
+    if (s == NULL) {
+        return NULL;
+    }
+
+    // 2. Uzunluğu bul (strlen fonksiyonunun manuel hali)
+    int len = 0;
+    while (s[len] != '\0') {
+        len++;
+    }
+
+    // 3. Bellek Tahsisi
+    // len kadar harf, +1 tane de '\0' karakteri için yer ayırıyoruz.
+    char *new_str = (char *)malloc((len + 1) * sizeof(char));
+
+    // 4. Bellek tahsisinin başarısız olma durumunu yönet (Kritik Adım)
+    if (new_str == NULL) {
+        return NULL;
+    }
+
+    // 5. Verileri kopyala
+    // Döngü koşulunu "i <= len" yaptık.
+    // Böylece i, len değerine ulaştığında sondaki '\0' karakterini de kopyalamış oluruz.
+    for (int i = 0; i <= len; i++) {
+        new_str[i] = s[i];
+    }
+
+    // 6. Yeni ayırdığımız ve içini doldurduğumuz belleğin adresini geri döndür
+    return new_str;
+}
+
+int main() {
+    // --- SINAV SENARYOSU: KULLANIM TESTİ ---
+    const char *orijinal_metin = "HEIG-VD Data Engineering";
+
+    // Kendi yazdığımız fonksiyonu çağırıyoruz
+    char *kopya_metin = my_strdup(orijinal_metin);
+
+    if (kopya_metin != NULL) {
+        printf("Orijinal : %s\n", orijinal_metin);
+        printf("Kopya    : %s\n", kopya_metin);
+
+        // Orijinal metin ve kopya metin farklı bellek adreslerindedir.
+        // Bunu kanıtlamak için kopyanın ilk harfini değiştirelim:
+        kopya_metin[0] = 'X';
+        printf("Degistirilmis Kopya: %s\n", kopya_metin);
+        printf("Orijinal metin degismedi: %s\n", orijinal_metin);
+
+        // my_strdup içinde malloc kullandık.
+        // İşi biten bu belleği işletim sistemine iade etme sorumluluğu artık bizde.
+        free(kopya_metin);
+    } else {
+        printf("Bellek tahsisi basarisiz oldu.\n");
+    }
+
+    return 0;
+}
 
 ```
 
