@@ -1772,32 +1772,307 @@ int main() {
 ```
 
 ```c
+#include <stdio.h>
+#include <stddef.h>
 
+void reverse_array(int *tab, size_t size) {
+    // Güvenlik: Boş dizi gelirse işlemi iptal et
+    if (tab == NULL || size == 0) return;
+
+    int *start = tab;
+    // 1. DÜZELTME: Son elemanın gerçek adresine konumlan (-1)
+    int *end = tab + size - 1;
+
+    // Takas işlemi (İşaretçiler ortada buluşana kadar)
+    while (start < end) {
+        int temp = *start;
+        *start = *end;
+        *end = temp;
+        ++start;
+        --end;
+    }
+
+    // 2. DÜZELTME: Yazdırma için orijinal sınırı yeniden hesapla
+    // Çünkü yukarıdaki 'end' işaretçisi artık ortada duruyor.
+    int *real_end = tab + size;
+
+    // Güvenlik için '!=' yerine '<' kullanmak her zaman daha iyidir.
+    for (int *i = tab; i < real_end; ++i) {
+        printf("%d ", *i);
+    }
+    printf("\n");
+}
+
+int main() {
+    int t[] = { 1, 2, 3, 4, 5 };
+
+    // Dizi adı (t) doğrudan ilk elemanın adresini temsil eder.
+    reverse_array(t, 5);
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
 
+// 2. ADIM (Yardımcı Makro): Kendisine gelen kelimeyi (token) '#' ile tırnak içine alır (Stringification)
+#define STR_HELPER(x) #x
+
+// 1. ADIM (Ana Makro): Gelen iki parametreyi '##' ile birleştirir ve yardımcı makroya paslar
+#define PRINTER(num, ch) printf("%s\n", STR_HELPER(num ## ch))
+
+int main() {
+    PRINTER(42, i);        // Arka planda dönüşüm: printf("%s\n", "42i");
+    PRINTER(3.140, f);     // Arka planda dönüşüm: printf("%s\n", "3.140f");
+    PRINTER(2.718280, d);  // Arka planda dönüşüm: printf("%s\n", "2.718280d");
+
+    return 0;
+}
+// YANLIŞ YAKLAŞIM (Tek kademe):
+#define BAD_MACRO(a, b) #a##b  // DERLEME HATASI! Sözdizimi geçersizdir.
+
+// DOĞRU YAKLAŞIM:
+// İşlemi iki ayrı makroya böldüğümüzde, ilk makro (PRINTER) tokenleri birleştirir (42i).
+// Ardından C ön işlemcisi, sonucu STR_HELPER(42i) olarak okur.
+// STR_HELPER makrosu devreye girdiğinde artık ortada birleştirilecek bir şey yoktur,
+// sadece #x kuralını uygulayarak bunu "42i" metnine çevirir.
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdint.h>
+#include <assert.h>
 
+// 1. Padding (Boşluk) içermeyen kompakt yapı tanımı
+typedef struct __attribute__((packed)) {
+    uint8_t type;         // Offset 0 (1 octet)
+    uint16_t sensor_id;   // Offset 1 (2 octets)
+    uint32_t timestamp;   // Offset 3 (4 octets)
+    uint16_t value;       // Offset 7 (2 octets)
+    uint8_t checksum;     // Offset 9 (1 octet)
+} SensorFrame;
+
+// 2. Yapının tam olarak 10 bayt olduğunu derleme zamanında doğrula
+static_assert(sizeof(SensorFrame) == 10, "Structure size must be exactly 10 bytes");
+
+// Sensörden gelen ham veri
+uint8_t raw[] = {0x03, 0x2A, 0x00, 0x78, 0x56, 0x34, 0x12, 0xE8, 0x03, 0xCA};
+
+int main(void) {
+    // 3. Doğrudan Haritalama (Direct Mapping)
+    // raw dizisinin adresini alıp SensorFrame şablonuyla okuyoruz.
+    SensorFrame *frame = (SensorFrame *)raw;
+
+    // 4. Checksum Hesaplama (İlk 9 baytın XOR'u)
+    uint8_t calculated_checksum = 0;
+    for (int i = 0; i < 9; i++) {
+        calculated_checksum ^= raw[i];
+    }
+
+    // 5. İstenen formata göre yazdırma
+    printf("Type      : %u\n", frame->type);
+    printf("Sensor ID : %u\n", frame->sensor_id);
+
+    // Timestamp hexadecimal formatta (8 hane, 0 dolgulu)
+    printf("Timestamp : 0x%08X\n", frame->timestamp);
+
+    printf("Value     : %u\n", frame->value);
+
+    // Checksum kontrolü
+    if (calculated_checksum == frame->checksum) {
+        printf("Checksum  : valide\n");
+    } else {
+        printf("Checksum  : invalide\n");
+    }
+
+    return 0;
+}
 
 ```
 
 ```c
+#include <stdio.h>
 
+typedef struct {
+    int id;
+    char nom[50];
+    char prenom[50];
+    float moyenne;
+} etudiant_t;
+
+void lire_fichier(const char *nom_fichier) {
+    // 1. Dosyayı ikili okuma (rb) modunda aç
+    FILE *file = fopen(nom_fichier, "rb");
+    if (file == NULL) {
+        // Sınavlarda hata mesajı basmak iyidir ama bazen hocalar
+        // sessizce çıkılmasını (return) tercih edebilir.
+        return;
+    }
+
+    etudiant_t etudiant;
+
+    // 2. Döngü: 1 adet etudiant_t okumayı başardığın sürece içeri gir
+    while (fread(&etudiant, sizeof(etudiant_t), 1, file) == 1) {
+
+        // 3. İstenen formatta ekrana yazdır (Virgülden sonra 2 basamak: %.2f)
+        printf("ID: %d\n", etudiant.id);
+        printf("Nom: %s\n", etudiant.nom);
+        printf("Prénom: %s\n", etudiant.prenom);
+        printf("Moyenne: %.2f\n", etudiant.moyenne);
+        printf("--------------------\n"); // Tam olarak 20 tire
+
+        // 4. İmleci bir kayıt boyutu kadar İLERİ taşı (Bir kaydı atla)
+        // SEEK_CUR: Geçerli (current) konumdan itibaren offset kadar git.
+        fseek(file, sizeof(etudiant_t), SEEK_CUR);
+    }
+
+    // 5. Dosyayı kapat
+    fclose(file);
+}
+
+// --- SINAV SENARYOSU İÇİN YARDIMCI TEST BLOĞU ---
+/*
+int main() {
+    // Test verisi oluşturmak için (Sınavda yazmana gerek yok)
+    FILE *f = fopen("test.bin", "wb");
+    if (f) {
+        etudiant_t e1 = {1, "Dupont", "Alice", 14.50f};
+        etudiant_t e2 = {2, "Martin", "Bob", 12.00f};    // Bu atlanacak
+        etudiant_t e3 = {3, "Durand", "Charlie", 16.75f};
+        etudiant_t e4 = {4, "Petit", "David", 9.50f};    // Bu atlanacak
+
+        fwrite(&e1, sizeof(etudiant_t), 1, f);
+        fwrite(&e2, sizeof(etudiant_t), 1, f);
+        fwrite(&e3, sizeof(etudiant_t), 1, f);
+        fwrite(&e4, sizeof(etudiant_t), 1, f);
+        fclose(f);
+    }
+
+    lire_fichier("test.bin");
+    return 0;
+}
+*/
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
 
+typedef struct {
+    int id;
+    char nom[50];
+    char prenom[50];
+    float moyenne;
+} etudiant_t;
+
+/**
+ * Binary dosyayı okur, BİR oku BİR atla.
+ * Sadece 1., 3., 5. kayıtlar (tek indeksliler) yazdırılır.
+ *
+ * @param nom_fichier Okunacak binary dosyanın adı
+ */
+void lire_fichier(const char *nom_fichier) {
+
+    // 1. DOSYAYI AÇ
+    FILE *f = fopen(nom_fichier, "rb");
+    if (f == NULL) {
+        fprintf(stderr, "Erreur d'ouverture du fichier\n");
+        return;
+    }
+
+    etudiant_t e;
+
+    // 2. DÖNGÜ: Oku → Yazdır → Atla → Tekrar
+    while (1) {
+        // BİR kayıt OKU
+        if (fread(&e, sizeof(etudiant_t), 1, f) != 1) {
+            break;  // Dosya sonu → çık
+        }
+
+        // Okunan kaydı YAZDIR
+        printf("ID: %d\n", e.id);
+        printf("Nom: %s\n", e.nom);
+        printf("Prénom: %s\n", e.prenom);
+        printf("Moyenne: %.2f\n", e.moyenne);
+        printf("--------------------\n");
+
+        // BİR kayıt ATLA (SEEK_CUR: mevcut konumdan)
+        fseek(f, sizeof(etudiant_t), SEEK_CUR);
+        // Başarısız olursa (dosya sonu) → döngü başında zaten kontrol edilecek
+    }
+
+    // 3. DOSYAYI KAPAT
+    fclose(f);
+}
 
 ```
 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
 
+typedef struct image {
+    unsigned w;
+    unsigned h;
+    unsigned byte_per_pixel;
+    char data[];  // flexible array member
+} image_t;
+
+image_t *read_image(const char *filename) {
+    // 1. Dosyayı binary modda aç
+    FILE *f = fopen(filename, "rb");
+    if (f == NULL) {
+        fprintf(stderr, "Impossible d'ouvrir le fichier\n");
+        return NULL;
+    }
+
+    // 2. Header verilerini oku
+    // Doğrudan struct'a okuyamayız çünkü henüz malloc yapmadık.
+    // Bu yüzden önce geçici değişkenlere okuyoruz.
+    unsigned header[3];
+    if (fread(header, sizeof(unsigned), 3, f) != 3) {
+        fprintf(stderr, "Impossible de lire le header\n");
+        fclose(f);
+        return NULL;
+    }
+
+    unsigned w = header[0];
+    unsigned h = header[1];
+    unsigned bpp = header[2];
+
+    // Toplam piksel verisi boyutu (size_t ile overflow koruması)
+    size_t data_size = (size_t)w * h * bpp;
+
+    // 3. Bellek Tahsisi (Struct boyutu + FAM için gereken veri boyutu)
+    image_t *img = (image_t *)malloc(sizeof(image_t) + data_size);
+    if (img == NULL) {
+        fprintf(stderr, "Impossible d'allouer la mémoire\n");
+        fclose(f);
+        return NULL;
+    }
+
+    // Değerleri yapıya kopyala
+    img->w = w;
+    img->h = h;
+    img->byte_per_pixel = bpp;
+
+    // 4. Piksel verilerini oku
+    // img->data artık tahsis ettiğimiz o ekstra boşluğun başlangıç adresidir.
+    if (fread(img->data, 1, data_size, f) != data_size) {
+        fprintf(stderr, "Impossible de lire les pixels\n");
+        free(img);     // Hata durumunda ayrılan belleği iade et
+        fclose(f);     // Hata durumunda dosyayı kapat
+        return NULL;
+    }
+
+    // 5. Başarılı bitiş
+    fclose(f);
+    return img;
+}
 
 ```
 

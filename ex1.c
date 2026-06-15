@@ -1290,18 +1290,228 @@
 //     }
 // }
 
-typedef struct DNode {
-    int data;
-    struct DNode *prev;
-    struct DNode *next;
-}DNode;
+// typedef struct DNode {
+//     int data;
+//     struct DNode *prev;
+//     struct DNode *next;
+// }DNode;
 
-void delete_node(DNode **head, DNode *to_delete) {
-    if (*head == NULL || to_delete == NULL) {
-        return;
+// void delete_node(DNode **head, DNode *to_delete) {
+//     if (*head == NULL || to_delete == NULL) {
+//         return;
+//     }
+
+//     if (*head == to_delete) {
+//         *head = to_delete->next;
+//     }
+//     if(to_delete->next != NULL){
+//         to_delete->next->prev = to_delete->prev;
+//     }
+// }
+
+
+// typedef struct DNode {
+//     int data;
+//     struct DNode *prev;
+//     struct DNode *next;
+// }DNode;
+
+// void insert_sorted(DNode **head, int value) {
+//     if (head == NULL) return;
+//     DNode *new_node = malloc(sizeof(DNode));
+//     if (new_node == NULL) return;
+//     new_node->data = value;
+//     new_node->prev = NULL;
+//     new_node->next = NULL;
+
+//     if(*head == NULL){
+//         *head = new_node;
+//         return;
+//     }
+
+//     DNode *current = *head;
+
+//     while(current != NULL && current->data < value){
+//         current = current->next;
+//     }
+//     if(current == *head){
+//         (*head)->prev = new_node;
+//         *head = new_node;
+//     }
+
+
+// }
+
+// void reverse_array(int *tab, size_t size) {
+
+//     if(tab == NULL || size<=1) return;
+
+//     int *start = tab;
+//     int *end = tab + size - 1;
+
+//     while (start < end) {
+//         int temp = *start;
+//         *start = *end;
+//         *end = temp;
+//         ++start;
+//         --end;
+//     }
+
+//     for (int *i = tab; i < tab + size + 1; ++i) {
+//         printf("%d \n", *i);
+//     }
+// }
+
+
+// int main() {
+
+//     int t[] = { 1, 2, 3, 4, 5 };
+//     reverse_array(t, 5);
+
+
+//     return 0;
+
+// }
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+
+// typedef struct {
+//     int id;
+//     char nom[50];
+//     char prenom[50];
+//     float moyenne;
+// }etudiant_t;
+
+// void lire_fichier(const char *nom_fichier) {
+//     FILE *f = fopen(nom_fichier, "rb");
+//     if (f == NULL) {
+//         fprintf(stderr, "Erreur d'ouverture du fichier\n");
+//         return;
+//     }
+
+//     etudiant_t e;
+
+//     while (1) {
+//         if (fread(&e, sizeof(etudiant_t), 1, f) != 1) {
+//             break;
+//         }
+//         printf("ID : %d\n", e.id);
+//         printf("Nom : %s\n", e.nom);
+//         printf("Prenom : %s\n", e.prenom);
+//         printf("Moyenne : %.2f\n", e.moyenne);
+//         printf("--------------------\n");
+
+//         fseek(f, sizeof(etudiant_t), SEEK_CUR);
+//     }
+
+//     fclose(f);
+// }
+
+
+// typedef struct {
+//     int id;
+//     char nom[50];
+//     char prenom[50];
+//     float moyenne;
+// }etudiant_t;
+
+
+// void lire_fichier(const char *filename) {
+//     FILE *f = fopen(filename, "rb");
+//     if (f == NULL) {
+//         return;
+//     }
+
+//     etudiant_t e;
+
+//     while (1) {
+//         if (fread(&e, sizeof(etudiant_t), 1, f) != 1) {
+//             break;
+//         }
+//         printf("ID: %d\n", e.id);
+//         printf("Nom: %s\n", e.nom);
+//         printf("Prénom: %s\n", e.prenom);
+//         printf("Moyenne: %.2f\n", e.moyenne);
+//         printf("--------------------\n"); // Tam olarak 20 tire
+
+//         fseek(f, sizeof(etudiant_t), SEEK_CUR);
+//     }
+
+//     fclose(f);
+
+// }
+// int main() {
+//     // Fonksiyonunu test etmek icin cagiriyorsun
+//     lire_fichier("ogrenciler.bin");
+
+//     return 0;
+// }
+
+// size_t my_strlen(const char *str) {
+//     const char *p = str;
+//     while (*p++);
+//     --p;
+//     return p - str;
+// }
+
+// int main() {
+
+//     printf("%d\n", my_strlen("Bonjour le monde!"));
+//     printf("%d\n", my_strlen(""));
+
+//     return 0;
+
+// }
+
+typedef struct image {
+    unsigned w;
+    unsigned h;
+    unsigned byte_per_pixel;
+    char data[];
+
+}image_t;
+
+image_t *read_image(const char *filename) {
+    FILE *f = fopen(filename, "rb");
+    if (f == NULL) {
+        fprintf(stderr, "impossible d'ouvrir le fichier\n");
+        return NULL;
     }
 
-    if (*head == to_delete) {
-        *head = to_delete->next;
+    unsigned int w, h, bpp;
+    if (fread(&w, sizeof(unsigned int), 1, f) != 1 ||
+        fread(&h, sizeof(unsigned int), 1, f) != 1 ||
+        fread(&bpp, sizeof(unsigned int), 1, f) != 1
+        ) {
+        fprinf(stderr, "Impossible de lire le header\n");
+        fclose(f);
+        return NULL;
     }
+
+    size_t data_size = w * h * bpp;
+    image_t *img = malloc(sizeof(image_t) + data_size);
+    if (img == NULL) {
+        fprintf(stderr, "impossible d'allouer la memoire\n");
+        fclose(f);
+        return NULL;
+    }
+
+    img->byte_per_pixel = bpp;
+    img->w = w;
+    img->h = h;
+
+    if (fread(img->data, 1, data_size, f) != data_size) {
+        fprintf(stderr, "Impossible de lire les pixels\n");
+        free(img);
+        fclose(f);
+        return NULL;
+    }
+
+    fclose(f);
+    return;
+
+
+
 }
